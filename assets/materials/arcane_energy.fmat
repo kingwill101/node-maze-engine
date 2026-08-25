@@ -1,0 +1,26 @@
+material {
+  name: "ArcaneEnergy",
+  shading_model: unlit,
+  blending: alpha,
+  culling: back,
+  parameters: [
+    { type: vec4, name: core_color, hint: source_color, default: [0.15, 0.95, 1.0, 1.0] },
+    { type: vec4, name: flare_color, hint: source_color, default: [0.75, 0.12, 1.0, 1.0] },
+    { type: float, name: phase, default: 0.0 },
+    { type: float, name: intensity, hint: range(0, 2, 0.01), default: 1.0 },
+  ],
+}
+
+fragment {
+  void Surface(inout MaterialInputs material) {
+    float heartbeat = 0.5 + 0.5 * sin(material_params.phase * 7.0);
+    float interference = 0.5 + 0.5 * sin(material_params.phase * 19.0 + heartbeat * 3.14);
+    float flare = pow(heartbeat, 5.0) + interference * 0.22;
+    vec3 color = mix(material_params.core_color.rgb,
+                     material_params.flare_color.rgb,
+                     clamp(flare, 0.0, 1.0));
+    color *= material_params.intensity * (0.8 + heartbeat * 0.55);
+    material.base_color = vec4(color, 0.82 + heartbeat * 0.18);
+    PrepareMaterial(material);
+  }
+}

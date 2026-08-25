@@ -1,0 +1,138 @@
+# Node Maze Engine
+
+An experimental, Flutter-native 3D game engine and original maze-chase game.
+
+Play the web build at **https://kingwill101.github.io/node-maze-engine/**.
+
+## Stack
+
+- Flutter Scene for realtime 3D rendering, assets, materials, and animation.
+- A small renderer-independent ECS in `lib/engine`.
+- LuaLike for isolated, data-driven Godot-style behavior scripts.
+- A deterministic 60 Hz gameplay simulation with render interpolation support.
+- ImageGen character direction with checked-in modeling references and HUD art.
+
+## Run
+
+```sh
+fvm flutter pub get
+fvm flutter run -d macos --enable-flutter-gpu
+```
+
+Move with arrow keys or WASD. Press F to fire, Q to cast Star Pulse, V/Tab to
+switch camera, I for the live scene inspector, M for map select, and P/Escape
+to pause.
+
+Flutter Scene uses Flutter GPU on native platforms, so native `flutter run`
+commands must include `--enable-flutter-gpu`. The web backend uses WebGL2 and
+does not need this flag.
+
+## Architecture
+
+The ECS world owns gameplay state. Flutter Scene nodes are a view of entities with renderable
+components. Structural ECS changes are command-buffered until the end of a system tick, which
+makes queries safe for Dart and Lua behaviors.
+
+The first vertical slice includes typed components, one- and two-component queries, fixed and
+frame systems, an event bus, Godot-style behavior lifecycle contracts, a restricted Lua-to-ECS
+bridge, a maze, movement, joined wall geometry, pellets, scoring, and a procedural Flutter Scene
+presentation.
+
+The current game loop also includes ECS-owned session state, power pellets,
+frightened ghost scoring, lives and respawning, win/game-over phases, restart
+controls, a Lua-driven ghost, and a composed 3D heroine based on the checked-in
+ImageGen character direction.
+
+Four ghosts now run independent Lua VMs. Their ECS `GhostProfile` components
+select chaser, ambusher, shy, and patrol targeting strategies; the scripting
+surface exposes player sensing, power mode, and safe maze-target requests. Each
+profile also has a distinct composed 3D character and frightened-state visual.
+
+A timed 3D bonus fruit appears when half the pellets remain, awards 1,000
+points, and expires after ten seconds. Consecutive frightened-ghost captures
+escalate through 200, 400, 800, and 1,600 points until power mode ends.
+
+## Authoring
+
+`assets/lua/level.lua` owns the level name, maze layout, and gameplay tuning.
+Edit the ASCII maze to build another level: `#` is a wall, `.` a pellet, `o` a
+power pellet, `P` the player spawn, `A` through `D` are ghost spawns, `K` is a
+Star Key, `|` a locked door, and `^` a rift trap. The
+loader validates row widths, tiles, and required spawns before creating the ECS
+world.
+
+The same script now returns a three-chapter campaign. Chapters also author
+story text, objectives, timed/progress-triggered events, render distance, and
+camera mode. The final large-world chapter uses a close first-person camera;
+future Lua chapters can opt into it with `camera = 'first_person'`.
+
+`assets/lua/ghost.lua` demonstrates entity behavior scripts with `ready` and
+`fixed_update` callbacks. `LuaBehaviorScheduler` can attach the same lifecycle
+to other entity types without adding script-specific logic to the game loop.
+The expanded API includes exported properties, groups, component introspection,
+simulation timers, and queued cross-VM signals. See
+`docs/LUA_SCRIPTING.md` for the complete callable surface and examples.
+The default `assets/lua/autoload.lua` behavior is attached at `/root` before
+enemy scripts and can resolve stable scene paths with `get_node`, mirroring a
+small Godot SceneTree/autoload surface over the ECS.
+
+Walls are merged into horizontal runs instead of rendered as one cube per tile.
+Their neon rails use `assets/materials/neon_wall.fmat`, whose `pulse` parameter
+is driven each frame. This is also the extension pattern for future animated
+Flutter Scene materials.
+
+Wall runs are capped to streamable segments and presentation entities outside
+the current level's render distance are culled. The camera follows the player,
+so maps can grow beyond a single screen without rendering the entire world.
+Each wall is a layered Flutter Scene assembly: dark architectural mass, top and
+side energy conduits, rotating runes, and floating pulse motes.
+
+Characters are built as composed 3D meshes and animated on the render side:
+the heroine turns, bobs, chomps, and swings her gloves; ghosts bob and wobble
+with individual phase offsets; the bonus fruit spins and floats. Gameplay
+positions remain deterministic in the ECS while presentation animation stays
+independent of the fixed simulation.
+
+## Verify
+
+```sh
+fvm flutter analyze
+fvm flutter test
+fvm flutter build macos --debug
+```
+
+The build command compiles Flutter Scene material sources. Launch the resulting
+app—or use the run command above—with Flutter GPU enabled.
+
+## GitHub Pages deployment
+
+Pushes to `main` run `.github/workflows/deploy-pages.yml`. The workflow installs
+Flutter master, runs the full test suite, builds with the repository-specific
+`/node-maze-engine/` base path, uploads `build/web`, and deploys it through the
+protected `github-pages` environment. It can also be started manually from the
+Actions tab with **Run workflow**.
+
+In first-person chapters, W/Up moves forward, S/Down moves backward, A/Left and
+D/Right turn in 90-degree steps, and Space stops. The animated camera uses a
+wider field of view and movement bob. The live map overlay reads walls,
+remaining sparks, ghosts, player position, and facing directly from ECS state.
+Lua levels can enable `auto_run`; the engine chooses an open spawn exit and
+starts moving immediately, while turns steer the runner at maze intersections.
+Power mode now throws the wall material into a rapid magenta reality storm, and
+the floor uses a second compiled `.fmat` shader with slow rift surges and rare
+energy flashes.
+
+Levels may also generate their `maze` table algorithmically inside Lua. The
+fourth chapter uses a seeded recursive-backtracker (`generate_maze`) to carve a
+31×21 connected dream maze, place valid player/ghost spawns, and scatter power
+objectives. A fixed seed makes runs reproducible; changing the seed produces a
+different validated world without recompiling Dart.
+
+Press V or Tab at any time to switch the same live ECS world between tactical
+top-down and 3D corridor views. Corridor view raises the procedural wall
+assemblies above eye level, widens the camera field of view, hides the external
+heroine mesh, and enables first-person steering. Switching back restores the
+overhead planning camera without resetting entities, score, or Lua behaviors.
+Press P, Escape, or the hardware Pause key to suspend/resume the simulation.
+Pause freezes ECS systems, Lua ticks, movement, encounters, and gameplay timers
+while allowing low-level Flutter Scene shader ambience to continue rendering.

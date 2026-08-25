@@ -1,0 +1,23 @@
+material {
+  name: "RiftFloor",
+  shading_model: unlit,
+  blending: opaque,
+  culling: back,
+  parameters: [
+    { type: vec4, name: void_color, hint: source_color, default: [0.008, 0.012, 0.05, 1.0] },
+    { type: vec4, name: rift_color, hint: source_color, default: [0.02, 0.28, 0.5, 1.0] },
+    { type: float, name: phase, default: 0.0 },
+  ],
+}
+
+fragment {
+  void Surface(inout MaterialInputs material) {
+    float surge = 0.5 + 0.5 * sin(material_params.phase * 1.7);
+    float flash = pow(0.5 + 0.5 * sin(material_params.phase * 0.31), 8.0);
+    vec3 color = mix(material_params.void_color.rgb,
+                     material_params.rift_color.rgb,
+                     0.12 + surge * 0.16 + flash * 0.18);
+    material.base_color = vec4(color, 1.0);
+    PrepareMaterial(material);
+  }
+}

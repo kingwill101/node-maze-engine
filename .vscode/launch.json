@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Node Maze (macOS + Flutter GPU)",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "macos",
+      "toolArgs": ["--enable-flutter-gpu"]
+    }
+  ]
+}
