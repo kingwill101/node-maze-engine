@@ -410,10 +410,12 @@ class _MazeGameViewState extends State<MazeGameView> {
     final sources = await Future.wait([
       rootBundle.loadString('assets/lua/autoload.lua'),
       rootBundle.loadString('assets/lua/ghost.lua'),
+      rootBundle.loadString('assets/lua/prefabs.lua'),
     ]);
     await target.loadGameScripts(
       autoloadSource: sources[0],
       ghostSource: sources[1],
+      prefabSource: sources[2],
     );
   }
 
@@ -1548,6 +1550,9 @@ class _RuntimeInspector extends StatelessWidget {
                     }
                     final groups = world.maybeGet<ScriptGroups>(entity);
                     final properties = world.maybeGet<ScriptProperties>(entity);
+                    final scriptComponents = world.maybeGet<ScriptComponents>(
+                      entity,
+                    );
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Column(
@@ -1578,6 +1583,15 @@ class _RuntimeInspector extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 10,
                                 color: Colors.white38,
+                              ),
+                            ),
+                          if (scriptComponents != null &&
+                              scriptComponents.values.isNotEmpty)
+                            Text(
+                              'lua: ${scriptComponents.values.keys.join(', ')}',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Color(0xffb35cff),
                               ),
                             ),
                           if (properties != null &&
@@ -1616,6 +1630,8 @@ class _RuntimeInspector extends StatelessWidget {
     if (world.has<DoorTag>(entity)) 'Door',
     if (world.has<TrapTag>(entity)) 'Trap',
     if (world.has<ScriptProjectileTag>(entity)) 'Projectile',
+    if (world.maybeGet<ScriptComponents>(entity) case final components?)
+      ...components.values.keys.map((name) => 'Lua:$name'),
     if (world.has<ScriptDrawings>(entity)) 'Drawings',
     if (world.has<ScriptParticleEmitters>(entity)) 'Particles',
     if (world.has<ScriptHud>(entity)) 'Hud',

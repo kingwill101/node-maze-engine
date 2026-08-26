@@ -29,9 +29,14 @@ does not need this flag.
 
 ## Architecture
 
-The ECS world owns gameplay state. Flutter Scene nodes are a view of entities with renderable
-components. Structural ECS changes are command-buffered until the end of a system tick, which
-makes queries safe for Dart and Lua behaviors.
+The engine kernel owns storage, deterministic simulation, collision, input,
+Flutter Scene rendering, and GPU resources. Lua is the game-authoring layer:
+scripts define prefabs, attach arbitrary named components, coordinate scenes,
+draw procedural objects and HUDs, and implement behavior. The public Lua API
+uses familiar `Node`, `SceneTree`, and `Prefab` concepts while the ECS remains
+an internal, renderer-independent implementation detail. Structural changes
+are command-buffered until the end of a system tick, making queries safe for
+Dart and Lua behaviors.
 
 The first vertical slice includes typed components, one- and two-component queries, fixed and
 frame systems, an event bus, Godot-style behavior lifecycle contracts, a restricted Lua-to-ECS
@@ -75,6 +80,12 @@ simulation timers, and queued cross-VM signals. See
 The default `assets/lua/autoload.lua` behavior is attached at `/root` before
 enemy scripts and can resolve stable scene paths with `get_node`, mirroring a
 small Godot SceneTree/autoload surface over the ECS.
+
+`assets/lua/prefabs.lua` defines the demo's wisps, runes, orbs, hostile bolts,
+and Dream Warden entirely in Lua. A new game can replace these recipes without
+adding Dart component classes or editing the engine. Generic gameplay data is
+attached with `Node.add_component`, changed with `Node.set_value`, and queried
+through `SceneTree.get_nodes_with_component`.
 
 Walls are merged into horizontal runs instead of rendered as one cube per tile.
 Their neon rails use `assets/materials/neon_wall.fmat`, whose `pulse` parameter

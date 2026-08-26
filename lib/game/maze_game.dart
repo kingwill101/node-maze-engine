@@ -322,12 +322,22 @@ class MazeGame {
   Future<void> loadGameScripts({
     required String autoloadSource,
     required String ghostSource,
+    String prefabSource = '',
   }) async {
     scripts.clear();
+    final bootstrapSource = prefabSource.isEmpty
+        ? autoloadSource
+        : '''
+local __builtin_prefabs = (function()
+$prefabSource
+end)()
+__builtin_prefabs.register()
+$autoloadSource
+''';
     await scripts.attach(
       entity: session,
       runtime: _createScriptRuntime(),
-      source: autoloadSource,
+      source: bootstrapSource,
       scriptPath: 'assets/lua/autoload.lua',
     );
     for (final ghost in ghosts) {
@@ -642,15 +652,29 @@ class _ScriptProjectileSystem implements EngineSystem {
       velocity.remainingSeconds -= deltaSeconds;
       final expired = velocity.remainingSeconds <= 0;
       final hitWall = maze.isWall(transform.x.round(), transform.z.round());
-      final projectile = context.world.maybeGet<ScriptProjectileTag>(entity);
+      final nativeProjectile = context.world.maybeGet<ScriptProjectileTag>(
+        entity,
+      );
+      final scriptedProjectile = context.world
+          .maybeGet<ScriptComponents>(entity)
+          ?.values['projectile'];
+      final isProjectile =
+          nativeProjectile != null || scriptedProjectile != null;
+      final hurtsPlayer =
+          nativeProjectile?.hurtsPlayer ??
+          scriptedProjectile?['hurts_player'] != false;
+      final damage =
+          nativeProjectile?.damage ??
+          (scriptedProjectile?['damage'] as num?)?.toInt() ??
+          1;
       final hitPlayer =
-          projectile != null &&
-          projectile.hurtsPlayer &&
+          isProjectile &&
+          hurtsPlayer &&
           playerInvulnerability <= 0 &&
           (player.x - transform.x).abs() < .42 &&
           (player.z - transform.z).abs() < .42;
       if (hitPlayer) {
-        state.lives = (state.lives - projectile.damage).clamp(0, 999);
+        state.lives = (state.lives - damage).clamp(0, 999);
         state
           ..announcement = 'THE DREAM WARDEN STRIKES'
           ..announcementSeconds = 2;
@@ -662,7 +686,7 @@ class _ScriptProjectileSystem implements EngineSystem {
         playerInvulnerability = 1;
       }
       var hitEnemy = false;
-      if (projectile != null && !projectile.hurtsPlayer) {
+      if (isProjectile && !hurtsPlayer) {
         for (final (enemy, enemyTransform, _)
             in context.world.query2<Transform3, GhostTag>()) {
           if ((enemyTransform.x - transform.x).abs() >= .45 ||

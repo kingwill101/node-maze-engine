@@ -63,17 +63,17 @@ class LuaBehaviorRuntime {
             entity.id,
       ];
     });
-    _expose('instantiate', (args) {
+    _expose('_engine_instantiate_empty', (args) {
       final prefab = _string(args, 0);
       final path = _string(args, 1);
       final entity = engine.world.create([
         Transform3(_number(args, 2), _number(args, 3), _number(args, 4)),
         ScriptProperties({'prefab': prefab}),
         ScriptGroups(['script_spawned', prefab]),
+        ScriptComponents(),
         ScriptDrawings(),
       ]);
       sceneTree?.register(path, entity);
-      _applyPrefab(entity, prefab);
       return entity.id;
     });
     _expose('entity_set_path', (args) {
@@ -99,7 +99,8 @@ class LuaBehaviorRuntime {
     _expose('entity_is_alive', (args) => engine.world.isAlive(_entity(args)));
     _expose('entity_has_component', (args) {
       final entity = _entity(args);
-      return switch (_string(args, 1)) {
+      final name = _string(args, 1);
+      return switch (name) {
         'transform' => engine.world.has<Transform3>(entity),
         'mover' => engine.world.has<GridMover>(entity),
         'player' => engine.world.has<PlayerTag>(entity),
@@ -115,8 +116,61 @@ class LuaBehaviorRuntime {
         'door' => engine.world.has<DoorTag>(entity),
         'key' => engine.world.has<KeyPickupTag>(entity),
         'trap' => engine.world.has<TrapTag>(entity),
-        _ => false,
+        _ => _scriptComponents(entity).values.containsKey(name),
       };
+    });
+    _expose('add_component', (args) {
+      final entity = _entity(args);
+      final type = _string(args, 1);
+      final data = args.length > 2
+          ? _stringObjectMap(_argument(args, 2))
+          : <String, Object?>{};
+      _scriptComponents(entity).values[type] = data;
+      return entity.id;
+    });
+    _expose('remove_component', (args) {
+      engine.world
+          .maybeGet<ScriptComponents>(_entity(args))
+          ?.values
+          .remove(_string(args, 1));
+      return null;
+    });
+    _expose(
+      'has_component',
+      (args) =>
+          engine.world
+              .maybeGet<ScriptComponents>(_entity(args))
+              ?.values
+              .containsKey(_string(args, 1)) ??
+          false,
+    );
+    _expose(
+      'get_component',
+      (args) => engine.world
+          .maybeGet<ScriptComponents>(_entity(args))
+          ?.values[_string(args, 1)],
+    );
+    _expose('get_component_value', (args) {
+      final data = _scriptComponents(_entity(args)).values[_string(args, 1)];
+      return data?[_string(args, 2)];
+    });
+    _expose('set_component_value', (args) {
+      final data = _scriptComponents(_entity(args)).values
+          .putIfAbsent(_string(args, 1), () => {});
+      data[_string(args, 2)] = _deepUnwrap(_argument(args, 3));
+      return null;
+    });
+    _expose('get_nodes_with_component', (args) {
+      final type = _string(args, 0);
+      return [
+        for (final entity in engine.world.entities)
+          if (engine.world
+                  .maybeGet<ScriptComponents>(entity)
+                  ?.values
+                  .containsKey(type) ??
+              false)
+            entity.id,
+      ];
     });
     _expose('entity_add_component', (args) {
       final entity = _entity(args);
@@ -450,6 +504,42 @@ class LuaBehaviorRuntime {
 
   Future<void> load(String source, {String? scriptPath}) async {
     await _lua.execute('''
+local __node_prefabs = {}
+
+Node = {}
+function Node.get(path) return get_node(path) end
+function Node.has(path) return has_node(path) end
+function Node.path(entity) return get_node_path(entity) end
+function Node.queue_free(entity) return entity_destroy(entity) end
+function Node.add_to_group(entity, group) return entity_add_to_group(entity, group) end
+function Node.remove_from_group(entity, group) return entity_remove_from_group(entity, group) end
+function Node.is_in_group(entity, group) return entity_is_in_group(entity, group) end
+function Node.add_component(entity, component, data) return add_component(entity, component, data or {}) end
+function Node.remove_component(entity, component) return remove_component(entity, component) end
+function Node.has_component(entity, component) return entity_has_component(entity, component) end
+function Node.get_component(entity, component) return get_component(entity, component) end
+function Node.get_value(entity, component, key) return get_component_value(entity, component, key) end
+function Node.set_value(entity, component, key, value) return set_component_value(entity, component, key, value) end
+
+SceneTree = {}
+function SceneTree.get_nodes_in_group(group) return get_nodes_in_group(group) end
+function SceneTree.get_nodes_with_component(component) return get_nodes_with_component(component) end
+function SceneTree.node_count() return #get_scene_paths() end
+
+Prefab = {}
+function Prefab.define(name, factory) __node_prefabs[name] = factory end
+function Prefab.has(name) return __node_prefabs[name] ~= nil end
+function Prefab.instantiate(name, path, x, y, z)
+  local factory = __node_prefabs[name]
+  if factory == nil then error("Unknown Lua prefab: " .. tostring(name)) end
+  local entity = _engine_instantiate_empty(name, path, x or 0, y or 0, z or 0)
+  factory(entity)
+  return entity
+end
+function instantiate(name, path, x, y, z)
+  return Prefab.instantiate(name, path, x, y, z)
+end
+
 $source
 
 function __node_dispatch(callback, entity, delta)
@@ -515,6 +605,31 @@ end
         : raw.toString();
   }
 
+  Object? _deepUnwrap(Object? value) {
+    final raw = value is Value ? value.unwrap() : value;
+    if (raw is Map) {
+      return {
+        for (final entry in raw.entries)
+          entry.key.toString(): _deepUnwrap(entry.value),
+      };
+    }
+    if (raw is List) return raw.map(_deepUnwrap).toList();
+    return raw;
+  }
+
+  Map<String, Object?> _stringObjectMap(Object? value) {
+    final raw = _deepUnwrap(value);
+    if (raw == null) return {};
+    if (raw is! Map) {
+      throw ArgumentError.value(
+        value,
+        'data',
+        'Component data must be a table',
+      );
+    }
+    return {for (final entry in raw.entries) entry.key.toString(): entry.value};
+  }
+
   ScriptProperties _properties(Entity entity) {
     final existing = engine.world.maybeGet<ScriptProperties>(entity);
     if (existing != null) return existing;
@@ -555,127 +670,12 @@ end
     return created;
   }
 
-  void _applyPrefab(Entity entity, String prefab) {
-    final drawings = _drawings(entity).values;
-    switch (prefab) {
-      case 'wisp':
-        drawings['core'] =
-            ScriptDrawing(
-                name: 'core',
-                shape: ScriptPrimitiveShape.sphere,
-                x: 0,
-                y: .28,
-                z: 0,
-                scaleX: .16,
-                scaleY: .16,
-                scaleZ: .16,
-                color: '#31e7ff',
-              )
-              ..animation = 'float'
-              ..animationSpeed = 2.4
-              ..animationAmount = .18;
-      case 'rune':
-        drawings['glyph'] =
-            ScriptDrawing(
-                name: 'glyph',
-                shape: ScriptPrimitiveShape.box,
-                x: 0,
-                y: .32,
-                z: 0,
-                scaleX: .08,
-                scaleY: .32,
-                scaleZ: .08,
-                color: '#b35cff',
-              )
-              ..animation = 'spin'
-              ..animationSpeed = 1.8;
-      case 'orb':
-        drawings['orb'] =
-            ScriptDrawing(
-                name: 'orb',
-                shape: ScriptPrimitiveShape.sphere,
-                x: 0,
-                y: .3,
-                z: 0,
-                scaleX: .24,
-                scaleY: .24,
-                scaleZ: .24,
-                color: '#ffd45c',
-              )
-              ..animation = 'pulse'
-              ..animationSpeed = 3
-              ..animationAmount = .22;
-      case 'bolt':
-        engine.world.add(entity, const ScriptProjectileTag());
-        _particles(entity).values['trail'] = ScriptParticleEmitter(
-          name: 'trail',
-          count: 10,
-          radius: .65,
-          speed: 3.5,
-          size: .045,
-          color: '#ff3970',
-          pattern: 'trail',
-        );
-        drawings['bolt'] =
-            ScriptDrawing(
-                name: 'bolt',
-                shape: ScriptPrimitiveShape.sphere,
-                x: 0,
-                y: .25,
-                z: 0,
-                scaleX: .13,
-                scaleY: .13,
-                scaleZ: .13,
-                color: '#ff3970',
-              )
-              ..animation = 'pulse'
-              ..animationSpeed = 10
-              ..animationAmount = .3;
-      case 'boss':
-        engine.world.add(entity, const BossTag());
-        _particles(entity).values['void_crown'] = ScriptParticleEmitter(
-          name: 'void_crown',
-          count: 24,
-          radius: 1.1,
-          speed: 1.4,
-          size: .055,
-          color: '#b35cff',
-          pattern: 'orbit',
-        );
-        drawings['body'] =
-            ScriptDrawing(
-                name: 'body',
-                shape: ScriptPrimitiveShape.sphere,
-                x: 0,
-                y: .55,
-                z: 0,
-                scaleX: .72,
-                scaleY: .72,
-                scaleZ: .72,
-                color: '#b35cff',
-              )
-              ..animation = 'float'
-              ..animationSpeed = 1.6
-              ..animationAmount = .16;
-        drawings['crown'] =
-            ScriptDrawing(
-                name: 'crown',
-                shape: ScriptPrimitiveShape.box,
-                x: 0,
-                y: 1.35,
-                z: 0,
-                scaleX: .48,
-                scaleY: .08,
-                scaleZ: .48,
-                color: '#ffd45c',
-              )
-              ..animation = 'spin'
-              ..animationSpeed = 1.2;
-      case 'empty':
-        break;
-      default:
-        throw ArgumentError.value(prefab, 'prefab', 'Unknown Lua prefab');
-    }
+  ScriptComponents _scriptComponents(Entity entity) {
+    final existing = engine.world.maybeGet<ScriptComponents>(entity);
+    if (existing != null) return existing;
+    final created = ScriptComponents();
+    engine.world.add(entity, created);
+    return created;
   }
 }
 

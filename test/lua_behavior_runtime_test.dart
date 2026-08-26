@@ -135,6 +135,14 @@ void main() {
     final tree = SceneTree()..register('/root', root);
     final lua = LuaBehaviorRuntime(engine, sceneTree: tree);
     await lua.load('''
+      Prefab.define('wisp', function(entity)
+        draw_sphere(entity, 'core', 0, 0.28, 0, 0.16, '#31e7ff')
+        Node.add_component(entity, 'guide', { role = 'pathfinder' })
+      end)
+      Prefab.define('bolt', function(entity)
+        Node.add_component(entity, 'projectile', { damage = 2, hurts_player = true })
+      end)
+
       function ready(root)
         local wisp = instantiate('wisp', '/root/effects/guide', 3, 0.2, 7)
         local bolt = instantiate('bolt', '/root/projectiles/test', 2, 0.2, 2)
@@ -159,9 +167,38 @@ void main() {
     expect(engine.world.get<ScriptProperties>(root).values['spawned'], 2);
     expect(engine.world.get<ScriptProperties>(root).values['wisp'], wisp.id);
     final bolt = tree.getNode('/root/projectiles/test')!;
-    expect(engine.world.has<ScriptProjectileTag>(bolt), isTrue);
+    expect(
+      engine.world.get<ScriptComponents>(bolt).values['projectile']?['damage'],
+      2,
+    );
     expect(engine.world.get<ScriptVelocity>(bolt).z, -2);
     expect(engine.world.get<ScriptVelocity>(bolt).remainingSeconds, 4);
+  });
+
+  test('Godot-like Lua API creates and queries game components', () async {
+    final engine = EngineContext();
+    final root = engine.world.create([ScriptProperties()]);
+    final lua = LuaBehaviorRuntime(engine);
+    await lua.load('''
+      function ready(root)
+        Node.add_component(root, 'dialogue', { speaker = 'Oracle', line = 3 })
+        Node.set_value(root, 'dialogue', 'mood', 'ominous')
+        entity_set_property(root, 'found', #SceneTree.get_nodes_with_component('dialogue'))
+        entity_set_property(root, 'speaker', Node.get_value(root, 'dialogue', 'speaker'))
+      end
+    ''');
+
+    await lua.ready(root);
+
+    final component = engine.world
+        .get<ScriptComponents>(root)
+        .values['dialogue']!;
+    expect(component, containsPair('mood', 'ominous'));
+    expect(engine.world.get<ScriptProperties>(root).values['found'], 1);
+    expect(
+      engine.world.get<ScriptProperties>(root).values['speaker'],
+      'Oracle',
+    );
   });
 
   test('Lua controls door and trap components', () async {

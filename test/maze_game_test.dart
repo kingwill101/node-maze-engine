@@ -39,9 +39,13 @@ void main() {
     await game.loadGameScripts(
       autoloadSource: await File('assets/lua/autoload.lua').readAsString(),
       ghostSource: '',
+      prefabSource: await File('assets/lua/prefabs.lua').readAsString(),
     );
 
-    final bosses = game.runtime.context.world.query<BossTag>().toList();
+    final bosses = game.runtime.context.world
+        .query<ScriptComponents>()
+        .where((entry) => entry.$2.values.containsKey('boss'))
+        .toList();
     expect(bosses, hasLength(1));
     expect(
       game.runtime.context.world
@@ -55,7 +59,12 @@ void main() {
       await Future<void>.delayed(Duration.zero);
     }
 
-    expect(game.runtime.context.world.query<ScriptProjectileTag>(), isNotEmpty);
+    expect(
+      game.runtime.context.world.query<ScriptComponents>().where(
+        (entry) => entry.$2.values.containsKey('projectile'),
+      ),
+      isNotEmpty,
+    );
   });
 
   test('Lua opens a blocking door when the player collects a key', () async {
@@ -63,6 +72,7 @@ void main() {
     await game.loadGameScripts(
       autoloadSource: await File('assets/lua/autoload.lua').readAsString(),
       ghostSource: '',
+      prefabSource: await File('assets/lua/prefabs.lua').readAsString(),
     );
     final door = game.runtime.context.world.query<DoorTag>().single.$2;
     expect(door.open, isFalse);
@@ -240,7 +250,11 @@ void main() {
     final autoload = await File('assets/lua/autoload.lua').readAsString();
     final ghosts = await File('assets/lua/ghost.lua').readAsString();
 
-    await game.loadGameScripts(autoloadSource: autoload, ghostSource: ghosts);
+    await game.loadGameScripts(
+      autoloadSource: autoload,
+      ghostSource: ghosts,
+      prefabSource: await File('assets/lua/prefabs.lua').readAsString(),
+    );
 
     expect(game.sceneTree.getNode('/root'), game.session);
     expect(game.sceneTree.getNode('player'), game.player);
@@ -426,6 +440,7 @@ void main() {
       await game.loadGameScripts(
         autoloadSource: await File('assets/lua/autoload.lua').readAsString(),
         ghostSource: '',
+        prefabSource: await File('assets/lua/prefabs.lua').readAsString(),
       );
 
       game.advance(1 / 60);

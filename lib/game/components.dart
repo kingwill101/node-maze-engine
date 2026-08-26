@@ -113,6 +113,19 @@ class ScriptProperties {
   final Map<String, Object?> values;
 }
 
+/// Game-defined components authored entirely by Lua.
+///
+/// Native Dart components remain available for engine-level hot paths, while
+/// arbitrary gameplay concepts live here without requiring a Dart type.
+class ScriptComponents {
+  ScriptComponents([Map<String, Map<String, Object?>> values = const {}])
+    : values = {
+        for (final entry in values.entries) entry.key: Map.of(entry.value),
+      };
+
+  final Map<String, Map<String, Object?>> values;
+}
+
 class ScriptGroups {
   ScriptGroups([Iterable<String> values = const []]) : values = Set.of(values);
 

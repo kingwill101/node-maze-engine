@@ -23,21 +23,26 @@ local path = get_node_path(player)
 local paths = get_scene_paths()
 ```
 
-Lua can instantiate lightweight prefabs at runtime and immediately address them
-through the scene tree. Prefabs are ECS recipes, not renderer objects:
+Lua can define and instantiate prefabs at runtime and immediately address them
+through the scene tree. The demo definitions live in `assets/lua/prefabs.lua`;
+they are ordinary scripts rather than hard-coded Dart recipes:
 
 ```lua
-local wisp = instantiate('wisp', '/root/effects/guide', 4, 0.2, 7)
-entity_set_property(wisp, 'role', 'pathfinder')
-entity_set_path(wisp, '/root/effects/north_guide')
-local spawned = get_nodes_in_group('script_spawned')
-entity_destroy(wisp)
+Prefab.define('wisp', function(entity)
+  draw_sphere(entity, 'core', 0, 0.28, 0, 0.16, '#31e7ff')
+  Node.add_component(entity, 'guide', { role = 'pathfinder' })
+end)
+
+local wisp = Prefab.instantiate('wisp', '/root/effects/guide', 4, 0.2, 7)
+local spawned = SceneTree.get_nodes_in_group('script_spawned')
+Node.queue_free(wisp)
 ```
 
 Built-in visual recipes are `wisp`, `rune`, `orb`, `bolt`, `boss`, and `empty`. The demo
 autoload creates two guide wisps and a rotating spawn rune on every map.
 `entity_set_velocity(entity, vx, vy, vz, lifetime)` turns a spawned entity into
-a simulated moving object. The `bolt` recipe is a damaging projectile.
+a simulated moving object. The `bolt` recipe attaches a Lua `projectile`
+component whose damage settings are consumed by the native collision kernel.
 Dreamseed 7331 uses these APIs for a three-phase Dream Warden boss that aims and
 fires entirely from the Lua autoload.
 
@@ -60,7 +65,31 @@ function timeout(entity, timer_name) end
 function signal_received(entity, signal_name, source, payload) end
 ```
 
-## Entity and component API
+## Node, SceneTree, and component API
+
+The preferred surface resembles Godot scripting while keeping entity ids as
+lightweight node handles:
+
+```lua
+local player = Node.get('/root/player')
+Node.add_to_group(player, 'heroes')
+Node.add_component(player, 'inventory', { keys = 0, spell = 'none' })
+Node.set_value(player, 'inventory', 'keys', 1)
+
+if Node.has_component(player, 'inventory') then
+  local inventory = Node.get_component(player, 'inventory')
+end
+
+local inventories = SceneTree.get_nodes_with_component('inventory')
+local enemies = SceneTree.get_nodes_in_group('enemies')
+```
+
+Named Lua components can contain tables, lists, strings, booleans, and numbers.
+They let games introduce dialogue, quests, health, loot, or AI state without
+declaring matching Dart types. Native names such as `transform`, `mover`, and
+`ghost` remain introspectable through `Node.has_component`.
+
+The lower-level compatibility functions remain available:
 
 ```lua
 entity_is_alive(entity)
@@ -76,16 +105,17 @@ door_is_open(door)
 trap_set_active(trap, false)
 ```
 
-Supported component names are `transform`, `mover`, `player`, `ghost`,
+Native component names include `transform`, `mover`, `player`, `ghost`,
 `properties`, `groups`, and `drawings`. Scripts may dynamically add or remove
-the `properties`, `groups`, and `drawings` components:
+the `properties`, `groups`, and `drawings` bridge components:
 
 ```lua
 entity_add_component(entity, 'drawings')
 entity_remove_component(entity, 'drawings')
 ```
 
-The whitelist is the scripting capability boundary.
+Native operations remain the capability boundary; game-defined named
+components are deliberately open-ended data.
 
 ## Dungeon interactions and combat
 
