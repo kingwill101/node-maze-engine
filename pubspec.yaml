@@ -39,6 +39,7 @@ dependencies:
   lualike: ^0.5.2
   vector_math: ^2.4.2
   hooks: ^2.2.0
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

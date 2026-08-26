@@ -9,6 +9,7 @@ import 'package:vector_math/vector_math.dart' as vm;
 import 'engine/entity.dart';
 import 'engine/world.dart';
 import 'game/components.dart';
+import 'game/game_save.dart';
 import 'game/level.dart';
 import 'game/maze_game.dart';
 import 'generated/nix_character.g.dart';
@@ -24,15 +25,26 @@ Future<void> main() async {
     levelSource,
     scriptPath: 'assets/lua/level.lua',
   );
-  runApp(MazeEngineApp(catalog: catalog));
+  final saveStore = SharedPreferencesGameSaveStore();
+  final saveData = await saveStore.load();
+  runApp(
+    MazeEngineApp(catalog: catalog, saveStore: saveStore, saveData: saveData),
+  );
 }
 
 class MazeEngineApp extends StatefulWidget {
-  const MazeEngineApp({super.key, this.catalog, this.campaign})
-    : assert(catalog != null || campaign != null);
+  const MazeEngineApp({
+    super.key,
+    this.catalog,
+    this.campaign,
+    this.saveStore,
+    this.saveData,
+  }) : assert(catalog != null || campaign != null);
 
   final GameCatalog? catalog;
   final LevelCampaign? campaign;
+  final GameSaveStore? saveStore;
+  final GameSaveData? saveData;
 
   @override
   State<MazeEngineApp> createState() => _MazeEngineAppState();
@@ -41,6 +53,27 @@ class MazeEngineApp extends StatefulWidget {
 class _MazeEngineAppState extends State<MazeEngineApp> {
   int? selectedGame;
   int? selectedLevel;
+  late final GameSaveData saveData = widget.saveData ?? GameSaveData();
+
+  Future<void> _completeChapter(String gameId, int chapter) async {
+    final game = catalog.games.firstWhere((game) => game.id == gameId);
+    setState(() {
+      saveData.completeChapter(gameId, chapter, game.campaign.levels.length);
+    });
+    await widget.saveStore?.save(saveData);
+  }
+
+  Future<void> _updateSettings({
+    required bool reducedMotion,
+    required bool highContrast,
+  }) async {
+    setState(() {
+      saveData
+        ..reducedMotion = reducedMotion
+        ..highContrast = highContrast;
+    });
+    await widget.saveStore?.save(saveData);
+  }
 
   GameCatalog get catalog =>
       widget.catalog ??
@@ -65,26 +98,46 @@ class _MazeEngineAppState extends State<MazeEngineApp> {
       debugShowCheckedModeBanner: false,
       title: 'Node Game Center',
       theme: ThemeData.dark(useMaterial3: true).copyWith(
-        scaffoldBackgroundColor: const Color(0xff050510),
+        scaffoldBackgroundColor: saveData.highContrast
+            ? Colors.black
+            : const Color(0xff050510),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xff31e7ff),
           brightness: Brightness.dark,
         ),
       ),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context)
+            .copyWith(disableAnimations: saveData.reducedMotion),
+        child: child!,
+      ),
       home: activeGame == null
           ? GameCenterScene(
               catalog: catalog,
+              settings: saveData,
+              onSettingsChanged: _updateSettings,
               onSelect: (index) => setState(() => selectedGame = index),
             )
           : selectedLevel == null
           ? StartScene(
               campaign: activeGame.campaign,
+              unlockedLevelIndex: saveData.unlockedChapter(activeGame.id),
+              completedLevels: {
+                for (
+                  var index = 0;
+                  index < activeGame.campaign.levels.length;
+                  index++
+                )
+                  if (saveData.isCompleted(activeGame.id, index)) index,
+              },
               onStart: (index) => setState(() => selectedLevel = index),
               onBack: () => setState(() => selectedGame = null),
             )
           : MazeGameView(
               campaign: activeGame.campaign,
+              gameId: activeGame.id,
               initialLevelIndex: selectedLevel!,
+              onLevelCompleted: _completeChapter,
               onExitToMenu: () => setState(() => selectedLevel = null),
             ),
     );
@@ -96,10 +149,18 @@ class GameCenterScene extends StatefulWidget {
     super.key,
     required this.catalog,
     required this.onSelect,
+    this.settings,
+    this.onSettingsChanged,
   });
 
   final GameCatalog catalog;
   final ValueChanged<int> onSelect;
+  final GameSaveData? settings;
+  final Future<void> Function({
+    required bool reducedMotion,
+    required bool highContrast,
+  })?
+  onSettingsChanged;
 
   @override
   State<GameCenterScene> createState() => _GameCenterSceneState();
@@ -146,6 +207,20 @@ class _GameCenterSceneState extends State<GameCenterScene> {
         fit: StackFit.expand,
         children: [
           const _TitleBackdrop(),
+          if (widget.settings != null && widget.onSettingsChanged != null)
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: IconButton.filledTonal(
+                    tooltip: 'Accessibility settings',
+                    icon: const Icon(Icons.accessibility_new),
+                    onPressed: _showSettings,
+                  ),
+                ),
+              ),
+            ),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(36),
@@ -209,6 +284,53 @@ class _GameCenterSceneState extends State<GameCenterScene> {
       ),
     ),
   );
+
+  Future<void> _showSettings() async {
+    var reducedMotion = widget.settings!.reducedMotion;
+    var highContrast = widget.settings!.highContrast;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('ACCESSIBILITY'),
+          content: SizedBox(
+            width: 360,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SwitchListTile(
+                  title: const Text('Reduced motion'),
+                  subtitle: const Text('Disables interface transitions'),
+                  value: reducedMotion,
+                  onChanged: (value) =>
+                      setDialogState(() => reducedMotion = value),
+                ),
+                SwitchListTile(
+                  title: const Text('High contrast'),
+                  subtitle: const Text('Uses a pure-black game center'),
+                  value: highContrast,
+                  onChanged: (value) =>
+                      setDialogState(() => highContrast = value),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () {
+                widget.onSettingsChanged!(
+                  reducedMotion: reducedMotion,
+                  highContrast: highContrast,
+                );
+                Navigator.pop(context);
+              },
+              child: const Text('SAVE SETTINGS'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _GameCard extends StatelessWidget {
@@ -284,11 +406,17 @@ class StartScene extends StatefulWidget {
     required this.campaign,
     required this.onStart,
     this.onBack,
+    this.unlockedLevelIndex,
+    this.completedLevels = const {},
   });
 
   final LevelCampaign campaign;
   final ValueChanged<int> onStart;
   final VoidCallback? onBack;
+  final int? unlockedLevelIndex;
+  final Set<int> completedLevels;
+
+  int get maximumUnlocked => unlockedLevelIndex ?? campaign.levels.length - 1;
 
   @override
   State<StartScene> createState() => _StartSceneState();
@@ -315,7 +443,7 @@ class _StartSceneState extends State<StartScene> {
       setState(() => selected = (selected - 1 + count) % count);
     } else if (event.logicalKey == LogicalKeyboardKey.enter ||
         event.logicalKey == LogicalKeyboardKey.space) {
-      widget.onStart(selected);
+      if (selected <= widget.maximumUnlocked) widget.onStart(selected);
     } else if (event.logicalKey == LogicalKeyboardKey.escape &&
         widget.onBack != null) {
       widget.onBack!();
@@ -417,8 +545,14 @@ class _StartSceneState extends State<StartScene> {
                           index: index,
                           level: widget.campaign.levels[index],
                           selected: selected == index,
+                          locked: index > widget.maximumUnlocked,
+                          completed: widget.completedLevels.contains(index),
                           onSelect: () => setState(() => selected = index),
-                          onStart: () => widget.onStart(index),
+                          onStart: () {
+                            if (index <= widget.maximumUnlocked) {
+                              widget.onStart(index);
+                            }
+                          },
                         ),
                       ),
                     ),
@@ -426,7 +560,9 @@ class _StartSceneState extends State<StartScene> {
                     Row(
                       children: [
                         FilledButton.icon(
-                          onPressed: () => widget.onStart(selected),
+                          onPressed: selected <= widget.maximumUnlocked
+                              ? () => widget.onStart(selected)
+                              : null,
                           icon: const Icon(Icons.play_arrow_rounded),
                           label: const Padding(
                             padding: EdgeInsets.symmetric(vertical: 14),
@@ -459,6 +595,8 @@ class _MapCard extends StatelessWidget {
     required this.index,
     required this.level,
     required this.selected,
+    required this.locked,
+    required this.completed,
     required this.onSelect,
     required this.onStart,
   });
@@ -466,6 +604,8 @@ class _MapCard extends StatelessWidget {
   final int index;
   final LevelDefinition level;
   final bool selected;
+  final bool locked;
+  final bool completed;
   final VoidCallback onSelect;
   final VoidCallback onStart;
 
@@ -495,7 +635,11 @@ class _MapCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '0${index + 1}',
+              locked
+                  ? 'LOCKED'
+                  : completed
+                  ? 'COMPLETE'
+                  : '0${index + 1}',
               style: const TextStyle(color: Color(0xffb35cff)),
             ),
             const Spacer(),
@@ -564,12 +708,16 @@ class MazeGameView extends StatefulWidget {
   const MazeGameView({
     super.key,
     required this.campaign,
+    required this.gameId,
     this.initialLevelIndex = 0,
     required this.onExitToMenu,
+    required this.onLevelCompleted,
   });
   final LevelCampaign campaign;
+  final String gameId;
   final int initialLevelIndex;
   final VoidCallback onExitToMenu;
+  final void Function(String gameId, int chapter) onLevelCompleted;
 
   @override
   State<MazeGameView> createState() => _MazeGameViewState();
@@ -584,6 +732,7 @@ class _MazeGameViewState extends State<MazeGameView> {
   late CameraMode activeCameraMode;
   bool paused = false;
   bool inspectorVisible = false;
+  bool completionRecorded = false;
   double get sceneTileScale =>
       activeCameraMode == CameraMode.firstPerson ? 2.35 : 1;
   final FocusNode focusNode = FocusNode();
@@ -661,6 +810,7 @@ class _MazeGameViewState extends State<MazeGameView> {
       game = MazeGame(level: widget.campaign.levels[levelIndex]);
       activeCameraMode = game.level.cameraMode;
       paused = false;
+      completionRecorded = false;
       _snapCameraYaw();
     });
     _loadGhostBehavior();
@@ -732,12 +882,13 @@ class _MazeGameViewState extends State<MazeGameView> {
     if (game.phase != GamePhase.playing &&
         (event.logicalKey == LogicalKeyboardKey.enter ||
             event.logicalKey == LogicalKeyboardKey.space)) {
-      final next =
-          game.phase == GamePhase.won &&
-              levelIndex + 1 < widget.campaign.levels.length
-          ? levelIndex + 1
-          : levelIndex;
-      _startLevel(next);
+      if (game.phase == GamePhase.won &&
+          levelIndex + 1 >= widget.campaign.levels.length) {
+        widget.onExitToMenu();
+      } else {
+        final next = game.phase == GamePhase.won ? levelIndex + 1 : levelIndex;
+        _startLevel(next);
+      }
       return KeyEventResult.handled;
     }
     if (event is KeyDownEvent &&
@@ -903,6 +1054,10 @@ class _MazeGameViewState extends State<MazeGameView> {
                     game.state.powerSeconds > 0 ? 1.75 : 1.0,
                   );
                   if (!paused) game.advance(deltaSeconds);
+                  if (game.phase == GamePhase.won && !completionRecorded) {
+                    completionRecorded = true;
+                    widget.onLevelCompleted(widget.gameId, levelIndex);
+                  }
                   if (mounted) setState(() {});
                 },
                 loadingBuilder: (_, progress) => Center(
@@ -978,6 +1133,7 @@ class _MazeGameViewState extends State<MazeGameView> {
                 phase: game.phase,
                 score: game.score,
                 hasNextLevel: levelIndex + 1 < widget.campaign.levels.length,
+                isPlatformer: widget.gameId == 'moonfall_courier',
               ),
           ],
         ),
@@ -2080,10 +2236,12 @@ class _GameStateOverlay extends StatelessWidget {
     required this.phase,
     required this.score,
     required this.hasNextLevel,
+    required this.isPlatformer,
   });
   final GamePhase phase;
   final int score;
   final bool hasNextLevel;
+  final bool isPlatformer;
 
   @override
   Widget build(BuildContext context) => Positioned.fill(
@@ -2105,7 +2263,13 @@ class _GameStateOverlay extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  phase == GamePhase.won ? 'MAZE CLEARED' : 'GAME OVER',
+                  phase == GamePhase.won
+                      ? isPlatformer
+                            ? hasNextLevel
+                                  ? 'CHAPTER COMPLETE'
+                                  : 'THE MOON RESTORED'
+                            : 'MAZE CLEARED'
+                      : 'GAME OVER',
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
@@ -2114,6 +2278,18 @@ class _GameStateOverlay extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
+                if (phase == GamePhase.won && isPlatformer && !hasNextLevel)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 14),
+                    child: SizedBox(
+                      width: 480,
+                      child: Text(
+                        'Nix delivers the final moon-note. The inverted rain turns to starlight, and every lost road home appears again.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(height: 1.5, color: Colors.white70),
+                      ),
+                    ),
+                  ),
                 Text(
                   'SCORE ${score.toString().padLeft(5, '0')}',
                   style: const TextStyle(fontSize: 18, letterSpacing: 3),
@@ -2131,6 +2307,17 @@ class _GameStateOverlay extends StatelessWidget {
                       style: TextStyle(
                         letterSpacing: 2,
                         color: Color(0xff31e7ff),
+                      ),
+                    ),
+                  ),
+                if (phase == GamePhase.won && !hasNextLevel)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Text(
+                      'ENTER TO RETURN TO THE CHAPTER MAP',
+                      style: TextStyle(
+                        letterSpacing: 2,
+                        color: Color(0xffffd45c),
                       ),
                     ),
                   ),

@@ -104,4 +104,26 @@ void main() {
 
     expect(selectedGame, 1);
   });
+
+  testWidgets('locked campaign chapters cannot be launched', (tester) async {
+    int? launched;
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.dark(),
+        home: StartScene(
+          campaign: campaign,
+          unlockedLevelIndex: 0,
+          onStart: (index) => launched = index,
+        ),
+      ),
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pumpAndSettle();
+    expect(find.text('LOCKED'), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    expect(launched, isNull);
+  });
 }
