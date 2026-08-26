@@ -9,6 +9,8 @@ future expressions, animations, promotional art, and the eventual glTF model.
 
 - `nix-turnaround-v1.png`: four-view modeling sheet for Nix, the moon-courier
   protagonist of the Game Center's fantasy side-scroller.
+- `moonfall-causeway-environment-v1.png`: side-view environment and parallax
+  direction for the first Moonfall Courier region.
 - `heroine-turnaround-v1.png`: the approved front/three-quarter/side/back
   modeling reference and expression study.
 - `heroine-portrait-checkerboard-v1.png`: an early portrait whose checkerboard
@@ -30,3 +32,10 @@ sheet in a neutral A-pose, with reconstruction-friendly separated limbs and
 simple material regions. Her locked identity includes silver-blue hair, amber
 eyes, a teal travel cloak, plum tunic, burgundy boots, crescent satchel, and a
 glowing cyan moon charm.
+
+The Moonfall Causeway prompt requested a gameplay-readable side view with five
+separable depth layers: dark foreground platforms, ruined observatories,
+floating middle-distance causeways, a fractured cyan moon, and an indigo star
+field. Violet fog defines the death plane while sparse amber lanterns mark safe
+routes. The image is concept direction; the shipped level should rebuild these
+layers as real Flutter Scene geometry, fog, particles, lights, and shaders.
