@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:node/game/level.dart';
+import 'package:node/game/game_save.dart';
 import 'package:node/game/maze.dart';
 import 'package:node/main.dart';
 
@@ -126,4 +127,49 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     expect(launched, isNull);
   });
+
+  testWidgets(
+    'game center exposes persistent audio and accessibility settings',
+    (tester) async {
+      bool? recordedAudioEnabled;
+      await tester.binding.setSurfaceSize(const Size(1200, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData.dark(),
+          home: GameCenterScene(
+            catalog: GameCatalog(
+              name: 'Test Center',
+              games: [
+                GameDefinition(
+                  id: 'test',
+                  name: 'Test',
+                  tagline: 'Test',
+                  campaign: campaign,
+                ),
+              ],
+            ),
+            settings: GameSaveData(),
+            onSelect: (_) {},
+            onSettingsChanged:
+                ({
+                  required reducedMotion,
+                  required highContrast,
+                  required audioEnabled,
+                }) async {
+                  recordedAudioEnabled = audioEnabled;
+                },
+          ),
+        ),
+      );
+
+      await tester.tap(find.byTooltip('Accessibility settings'));
+      await tester.pumpAndSettle();
+      expect(find.text('Audio'), findsOneWidget);
+      await tester.tap(find.text('Audio'));
+      await tester.tap(find.text('SAVE SETTINGS'));
+      await tester.pumpAndSettle();
+      expect(recordedAudioEnabled, isFalse);
+    },
+  );
 }

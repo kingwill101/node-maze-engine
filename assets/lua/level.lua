@@ -167,7 +167,7 @@ return {
     {
       game = 'moonfall_courier',
       name = 'Moonfall Causeway',
-      story = 'Gravity fractures at the edge of the dream. Pip must climb the floating causeway and relight its gate.',
+      story = 'Gravity fractures at the edge of the dream. Nix must climb the floating causeway and relight its gate.',
       objective = 'Leap across the Lua-built ruins, gather four star crystals, and reach the moon gate',
       camera = 'platformer',
       render_distance = 24,

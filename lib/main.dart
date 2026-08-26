@@ -9,6 +9,7 @@ import 'package:vector_math/vector_math.dart' as vm;
 import 'engine/entity.dart';
 import 'engine/world.dart';
 import 'game/components.dart';
+import 'game/game_audio.dart';
 import 'game/game_save.dart';
 import 'game/level.dart';
 import 'game/maze_game.dart';
@@ -66,11 +67,13 @@ class _MazeEngineAppState extends State<MazeEngineApp> {
   Future<void> _updateSettings({
     required bool reducedMotion,
     required bool highContrast,
+    required bool audioEnabled,
   }) async {
     setState(() {
       saveData
         ..reducedMotion = reducedMotion
-        ..highContrast = highContrast;
+        ..highContrast = highContrast
+        ..audioEnabled = audioEnabled;
     });
     await widget.saveStore?.save(saveData);
   }
@@ -136,6 +139,7 @@ class _MazeEngineAppState extends State<MazeEngineApp> {
           : MazeGameView(
               campaign: activeGame.campaign,
               gameId: activeGame.id,
+              audioEnabled: saveData.audioEnabled,
               initialLevelIndex: selectedLevel!,
               onLevelCompleted: _completeChapter,
               onExitToMenu: () => setState(() => selectedLevel = null),
@@ -159,6 +163,7 @@ class GameCenterScene extends StatefulWidget {
   final Future<void> Function({
     required bool reducedMotion,
     required bool highContrast,
+    required bool audioEnabled,
   })?
   onSettingsChanged;
 
@@ -288,6 +293,7 @@ class _GameCenterSceneState extends State<GameCenterScene> {
   Future<void> _showSettings() async {
     var reducedMotion = widget.settings!.reducedMotion;
     var highContrast = widget.settings!.highContrast;
+    var audioEnabled = widget.settings!.audioEnabled;
     await showDialog<void>(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -298,6 +304,13 @@ class _GameCenterSceneState extends State<GameCenterScene> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                SwitchListTile(
+                  title: const Text('Audio'),
+                  subtitle: const Text('Music and gameplay sound effects'),
+                  value: audioEnabled,
+                  onChanged: (value) =>
+                      setDialogState(() => audioEnabled = value),
+                ),
                 SwitchListTile(
                   title: const Text('Reduced motion'),
                   subtitle: const Text('Disables interface transitions'),
@@ -321,6 +334,7 @@ class _GameCenterSceneState extends State<GameCenterScene> {
                 widget.onSettingsChanged!(
                   reducedMotion: reducedMotion,
                   highContrast: highContrast,
+                  audioEnabled: audioEnabled,
                 );
                 Navigator.pop(context);
               },
@@ -709,12 +723,14 @@ class MazeGameView extends StatefulWidget {
     super.key,
     required this.campaign,
     required this.gameId,
+    required this.audioEnabled,
     this.initialLevelIndex = 0,
     required this.onExitToMenu,
     required this.onLevelCompleted,
   });
   final LevelCampaign campaign;
   final String gameId;
+  final bool audioEnabled;
   final int initialLevelIndex;
   final VoidCallback onExitToMenu;
   final void Function(String gameId, int chapter) onLevelCompleted;
@@ -733,6 +749,10 @@ class _MazeGameViewState extends State<MazeGameView> {
   bool paused = false;
   bool inspectorVisible = false;
   bool completionRecorded = false;
+  late final GameAudio audio = GameAudio(enabled: widget.audioEnabled);
+  int observedScore = 0;
+  int observedLives = 3;
+  int observedCheckpoints = 0;
   double get sceneTileScale =>
       activeCameraMode == CameraMode.firstPerson ? 2.35 : 1;
   final FocusNode focusNode = FocusNode();
@@ -788,6 +808,7 @@ class _MazeGameViewState extends State<MazeGameView> {
     _snapCameraYaw();
     _loadGhostBehavior();
     _loadSceneMaterials();
+    if (widget.gameId == 'moonfall_courier') audio.startMoonfallAmbience();
   }
 
   Future<void> _loadGhostBehavior() async {
@@ -811,6 +832,9 @@ class _MazeGameViewState extends State<MazeGameView> {
       activeCameraMode = game.level.cameraMode;
       paused = false;
       completionRecorded = false;
+      observedScore = 0;
+      observedLives = 3;
+      observedCheckpoints = 0;
       _snapCameraYaw();
     });
     _loadGhostBehavior();
@@ -836,6 +860,7 @@ class _MazeGameViewState extends State<MazeGameView> {
 
   @override
   void dispose() {
+    audio.dispose();
     focusNode.dispose();
     super.dispose();
   }
@@ -877,6 +902,9 @@ class _MazeGameViewState extends State<MazeGameView> {
       game.firePlayerBolt(
         useFirstPersonFacing: activeCameraMode == CameraMode.firstPerson,
       );
+      if (activeCameraMode == CameraMode.platformer) {
+        audio.play(GameAudioCue.bolt);
+      }
       return KeyEventResult.handled;
     }
     if (game.phase != GamePhase.playing &&
@@ -930,6 +958,7 @@ class _MazeGameViewState extends State<MazeGameView> {
             key == LogicalKeyboardKey.keyW) &&
         event is KeyDownEvent) {
       game.requestPlatformerJump();
+      audio.play(GameAudioCue.jump);
     } else {
       return KeyEventResult.ignored;
     }
@@ -1054,8 +1083,10 @@ class _MazeGameViewState extends State<MazeGameView> {
                     game.state.powerSeconds > 0 ? 1.75 : 1.0,
                   );
                   if (!paused) game.advance(deltaSeconds);
+                  _updateAudioFeedback();
                   if (game.phase == GamePhase.won && !completionRecorded) {
                     completionRecorded = true;
+                    audio.play(GameAudioCue.victory);
                     widget.onLevelCompleted(widget.gameId, levelIndex);
                   }
                   if (mounted) setState(() {});
@@ -1085,9 +1116,11 @@ class _MazeGameViewState extends State<MazeGameView> {
                         ),
                         const SizedBox(width: 8),
                         _Badge(
-                          label: activeCameraMode == CameraMode.firstPerson
-                              ? 'CORRIDOR VIEW'
-                              : 'TACTICAL VIEW',
+                          label: switch (activeCameraMode) {
+                            CameraMode.firstPerson => 'CORRIDOR VIEW',
+                            CameraMode.platformer => 'PLATFORM VIEW',
+                            CameraMode.follow => 'TACTICAL VIEW',
+                          },
                         ),
                       ],
                     ),
@@ -1103,7 +1136,9 @@ class _MazeGameViewState extends State<MazeGameView> {
                   padding: const EdgeInsets.all(20),
                   child: Text(
                     game.phase == GamePhase.playing
-                        ? 'F FIRE   •   Q STAR PULSE   •   V / TAB SWITCH VIEW   •   ${game.level.objective.toUpperCase()}'
+                        ? activeCameraMode == CameraMode.platformer
+                              ? 'A / D MOVE   •   SPACE JUMP   •   F STAR BOLT   •   P PAUSE'
+                              : 'F FIRE   •   Q STAR PULSE   •   V / TAB SWITCH VIEW   •   ${game.level.objective.toUpperCase()}'
                         : 'ENTER / SPACE TO RESTART',
                     style: const TextStyle(
                       letterSpacing: 3,
@@ -1192,6 +1227,22 @@ class _MazeGameViewState extends State<MazeGameView> {
       }
     }
     return widgets;
+  }
+
+  void _updateAudioFeedback() {
+    if (widget.gameId != 'moonfall_courier') return;
+    if (game.score > observedScore) audio.play(GameAudioCue.collect);
+    if (game.lives < observedLives) audio.play(GameAudioCue.hurt);
+    final checkpoints = game.runtime.context.world
+        .query<ScriptComponents>()
+        .where((entry) => entry.$2.values['checkpoint']?['active'] == true)
+        .length;
+    if (checkpoints > observedCheckpoints) {
+      audio.play(GameAudioCue.checkpoint);
+    }
+    observedScore = game.score;
+    observedLives = game.lives;
+    observedCheckpoints = checkpoints;
   }
 
   (vm.Vector3, vm.Vector3) _camera() {
@@ -2447,6 +2498,10 @@ class _MazeMapPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (cameraMode == CameraMode.platformer) {
+      _paintPlatformer(canvas, size);
+      return;
+    }
     final maze = game.maze;
     final scale = math.min(size.width / maze.width, size.height / maze.height);
     final origin = Offset(
@@ -2553,6 +2608,67 @@ class _MazeMapPainter extends CustomPainter {
       )
       ..close();
     canvas.drawPath(marker, Paint()..color = const Color(0xffffffff));
+  }
+
+  void _paintPlatformer(Canvas canvas, Size size) {
+    final world = game.runtime.context.world;
+    const padding = 9.0;
+    final width = math.max(1, game.maze.width - 1);
+    Offset point(Transform3 transform) => Offset(
+      padding + transform.x / width * (size.width - padding * 2),
+      size.height -
+          padding -
+          ((transform.y + 3) / 11).clamp(0, 1) * (size.height - padding * 2),
+    );
+
+    canvas.drawLine(
+      Offset(padding, size.height - padding),
+      Offset(size.width - padding, size.height - padding),
+      Paint()
+        ..color = const Color(0x8831e7ff)
+        ..strokeWidth = 2,
+    );
+    for (final (_, transform, components)
+        in world.query2<Transform3, ScriptComponents>()) {
+      final center = point(transform);
+      if (components.values.containsKey('platform')) {
+        final platform = components.values['platform']!;
+        final platformWidth =
+            ((platform['width'] as num?)?.toDouble() ?? 2) /
+            width *
+            (size.width - padding * 2);
+        canvas.drawLine(
+          center - Offset(platformWidth / 2, 0),
+          center + Offset(platformWidth / 2, 0),
+          Paint()
+            ..color = const Color(0xff31e7ff)
+            ..strokeWidth = 3,
+        );
+      } else if (components.values.containsKey('crystal')) {
+        canvas.drawCircle(center, 3, Paint()..color = const Color(0xffffd45c));
+      } else if (components.values.containsKey('hazard')) {
+        canvas.drawCircle(center, 3, Paint()..color = const Color(0xffff3970));
+      } else if (components.values.containsKey('checkpoint')) {
+        canvas.drawCircle(center, 4, Paint()..color = const Color(0xffb35cff));
+      } else if (components.values.containsKey('platform_enemy')) {
+        canvas.drawCircle(center, 4, Paint()..color = const Color(0xffff6d3a));
+      } else if (components.values.containsKey('exit_gate')) {
+        canvas.drawRect(
+          Rect.fromCenter(center: center, width: 5, height: 10),
+          Paint()..color = const Color(0xff8dffef),
+        );
+      }
+    }
+    final player = point(world.get<Transform3>(game.player));
+    canvas.drawCircle(player, 5, Paint()..color = const Color(0xffffffff));
+    canvas.drawCircle(
+      player,
+      7,
+      Paint()
+        ..color = const Color(0xff31e7ff)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5,
+    );
   }
 
   Offset _point(Offset origin, double scale, Transform3 transform) => Offset(

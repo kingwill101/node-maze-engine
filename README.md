@@ -32,6 +32,12 @@ Completed chapters unlock the next destination and are saved across launches on
 web and native. The Game Center accessibility menu persists reduced-motion and
 high-contrast preferences in the same versioned save.
 
+Moonfall includes an original procedural soundscape: a looping lunar ambience
+and synthesized cues for jumps, Star Bolts, crystals, damage, checkpoint
+lanterns, and the ending. Run `fvm dart tool/generate_audio.dart` to regenerate
+the deterministic PCM assets. Audio can be disabled from the accessibility
+menu and the choice persists with campaign progress.
+
 Flutter Scene uses Flutter GPU on native platforms, so native `flutter run`
 commands must include `--enable-flutter-gpu`. The web backend uses WebGL2 and
 does not need this flag.

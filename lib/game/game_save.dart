@@ -8,6 +8,7 @@ class GameSaveData {
     Set<String>? completedChapters,
     this.reducedMotion = false,
     this.highContrast = false,
+    this.audioEnabled = true,
   }) : unlockedChapters = Map.of(unlockedChapters ?? const {}),
        completedChapters = Set.of(completedChapters ?? const {});
 
@@ -15,6 +16,7 @@ class GameSaveData {
   final Set<String> completedChapters;
   bool reducedMotion;
   bool highContrast;
+  bool audioEnabled;
 
   int unlockedChapter(String gameId) => unlockedChapters[gameId] ?? 0;
 
@@ -34,6 +36,7 @@ class GameSaveData {
     'completed_chapters': completedChapters.toList()..sort(),
     'reduced_motion': reducedMotion,
     'high_contrast': highContrast,
+    'audio_enabled': audioEnabled,
   };
 
   factory GameSaveData.fromJson(Map<String, Object?> json) => GameSaveData(
@@ -49,6 +52,7 @@ class GameSaveData {
     },
     reducedMotion: json['reduced_motion'] == true,
     highContrast: json['high_contrast'] == true,
+    audioEnabled: json['audio_enabled'] != false,
   );
 }
 

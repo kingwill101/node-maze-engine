@@ -55,6 +55,7 @@ end
 
 local function setup_platformer(root, config)
   platformer_active = true
+  hud_remove(root, 'status')
   entity_set_position(player, 2, 0.9, 2)
   Node.add_component(player, 'platformer_player', { grounded = false })
   Node.add_component(player, 'character_animation', { state = 'idle', facing = 1 })
@@ -93,7 +94,6 @@ local function setup_platformer(root, config)
   entity_set_property(root, 'move_axis', 0)
   entity_set_property(root, 'jump_requested', false)
   entity_set_property(root, 'platformer_finish_title', config.title)
-  hud_label(root, 'platform_help', 'A/D MOVE   SPACE JUMP   F STAR BOLT   P PAUSE', 'bottom_left', 20, 24, '#31e7ff', 13)
   hud_label(root, 'platform_goal', 'STAR CRYSTALS 0/' .. platformer_total_crystals, 'top_right', 20, 20, '#ffd45c', 14)
   emit_signal(root, 'platformer_ready', player)
 end

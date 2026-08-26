@@ -3,7 +3,7 @@ import 'package:node/game/game_save.dart';
 
 void main() {
   test('campaign progress serializes and never relocks later chapters', () {
-    final save = GameSaveData(reducedMotion: true);
+    final save = GameSaveData(reducedMotion: true, audioEnabled: false);
 
     save.completeChapter('moonfall_courier', 0, 3);
     save.completeChapter('moonfall_courier', 1, 3);
@@ -17,5 +17,6 @@ void main() {
     expect(restored.unlockedChapter('moonfall_courier'), 2);
     expect(restored.completedChapters, save.completedChapters);
     expect(restored.reducedMotion, isTrue);
+    expect(restored.audioEnabled, isFalse);
   });
 }
