@@ -536,10 +536,11 @@ class _MazeGameViewState extends State<MazeGameView> {
   KeyEventResult _handlePlatformerKey(KeyEvent event) {
     final key = event.logicalKey;
     if (key == LogicalKeyboardKey.arrowLeft || key == LogicalKeyboardKey.keyA) {
-      game.setPlatformerAxis(-1);
+      // The side camera looks down -Z, so screen-left is world +X.
+      game.setPlatformerAxis(1);
     } else if (key == LogicalKeyboardKey.arrowRight ||
         key == LogicalKeyboardKey.keyD) {
-      game.setPlatformerAxis(1);
+      game.setPlatformerAxis(-1);
     } else if ((key == LogicalKeyboardKey.space ||
             key == LogicalKeyboardKey.arrowUp ||
             key == LogicalKeyboardKey.keyW) &&
