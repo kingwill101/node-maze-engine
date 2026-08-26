@@ -7,6 +7,8 @@ future expressions, animations, promotional art, and the eventual glTF model.
 
 ## Generated assets
 
+- `nix-turnaround-v1.png`: four-view modeling sheet for Nix, the moon-courier
+  protagonist of the Game Center's fantasy side-scroller.
 - `heroine-turnaround-v1.png`: the approved front/three-quarter/side/back
   modeling reference and expression study.
 - `heroine-portrait-checkerboard-v1.png`: an early portrait whose checkerboard
@@ -22,3 +24,9 @@ body, burgundy gear, teal comet ornament, and explicit avoidance of licensed
 arcade-character details. The portrait used the turnaround as its identity
 anchor; the second edit requested background extraction with genuine alpha
 while preserving the character design.
+
+Nix's prompt requested a consistent front/profile/back/three-quarter model
+sheet in a neutral A-pose, with reconstruction-friendly separated limbs and
+simple material regions. Her locked identity includes silver-blue hair, amber
+eyes, a teal travel cloak, plum tunic, burgundy boots, crescent satchel, and a
+glowing cyan moon charm.
