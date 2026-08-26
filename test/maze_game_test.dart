@@ -5,6 +5,7 @@ import 'package:node/game/components.dart';
 import 'package:node/game/level.dart';
 import 'package:node/game/maze.dart';
 import 'package:node/game/maze_game.dart';
+import 'package:node/scripting/lua_level_loader.dart';
 
 void main() {
   test('Lua projectile simulation damages the player and expires', () {
@@ -66,6 +67,51 @@ void main() {
       isNotEmpty,
     );
   });
+
+  test(
+    'Lua-authored platformer builds platforms and simulates a jump',
+    () async {
+      final campaign = await LuaLevelLoader().loadCampaign(
+        await File('assets/lua/level.lua').readAsString(),
+      );
+      final game = MazeGame(level: campaign.levels.last);
+      await game.loadGameScripts(
+        autoloadSource: await File('assets/lua/autoload.lua').readAsString(),
+        ghostSource: '',
+        prefabSource: await File('assets/lua/prefabs.lua').readAsString(),
+      );
+
+      expect(game.level.cameraMode, CameraMode.platformer);
+      expect(
+        game.runtime.context.world.query<ScriptComponents>().where(
+          (entry) => entry.$2.values.containsKey('platform'),
+        ),
+        hasLength(4),
+      );
+      expect(
+        game.runtime.context.world.get<ScriptComponents>(game.player).values,
+        contains('platformer_player'),
+      );
+
+      for (var frame = 0; frame < 8; frame++) {
+        game.advance(.05);
+        await Future<void>.delayed(Duration.zero);
+      }
+      final player = game.runtime.context.world.get<Transform3>(game.player);
+      final groundedY = player.y;
+      game.setPlatformerAxis(1);
+      game.requestPlatformerJump();
+      for (var frame = 0; frame < 16; frame++) {
+        game.advance(.05);
+        await Future<void>.delayed(Duration.zero);
+      }
+
+      expect(player.x, greaterThan(2));
+      expect(player.y, greaterThan(groundedY));
+      expect(game.runtime.context.world.query<BonusFruitTag>(), isEmpty);
+      expect(game.score, greaterThanOrEqualTo(250));
+    },
+  );
 
   test('Lua opens a blocking door when the player collects a key', () async {
     final game = MazeGame(maze: Maze(const ['#######', '#PK|A.#', '#######']));

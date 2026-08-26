@@ -186,6 +186,18 @@ class MazeGame {
     runtime.context.world.get<GridMover>(player).requested = direction;
   }
 
+  void setPlatformerAxis(double axis) {
+    runtime.context.world.get<ScriptProperties>(session).values['move_axis'] =
+        axis.clamp(-1, 1);
+  }
+
+  void requestPlatformerJump() {
+    runtime.context.world
+            .get<ScriptProperties>(session)
+            .values['jump_requested'] =
+        true;
+  }
+
   void turnFirstPerson(int quarterTurns) {
     const compass = [
       MoveDirection.up,
@@ -804,6 +816,7 @@ class _BonusFruitSystem implements EngineSystem {
 
   @override
   void update(EngineContext context, double deltaSeconds) {
+    if (level.cameraMode == CameraMode.platformer) return;
     final states = context.world.query<GameState>().toList();
     if (states.isEmpty || states.first.$2.phase != GamePhase.playing) return;
     final state = states.first.$2;

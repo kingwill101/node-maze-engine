@@ -209,6 +209,10 @@ class LuaBehaviorRuntime {
       (args) => engine.world.get<Transform3>(_entity(args)).x,
     );
     _expose(
+      'entity_get_y',
+      (args) => engine.world.get<Transform3>(_entity(args)).y,
+    );
+    _expose(
       'entity_get_z',
       (args) => engine.world.get<Transform3>(_entity(args)).z,
     );
@@ -219,6 +223,26 @@ class LuaBehaviorRuntime {
         ..y = _number(args, 2)
         ..z = _number(args, 3);
       return null;
+    });
+    _expose('game_add_score', (args) {
+      final states = engine.world.query<GameState>().toList();
+      if (states.isEmpty) return 0;
+      final state = states.first.$2;
+      state.score += _number(args, 0).toInt();
+      engine.events.emit(ScoreChanged(state.score));
+      return state.score;
+    });
+    _expose('game_complete_level', (args) {
+      final states = engine.world.query<GameState>().toList();
+      if (states.isEmpty) return false;
+      final state = states.first.$2;
+      if (state.phase != GamePhase.playing) return false;
+      state
+        ..phase = GamePhase.won
+        ..announcement = args.isEmpty ? 'LEVEL COMPLETE' : _string(args, 0)
+        ..announcementSeconds = 4;
+      engine.events.emit(const LevelCompleted());
+      return true;
     });
     _expose('door_set_open', (args) {
       final entity = _entity(args);
@@ -470,7 +494,7 @@ class LuaBehaviorRuntime {
   void _expose(
     String name,
     Object? Function(List<Object?> arguments) callback,
-  ) => _lua.expose(name, callback);
+  ) => _lua.expose(name, (List<Object?> arguments) => callback(arguments));
 
   Object? _argument(List<Object?> arguments, int index) {
     if (index >= arguments.length) return null;

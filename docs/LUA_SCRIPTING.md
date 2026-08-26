@@ -95,6 +95,7 @@ The lower-level compatibility functions remain available:
 entity_is_alive(entity)
 entity_has_component(entity, 'transform')
 entity_get_x(entity)
+entity_get_y(entity)
 entity_get_z(entity)
 entity_set_position(entity, x, y, z)
 entity_request_move(entity, 'left')
@@ -103,6 +104,8 @@ entity_destroy(entity) -- deferred
 door_set_open(door, true)
 door_is_open(door)
 trap_set_active(trap, false)
+game_add_score(250)
+game_complete_level('THE GATE IS RESTORED')
 ```
 
 Native component names include `transform`, `mover`, `player`, `ghost`,
@@ -116,6 +119,30 @@ entity_remove_component(entity, 'drawings')
 
 Native operations remain the capability boundary; game-defined named
 components are deliberately open-ended data.
+
+## Platformer example
+
+`Moonfall Causeway` demonstrates genre-specific gameplay authored on the same
+API. Its `platform`, `crystal`, `exit_gate`, and `platformer_player` components
+exist only in Lua. Each fixed update applies gravity and horizontal input,
+queries platform nodes, resolves downward landings, collects crystals, and
+opens the goal:
+
+```lua
+for _, platform in ipairs(SceneTree.get_nodes_with_component('platform')) do
+  local width = Node.get_value(platform, 'platform', 'width')
+  local top = entity_get_y(platform) + 0.35
+  -- Resolve the player's feet against the platform top.
+end
+
+if crystals_remaining == 0 then
+  game_complete_level('MOONFALL CAUSEWAY RESTORED')
+end
+```
+
+`game_add_score` and `game_complete_level` are narrow privileged capabilities:
+Lua decides when gameplay earns them, while the engine kernel safely updates
+session state and emits the corresponding native events.
 
 ## Dungeon interactions and combat
 

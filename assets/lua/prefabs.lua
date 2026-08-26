@@ -40,6 +40,28 @@ function M.register()
   end)
 
   Prefab.define('empty', function(entity) end)
+
+  Prefab.define('platform', function(entity)
+    Node.add_component(entity, 'platform', { width = 4, height = 0.35 })
+    draw_box(entity, 'stone', 0, 0, 0, 2.7, 0.35, 1.1, '#23315f')
+    draw_box(entity, 'rune_rail', 0, 0.32, 0, 2.7, 0.06, 1.14, '#31e7ff')
+    drawing_set_animation(entity, 'rune_rail', 'pulse', 2.4, 0.08)
+  end)
+
+  Prefab.define('crystal', function(entity)
+    Node.add_component(entity, 'crystal', { points = 250 })
+    draw_box(entity, 'crystal', 0, 0, 0, 0.18, 0.42, 0.18, '#ffd45c')
+    drawing_set_animation(entity, 'crystal', 'spin', 2.8, 0)
+    particle_emitter(entity, 'glitter', 10, 0.45, 1.2, 0.035, '#ffd45c', 'orbit')
+  end)
+
+  Prefab.define('exit_gate', function(entity)
+    Node.add_component(entity, 'exit_gate', {})
+    draw_box(entity, 'left_pillar', -0.55, 0.7, 0, 0.12, 0.75, 0.22, '#b35cff')
+    draw_box(entity, 'right_pillar', 0.55, 0.7, 0, 0.12, 0.75, 0.22, '#b35cff')
+    draw_box(entity, 'lintel', 0, 1.42, 0, 0.68, 0.12, 0.22, '#31e7ff')
+    particle_emitter(entity, 'portal', 20, 0.65, 1.8, 0.045, '#b35cff', 'orbit')
+  end)
 end
 
 return M

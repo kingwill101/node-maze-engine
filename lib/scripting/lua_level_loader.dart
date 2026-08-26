@@ -66,8 +66,11 @@ class LuaLevelLoader {
         scoreBonus: _int(map['score_bonus'], fallback: 0),
       );
 
-  CameraMode _cameraMode(Object? value) =>
-      value == 'first_person' ? CameraMode.firstPerson : CameraMode.follow;
+  CameraMode _cameraMode(Object? value) => switch (value) {
+    'first_person' => CameraMode.firstPerson,
+    'platformer' => CameraMode.platformer,
+    _ => CameraMode.follow,
+  };
 
   List<Object?> _optionalTableList(Object? value) =>
       value == null ? const [] : _tableList(value);

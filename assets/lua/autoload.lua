@@ -8,6 +8,48 @@ local hud_refresh = 0
 local boss = 0
 local boss_phase = 'dormant'
 local projectile_serial = 0
+local platformer_active = false
+local platformer_velocity_y = 0
+local platformer_grounded = false
+local platformer_crystals = 0
+
+local function spawn_platform(path, x, y, width)
+  local platform = Prefab.instantiate('platform', path, x, y, 2)
+  Node.set_value(platform, 'platform', 'width', width)
+  draw_box(platform, 'stone', 0, 0, 0, width * 0.675, 0.35, 1.1, '#23315f')
+  draw_box(platform, 'rune_rail', 0, 0.32, 0, width * 0.675, 0.06, 1.14, '#31e7ff')
+  drawing_set_animation(platform, 'rune_rail', 'pulse', 2.4, 0.08)
+  return platform
+end
+
+local function setup_platformer(root)
+  platformer_active = true
+  entity_set_position(player, 2, 0.9, 2)
+  Node.add_component(player, 'platformer_player', { grounded = false })
+  for _, enemy in ipairs(SceneTree.get_nodes_in_group('enemies')) do
+    Node.queue_free(enemy)
+  end
+
+  spawn_platform('/root/platforms/start', 4.5, 0, 6.5)
+  spawn_platform('/root/platforms/step_one', 9.5, 1.65, 2.2)
+  spawn_platform('/root/platforms/step_two', 13.2, 3.0, 2.0)
+  spawn_platform('/root/platforms/final', 17.2, 1.5, 3.8)
+
+  local crystal_positions = {
+    { 5.5, 1.0 }, { 9.5, 2.65 }, { 13.2, 4.0 }, { 17.4, 2.5 },
+  }
+  for index, position in ipairs(crystal_positions) do
+    Prefab.instantiate('crystal', '/root/crystals/' .. index, position[1], position[2], 2)
+  end
+  platformer_crystals = #crystal_positions
+  Prefab.instantiate('exit_gate', '/root/platformer_exit', 19.1, 2.15, 2)
+
+  entity_set_property(root, 'move_axis', 0)
+  entity_set_property(root, 'jump_requested', false)
+  hud_label(root, 'platform_help', 'A/D MOVE   SPACE JUMP', 'bottom_left', 20, 24, '#31e7ff', 13)
+  hud_label(root, 'platform_goal', 'STAR CRYSTALS 0/4', 'top_right', 20, 20, '#ffd45c', 14)
+  emit_signal(root, 'platformer_ready', player)
+end
 
 function ready(root)
   player = get_node('/root/player')
@@ -19,6 +61,10 @@ function ready(root)
   entity_set_property(player, 'scene_ready', true)
   entity_add_component(root, 'hud')
   hud_label(root, 'status', 'LUA HUD INITIALIZING', 'top_right', 20, 20, '#ffffff', 14)
+  if entity_get_property(root, 'scene_name') == 'Moonfall Causeway' then
+    setup_platformer(root)
+    return
+  end
   local px = entity_get_x(player)
   local pz = entity_get_z(player)
   local wisp_a = instantiate('wisp', '/root/effects/guide_wisp_a', px + 1, 0.2, pz)
@@ -47,6 +93,65 @@ function ready(root)
 end
 
 function fixed_update(root, delta)
+  if platformer_active then
+    local x = entity_get_x(player)
+    local y = entity_get_y(player)
+    local axis = entity_get_property(root, 'move_axis') or 0
+    local next_x = math.max(1.2, math.min(20.2, x + axis * 5.2 * delta))
+
+    if entity_get_property(root, 'jump_requested') then
+      entity_set_property(root, 'jump_requested', false)
+      if platformer_grounded then
+        platformer_velocity_y = 6.8
+        platformer_grounded = false
+        particle_emitter(player, 'jump_burst', 14, 0.45, 3.2, 0.04, '#31e7ff', 'burst')
+      end
+    end
+
+    platformer_velocity_y = platformer_velocity_y - 14.5 * delta
+    local next_y = y + platformer_velocity_y * delta
+    platformer_grounded = false
+    if platformer_velocity_y <= 0 then
+      for _, platform in ipairs(SceneTree.get_nodes_with_component('platform')) do
+        local px = entity_get_x(platform)
+        local py = entity_get_y(platform)
+        local width = Node.get_value(platform, 'platform', 'width') or 4
+        local top = py + 0.35
+        if math.abs(next_x - px) <= width / 2 and y - 0.45 >= top - 0.18 and next_y - 0.45 <= top then
+          next_y = top + 0.45
+          platformer_velocity_y = 0
+          platformer_grounded = true
+        end
+      end
+    end
+
+    if next_y < -3 then
+      next_x = 2
+      next_y = 0.9
+      platformer_velocity_y = 0
+      hud_label(root, 'platform_message', 'THE VOID RETURNS YOU', 'top_left', 20, 92, '#ff3970', 13)
+    end
+    entity_set_position(player, next_x, next_y, 2)
+    Node.set_value(player, 'platformer_player', 'grounded', platformer_grounded)
+
+    for _, crystal in ipairs(SceneTree.get_nodes_with_component('crystal')) do
+      if math.abs(next_x - entity_get_x(crystal)) < 0.55 and math.abs(next_y - entity_get_y(crystal)) < 0.8 then
+        Node.remove_component(crystal, 'crystal')
+        Node.queue_free(crystal)
+        platformer_crystals = platformer_crystals - 1
+        game_add_score(Node.get_value(crystal, 'crystal', 'points') or 250)
+        particle_emitter(player, 'star_burst', 24, 0.8, 4.5, 0.055, '#ffd45c', 'burst')
+        hud_label(root, 'platform_goal', 'STAR CRYSTALS ' .. (4 - platformer_crystals) .. '/4', 'top_right', 20, 20, '#ffd45c', 14)
+      end
+    end
+
+    local exit = Node.get('/root/platformer_exit')
+    if platformer_crystals == 0 and exit ~= 0 and math.abs(next_x - entity_get_x(exit)) < 0.8 and math.abs(next_y - entity_get_y(exit)) < 1.4 then
+      game_complete_level('MOONFALL CAUSEWAY RESTORED')
+    end
+    return
+  end
+
   hud_refresh = hud_refresh - delta
   if hud_refresh <= 0 then
     hud_refresh = 0.1

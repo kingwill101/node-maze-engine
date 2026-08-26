@@ -16,7 +16,7 @@ class LevelTuning {
   final int bonusPoints;
 }
 
-enum CameraMode { follow, firstPerson }
+enum CameraMode { follow, firstPerson, platformer }
 
 class LevelEventDefinition {
   const LevelEventDefinition({

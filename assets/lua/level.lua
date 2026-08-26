@@ -149,5 +149,24 @@ return {
       tuning = { player_speed = 4.3, ghost_speed = 2.9, power_seconds = 8.0,
                  bonus_seconds = 12.0, bonus_points = 3333 },
     },
+    {
+      name = 'Moonfall Causeway',
+      story = 'Gravity fractures at the edge of the dream. Pip must climb the floating causeway and relight its gate.',
+      objective = 'Leap across the Lua-built ruins, gather four star crystals, and reach the moon gate',
+      camera = 'platformer',
+      render_distance = 24,
+      events = {
+        { after_seconds = 3, message = 'THE CAUSEWAY IS SCRIPTED IN LUA. TRY NOT TO FALL.' },
+      },
+      maze = {
+        '#######################',
+        '#                     #',
+        '# P                 A #',
+        '#                     #',
+        '#######################',
+      },
+      tuning = { player_speed = 4.0, ghost_speed = 0.1, power_seconds = 6.0,
+                 bonus_seconds = 999.0, bonus_points = 1000 },
+    },
   },
 }

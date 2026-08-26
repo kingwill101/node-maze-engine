@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:node/game/level.dart';
 import 'package:node/scripting/lua_level_loader.dart';
 
 void main() {
@@ -26,12 +27,13 @@ void main() {
     final campaign = await LuaLevelLoader().loadCampaign(source);
 
     expect(campaign.name, 'Neon Rift Tour');
-    expect(campaign.levels, hasLength(4));
+    expect(campaign.levels, hasLength(5));
     expect(campaign.levels[1].maze.width, 25);
     expect(campaign.levels[2].maze.width, 35);
     expect(campaign.levels[2].cameraMode.name, 'firstPerson');
     expect(campaign.levels[2].autoRun, isTrue);
     expect(campaign.levels[2].events, hasLength(3));
+    expect(campaign.levels[4].cameraMode, CameraMode.platformer);
   });
 
   test(

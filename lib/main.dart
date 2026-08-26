@@ -164,13 +164,15 @@ class _StartSceneState extends State<StartScene> {
                           label: '${level.maze.width} × ${level.maze.height}',
                         ),
                         _Badge(
-                          label: level.cameraMode == CameraMode.firstPerson
-                              ? 'CORRIDOR START'
-                              : 'TACTICAL START',
+                          label: switch (level.cameraMode) {
+                            CameraMode.firstPerson => 'CORRIDOR START',
+                            CameraMode.platformer => 'PLATFORMER START',
+                            CameraMode.follow => 'TACTICAL START',
+                          },
                         ),
                         _Badge(label: '${level.events.length} STORY EVENTS'),
                         if (level.autoRun) const _Badge(label: 'AUTO-RUN'),
-                        if (selected == widget.campaign.levels.length - 1)
+                        if (level.name == 'Dreamseed 7331')
                           const _Badge(label: 'LUA GENERATED'),
                       ],
                     ),
@@ -455,6 +457,15 @@ class _MazeGameViewState extends State<MazeGameView> {
   }
 
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (activeCameraMode == CameraMode.platformer && event is KeyUpEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+          event.logicalKey == LogicalKeyboardKey.keyA ||
+          event.logicalKey == LogicalKeyboardKey.arrowRight ||
+          event.logicalKey == LogicalKeyboardKey.keyD) {
+        game.setPlatformerAxis(0);
+        return KeyEventResult.handled;
+      }
+    }
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
@@ -504,6 +515,9 @@ class _MazeGameViewState extends State<MazeGameView> {
     if (activeCameraMode == CameraMode.firstPerson) {
       return _handleFirstPersonKey(event);
     }
+    if (activeCameraMode == CameraMode.platformer) {
+      return _handlePlatformerKey(event);
+    }
     final direction = switch (event.logicalKey) {
       LogicalKeyboardKey.arrowLeft ||
       LogicalKeyboardKey.keyA => MoveDirection.right,
@@ -516,6 +530,24 @@ class _MazeGameViewState extends State<MazeGameView> {
     };
     if (direction == null) return KeyEventResult.ignored;
     game.requestMove(direction);
+    return KeyEventResult.handled;
+  }
+
+  KeyEventResult _handlePlatformerKey(KeyEvent event) {
+    final key = event.logicalKey;
+    if (key == LogicalKeyboardKey.arrowLeft || key == LogicalKeyboardKey.keyA) {
+      game.setPlatformerAxis(-1);
+    } else if (key == LogicalKeyboardKey.arrowRight ||
+        key == LogicalKeyboardKey.keyD) {
+      game.setPlatformerAxis(1);
+    } else if ((key == LogicalKeyboardKey.space ||
+            key == LogicalKeyboardKey.arrowUp ||
+            key == LogicalKeyboardKey.keyW) &&
+        event is KeyDownEvent) {
+      game.requestPlatformerJump();
+    } else {
+      return KeyEventResult.ignored;
+    }
     return KeyEventResult.handled;
   }
 
@@ -784,6 +816,9 @@ class _MazeGameViewState extends State<MazeGameView> {
         player + vm.Vector3(0, .68 + bob, 0),
         player + vm.Vector3(0, .62 + bob, 0) + forward * 12,
       );
+    }
+    if (activeCameraMode == CameraMode.platformer) {
+      return (player + vm.Vector3(0, 3.2, 9.5), player + vm.Vector3(0, 1.4, 0));
     }
     return (player + vm.Vector3(0, 10.5, 6.5), player + vm.Vector3(0, 0, -1.2));
   }

@@ -23,6 +23,10 @@ Move with arrow keys or WASD. Press F to fire, Q to cast Star Pulse, V/Tab to
 switch camera, I for the live scene inspector, M for map select, and P/Escape
 to pause.
 
+The Lua-authored **Moonfall Causeway** chapter switches to a side-view
+platformer camera. Move with A/D or Left/Right and jump with Space, W, or Up.
+Collect its four star crystals before entering the moon gate.
+
 Flutter Scene uses Flutter GPU on native platforms, so native `flutter run`
 commands must include `--enable-flutter-gpu`. The web backend uses WebGL2 and
 does not need this flag.
@@ -86,6 +90,12 @@ and Dream Warden entirely in Lua. A new game can replace these recipes without
 adding Dart component classes or editing the engine. Generic gameplay data is
 attached with `Node.add_component`, changed with `Node.set_value`, and queried
 through `SceneTree.get_nodes_with_component`.
+
+The fifth campaign chapter demonstrates a different genre on the same kernel.
+Lua creates floating platforms, crystals, and an exit gate, then implements
+gravity, jumping, platform collision, falling recovery, collection, scoring,
+HUD updates, and victory in `autoload.lua`. Dart only forwards platformer input,
+selects the side-view camera, and provides privileged score/completion calls.
 
 Walls are merged into horizontal runs instead of rendered as one cube per tile.
 Their neon rails use `assets/materials/neon_wall.fmat`, whose `pulse` parameter
