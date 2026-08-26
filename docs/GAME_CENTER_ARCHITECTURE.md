@@ -113,3 +113,25 @@ player. Dart translates those gameplay states into rotations for generated
 joints such as `left_upper_arm`, `right_thigh`, and `cloak`. Future animation
 graphs can preserve this contract whether a character is procedural Dart or a
 skinned glTF model.
+
+## Moonfall environment layers
+
+`MoonfallEnvironment` rebuilds the environment concept as live Flutter Scene
+geometry. No concept-art bitmap ships in the game. Cached sphere, cuboid, and
+torus geometry is composed into six scene groups:
+
+1. indigo sky, plum horizon, and deterministic stars;
+2. pulsing fractured moon with independently rotating shards;
+3. floating islands and distant rune observatories;
+4. mossy middle-distance arches and drifting debris;
+5. alpha-blended violet mist and animated cyan wind trails;
+6. fast foreground crystal silhouettes.
+
+Each group receives a distinct camera-relative X offset. Far layers move only
+slightly while foreground silhouettes move faster than the camera, producing
+real depth from the same side-on gameplay projection. Platformer mode removes
+the maze floor so the violet void and Lua-authored platforms remain readable.
+
+The implementation lives in `lib/scene/moonfall_environment.dart`. Its
+materials and geometry are persistent resources; only transforms change during
+animation frames.

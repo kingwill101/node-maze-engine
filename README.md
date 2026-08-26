@@ -102,6 +102,13 @@ the animation state while Dart poses the generated named joints. See
 `docs/GAME_CENTER_ARCHITECTURE.md` for the asset pipeline and regeneration
 command.
 
+Moonfall also replaces the maze floor with a procedural, multi-depth Flutter
+Scene environment: fractured moon geometry, stars, floating observatories,
+ruined arches, debris, translucent void fog, wind trails, and foreground
+crystals all move at separate parallax rates. The checked-in environment image
+is modeling direction only; the running game renders the background as live 3D
+geometry.
+
 Walls are merged into horizontal runs instead of rendered as one cube per tile.
 Their neon rails use `assets/materials/neon_wall.fmat`, whose `pulse` parameter
 is driven each frame. This is also the extension pattern for future animated

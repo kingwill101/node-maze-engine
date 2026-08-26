@@ -12,6 +12,7 @@ import 'game/components.dart';
 import 'game/level.dart';
 import 'game/maze_game.dart';
 import 'generated/nix_character.g.dart';
+import 'scene/moonfall_environment.dart';
 import 'scene/procedural_character.dart';
 import 'scripting/lua_level_loader.dart';
 
@@ -399,6 +400,8 @@ class _MazeGameViewState extends State<MazeGameView> {
   final Map<String, UnlitMaterial> scriptMaterials = {};
   late final ProceduralCharacterResources nixResources =
       ProceduralCharacterResources(nixCharacterSpec);
+  final MoonfallEnvironmentResources moonfallEnvironmentResources =
+      MoonfallEnvironmentResources();
 
   @override
   void initState() {
@@ -834,21 +837,28 @@ class _MazeGameViewState extends State<MazeGameView> {
     );
     final renderDistance = game.level.renderDistance;
     final widgets = <Widget>[
-      SceneMesh(
-        name: 'maze-floor',
-        geometry: floorGeometry,
-        material: riftFloorMaterial ?? floorMaterial,
-        position: vm.Vector3(
-          playerTransform.x * sceneTileScale,
-          -.5,
-          playerTransform.z * sceneTileScale,
+      if (activeCameraMode == CameraMode.platformer)
+        MoonfallEnvironment(
+          resources: moonfallEnvironmentResources,
+          playerX: playerTransform.x * sceneTileScale,
+          time: animationSeconds,
+        )
+      else
+        SceneMesh(
+          name: 'maze-floor',
+          geometry: floorGeometry,
+          material: riftFloorMaterial ?? floorMaterial,
+          position: vm.Vector3(
+            playerTransform.x * sceneTileScale,
+            -.5,
+            playerTransform.z * sceneTileScale,
+          ),
+          scale: vm.Vector3(
+            renderDistance * 2.4 * sceneTileScale,
+            1,
+            renderDistance * 2.4 * sceneTileScale,
+          ),
         ),
-        scale: vm.Vector3(
-          renderDistance * 2.4 * sceneTileScale,
-          1,
-          renderDistance * 2.4 * sceneTileScale,
-        ),
-      ),
       if (game.state.spellPulseSeconds > 0) _spellPulse(playerTransform),
     ];
     for (final (entity, transform)
