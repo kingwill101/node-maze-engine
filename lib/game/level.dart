@@ -34,6 +34,7 @@ class LevelEventDefinition {
 
 class LevelDefinition {
   const LevelDefinition({
+    this.gameId = 'node_maze',
     required this.name,
     required this.maze,
     this.tuning = const LevelTuning(),
@@ -45,6 +46,7 @@ class LevelDefinition {
     this.events = const [],
   });
 
+  final String gameId;
   final String name;
   final Maze maze;
   final LevelTuning tuning;
@@ -57,6 +59,27 @@ class LevelDefinition {
 
   factory LevelDefinition.defaultFor(Maze maze) =>
       LevelDefinition(name: 'Neon Junction', maze: maze);
+}
+
+class GameDefinition {
+  const GameDefinition({
+    required this.id,
+    required this.name,
+    required this.tagline,
+    required this.campaign,
+  });
+
+  final String id;
+  final String name;
+  final String tagline;
+  final LevelCampaign campaign;
+}
+
+class GameCatalog {
+  const GameCatalog({required this.name, required this.games});
+
+  final String name;
+  final List<GameDefinition> games;
 }
 
 class LevelCampaign {

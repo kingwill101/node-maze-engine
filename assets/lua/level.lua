@@ -50,6 +50,21 @@ end
 
 return {
   name = 'Neon Rift Tour',
+  catalog_name = 'Node Game Center',
+  games = {
+    {
+      id = 'node_maze',
+      name = 'Node Maze',
+      tagline = 'Tactical neon maze adventure',
+      campaign = 'Neon Rift Tour',
+    },
+    {
+      id = 'moonfall_courier',
+      name = 'Moonfall Courier',
+      tagline = 'A 2.5D fantasy action-platformer',
+      campaign = 'The Shattered Moon',
+    },
+  },
   levels = {
     {
       name = 'Neon Junction',
@@ -150,6 +165,7 @@ return {
                  bonus_seconds = 12.0, bonus_points = 3333 },
     },
     {
+      game = 'moonfall_courier',
       name = 'Moonfall Causeway',
       story = 'Gravity fractures at the edge of the dream. Pip must climb the floating causeway and relight its gate.',
       objective = 'Leap across the Lua-built ruins, gather four star crystals, and reach the moon gate',
@@ -167,6 +183,48 @@ return {
       },
       tuning = { player_speed = 4.0, ghost_speed = 0.1, power_seconds = 6.0,
                  bonus_seconds = 999.0, bonus_points = 1000 },
+    },
+    {
+      game = 'moonfall_courier',
+      name = 'The Bellwood Canopy',
+      story = 'The courier follows a stolen moon-note through a forest suspended above the clouds.',
+      objective = 'Wake the three bell shrines and escape the thorn runners',
+      camera = 'platformer',
+      render_distance = 28,
+      events = {
+        { after_seconds = 4, message = 'THE TREES REMEMBER EVERY COURIER WHO FELL.' },
+        { after_seconds = 18, message = 'A BELL ANSWERS FROM BEYOND THE WATERFALL.' },
+      },
+      maze = {
+        '#################################',
+        '#                               #',
+        '# P                           A #',
+        '#                               #',
+        '#################################',
+      },
+      tuning = { player_speed = 4.4, ghost_speed = 0.1, power_seconds = 6.0,
+                 bonus_seconds = 999.0, bonus_points = 1500 },
+    },
+    {
+      game = 'moonfall_courier',
+      name = 'Citadel of Inverted Rain',
+      story = 'Rain climbs toward a broken moon while the Star Eater turns the citadel inside out.',
+      objective = 'Cross the collapsing towers and open the lunar seal',
+      camera = 'platformer',
+      render_distance = 32,
+      events = {
+        { after_seconds = 3, message = 'THE RAIN FALLS UP. YOU STILL FALL DOWN.' },
+        { after_seconds = 22, message = 'THE STAR EATER IS WATCHING THROUGH THE MOON.' },
+      },
+      maze = {
+        '#####################################',
+        '#                                   #',
+        '# P                               A #',
+        '#                                   #',
+        '#####################################',
+      },
+      tuning = { player_speed = 4.7, ghost_speed = 0.1, power_seconds = 6.0,
+                 bonus_seconds = 999.0, bonus_points = 2500 },
     },
   },
 }

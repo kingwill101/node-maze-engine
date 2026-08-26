@@ -1,6 +1,7 @@
-# Node Maze Engine
+# Node Game Center
 
-An experimental, Flutter-native 3D game engine and original maze-chase game.
+A Flutter-native 3D game engine and game center containing Node Maze and the
+2.5D action-platformer Moonfall Courier.
 
 Play the web build at **https://kingwill101.github.io/node-maze-engine/**.
 
@@ -23,9 +24,10 @@ Move with arrow keys or WASD. Press F to fire, Q to cast Star Pulse, V/Tab to
 switch camera, I for the live scene inspector, M for map select, and P/Escape
 to pause.
 
-The Lua-authored **Moonfall Causeway** chapter switches to a side-view
-platformer camera. Move with A/D or Left/Right and jump with Space, W, or Up.
-Collect its four star crystals before entering the moon gate.
+**Moonfall Courier** is a three-chapter Lua-authored platformer campaign. Move
+with A/D or Left/Right, jump with Space/W/Up, and fire a Star Bolt with F.
+Collect every crystal, activate checkpoint lanterns, avoid moon thorns, defeat
+patrolling Thorn Runners, and reach each gate. Chapters advance with Enter.
 
 Flutter Scene uses Flutter GPU on native platforms, so native `flutter run`
 commands must include `--enable-flutter-gpu`. The web backend uses WebGL2 and
@@ -70,7 +72,7 @@ Star Key, `|` a locked door, and `^` a rift trap. The
 loader validates row widths, tiles, and required spawns before creating the ECS
 world.
 
-The same script now returns a three-chapter campaign. Chapters also author
+The same script returns a multi-game catalog and separate campaigns. Chapters author
 story text, objectives, timed/progress-triggered events, render distance, and
 camera mode. The final large-world chapter uses a close first-person camera;
 future Lua chapters can opt into it with `camera = 'first_person'`.
@@ -91,11 +93,11 @@ adding Dart component classes or editing the engine. Generic gameplay data is
 attached with `Node.add_component`, changed with `Node.set_value`, and queried
 through `SceneTree.get_nodes_with_component`.
 
-The fifth campaign chapter demonstrates a different genre on the same kernel.
-Lua creates floating platforms, crystals, and an exit gate, then implements
-gravity, jumping, platform collision, falling recovery, collection, scoring,
-HUD updates, and victory in `autoload.lua`. Dart only forwards platformer input,
-selects the side-view camera, and provides privileged score/completion calls.
+Moonfall demonstrates a different genre on the same kernel. Lua creates each
+chapter's platforms, crystals, hazards, checkpoint lanterns, enemies, exit gate,
+effects, HUD, scoring, damage, and victory rules. A reusable native platformer
+system provides deterministic movement, gravity, one-way landing, jumping, and
+checkpoint respawning; Lua consumes those states and authors the game rules.
 Its Nix character is generated from `assets/characters/nix.character.json` as a
 32-part procedural Dart hierarchy rendered directly by Flutter Scene. Lua owns
 the animation state while Dart poses the generated named joints. See

@@ -20,53 +20,275 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await useAssetBundle(rootBundle, assetRoot: 'assets/lua');
   final levelSource = await rootBundle.loadString('assets/lua/level.lua');
-  final campaign = await LuaLevelLoader().loadCampaign(
+  final catalog = await LuaLevelLoader().loadCatalog(
     levelSource,
     scriptPath: 'assets/lua/level.lua',
   );
-  runApp(MazeEngineApp(campaign: campaign));
+  runApp(MazeEngineApp(catalog: catalog));
 }
 
 class MazeEngineApp extends StatefulWidget {
-  const MazeEngineApp({super.key, required this.campaign});
-  final LevelCampaign campaign;
+  const MazeEngineApp({super.key, this.catalog, this.campaign})
+    : assert(catalog != null || campaign != null);
+
+  final GameCatalog? catalog;
+  final LevelCampaign? campaign;
 
   @override
   State<MazeEngineApp> createState() => _MazeEngineAppState();
 }
 
 class _MazeEngineAppState extends State<MazeEngineApp> {
+  int? selectedGame;
   int? selectedLevel;
 
+  GameCatalog get catalog =>
+      widget.catalog ??
+      GameCatalog(
+        name: 'Node Game Center',
+        games: [
+          GameDefinition(
+            id: 'legacy',
+            name: widget.campaign!.name,
+            tagline: '',
+            campaign: widget.campaign!,
+          ),
+        ],
+      );
+
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: 'Node Maze Engine',
-    theme: ThemeData.dark(useMaterial3: true).copyWith(
-      scaffoldBackgroundColor: const Color(0xff050510),
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xff31e7ff),
-        brightness: Brightness.dark,
+  Widget build(BuildContext context) {
+    final activeGame = selectedGame == null
+        ? null
+        : catalog.games[selectedGame!];
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Node Game Center',
+      theme: ThemeData.dark(useMaterial3: true).copyWith(
+        scaffoldBackgroundColor: const Color(0xff050510),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xff31e7ff),
+          brightness: Brightness.dark,
+        ),
+      ),
+      home: activeGame == null
+          ? GameCenterScene(
+              catalog: catalog,
+              onSelect: (index) => setState(() => selectedGame = index),
+            )
+          : selectedLevel == null
+          ? StartScene(
+              campaign: activeGame.campaign,
+              onStart: (index) => setState(() => selectedLevel = index),
+              onBack: () => setState(() => selectedGame = null),
+            )
+          : MazeGameView(
+              campaign: activeGame.campaign,
+              initialLevelIndex: selectedLevel!,
+              onExitToMenu: () => setState(() => selectedLevel = null),
+            ),
+    );
+  }
+}
+
+class GameCenterScene extends StatefulWidget {
+  const GameCenterScene({
+    super.key,
+    required this.catalog,
+    required this.onSelect,
+  });
+
+  final GameCatalog catalog;
+  final ValueChanged<int> onSelect;
+
+  @override
+  State<GameCenterScene> createState() => _GameCenterSceneState();
+}
+
+class _GameCenterSceneState extends State<GameCenterScene> {
+  int selected = 0;
+  final FocusNode focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    if (event.logicalKey == LogicalKeyboardKey.arrowRight ||
+        event.logicalKey == LogicalKeyboardKey.keyD) {
+      setState(() => selected = (selected + 1) % widget.catalog.games.length);
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+        event.logicalKey == LogicalKeyboardKey.keyA) {
+      setState(
+        () => selected =
+            (selected - 1 + widget.catalog.games.length) %
+            widget.catalog.games.length,
+      );
+    } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.space) {
+      widget.onSelect(selected);
+    } else {
+      return KeyEventResult.ignored;
+    }
+    return KeyEventResult.handled;
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: Focus(
+      autofocus: true,
+      focusNode: focusNode,
+      onKeyEvent: _handleKey,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          const _TitleBackdrop(),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(36),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'NODE GAME CENTER',
+                    style: TextStyle(
+                      fontSize: 38,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 7,
+                      color: Color(0xff31e7ff),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${widget.catalog.games.length} WORLDS · ONE LUA/ECS ENGINE',
+                    style: const TextStyle(
+                      letterSpacing: 3,
+                      color: Color(0xffb35cff),
+                    ),
+                  ),
+                  const Spacer(),
+                  Row(
+                    children: [
+                      for (
+                        var index = 0;
+                        index < widget.catalog.games.length;
+                        index++
+                      )
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              right: index == 0 ? 18 : 0,
+                            ),
+                            child: _GameCard(
+                              game: widget.catalog.games[index],
+                              selected: selected == index,
+                              onTap: () => setState(() => selected = index),
+                              onStart: () => widget.onSelect(index),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
+                  FilledButton.icon(
+                    onPressed: () => widget.onSelect(selected),
+                    icon: const Icon(Icons.sports_esports),
+                    label: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      child: Text('OPEN GAME'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     ),
-    home: selectedLevel == null
-        ? StartScene(
-            campaign: widget.campaign,
-            onStart: (index) => setState(() => selectedLevel = index),
-          )
-        : MazeGameView(
-            campaign: widget.campaign,
-            initialLevelIndex: selectedLevel!,
-            onExitToMenu: () => setState(() => selectedLevel = null),
+  );
+}
+
+class _GameCard extends StatelessWidget {
+  const _GameCard({
+    required this.game,
+    required this.selected,
+    required this.onTap,
+    required this.onStart,
+  });
+
+  final GameDefinition game;
+  final bool selected;
+  final VoidCallback onTap;
+  final VoidCallback onStart;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    onDoubleTap: onStart,
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      height: 250,
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: game.id == 'moonfall_courier'
+              ? const [Color(0xff321957), Color(0xff102f52)]
+              : const [Color(0xff10224a), Color(0xff071227)],
+        ),
+        border: Border.all(
+          color: selected ? const Color(0xff31e7ff) : Colors.white24,
+          width: selected ? 3 : 1,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            game.id == 'moonfall_courier'
+                ? Icons.nightlight_round
+                : Icons.blur_circular,
+            size: 48,
+            color: game.id == 'moonfall_courier'
+                ? const Color(0xffb35cff)
+                : const Color(0xff31e7ff),
           ),
+          const Spacer(),
+          Text(
+            game.name.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 3,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(game.tagline, style: const TextStyle(color: Colors.white70)),
+          const SizedBox(height: 12),
+          Text(
+            '${game.campaign.levels.length} CHAPTER${game.campaign.levels.length == 1 ? '' : 'S'}',
+            style: const TextStyle(color: Color(0xffffd45c), letterSpacing: 2),
+          ),
+        ],
+      ),
+    ),
   );
 }
 
 class StartScene extends StatefulWidget {
-  const StartScene({super.key, required this.campaign, required this.onStart});
+  const StartScene({
+    super.key,
+    required this.campaign,
+    required this.onStart,
+    this.onBack,
+  });
 
   final LevelCampaign campaign;
   final ValueChanged<int> onStart;
+  final VoidCallback? onBack;
 
   @override
   State<StartScene> createState() => _StartSceneState();
@@ -94,6 +316,9 @@ class _StartSceneState extends State<StartScene> {
     } else if (event.logicalKey == LogicalKeyboardKey.enter ||
         event.logicalKey == LogicalKeyboardKey.space) {
       widget.onStart(selected);
+    } else if (event.logicalKey == LogicalKeyboardKey.escape &&
+        widget.onBack != null) {
+      widget.onBack!();
     } else {
       return KeyEventResult.ignored;
     }
@@ -118,8 +343,8 @@ class _StartSceneState extends State<StartScene> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'NODE MAZE',
+                    Text(
+                      widget.campaign.name.toUpperCase(),
                       style: TextStyle(
                         fontSize: 42,
                         fontWeight: FontWeight.w900,
@@ -131,7 +356,9 @@ class _StartSceneState extends State<StartScene> {
                       ),
                     ),
                     Text(
-                      widget.campaign.name.toUpperCase(),
+                      level.gameId == 'moonfall_courier'
+                          ? 'MOONFALL COURIER'
+                          : 'NODE MAZE',
                       style: const TextStyle(
                         letterSpacing: 5,
                         color: Color(0xffb35cff),
@@ -203,7 +430,7 @@ class _StartSceneState extends State<StartScene> {
                           icon: const Icon(Icons.play_arrow_rounded),
                           label: const Padding(
                             padding: EdgeInsets.symmetric(vertical: 14),
-                            child: Text('ENTER THE MAZE'),
+                            child: Text('START CHAPTER'),
                           ),
                         ),
                         const SizedBox(width: 18),
@@ -543,11 +770,10 @@ class _MazeGameViewState extends State<MazeGameView> {
   KeyEventResult _handlePlatformerKey(KeyEvent event) {
     final key = event.logicalKey;
     if (key == LogicalKeyboardKey.arrowLeft || key == LogicalKeyboardKey.keyA) {
-      // The side camera looks down -Z, so screen-left is world +X.
-      game.setPlatformerAxis(1);
+      game.setPlatformerAxis(-1);
     } else if (key == LogicalKeyboardKey.arrowRight ||
         key == LogicalKeyboardKey.keyD) {
-      game.setPlatformerAxis(-1);
+      game.setPlatformerAxis(1);
     } else if ((key == LogicalKeyboardKey.space ||
             key == LogicalKeyboardKey.arrowUp ||
             key == LogicalKeyboardKey.keyW) &&

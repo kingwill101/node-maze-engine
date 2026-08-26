@@ -62,6 +62,38 @@ function M.register()
     draw_box(entity, 'lintel', 0, 1.42, 0, 0.68, 0.12, 0.22, '#31e7ff')
     particle_emitter(entity, 'portal', 20, 0.65, 1.8, 0.045, '#b35cff', 'orbit')
   end)
+
+  Prefab.define('moon_spike', function(entity)
+    Node.add_component(entity, 'hazard', { damage = 1 })
+    draw_box(entity, 'spike', 0, 0, 0, 0.32, 0.38, 0.5, '#ff3970')
+    drawing_set_animation(entity, 'spike', 'pulse', 5.5, 0.16)
+    particle_emitter(entity, 'embers', 8, 0.35, 1.4, 0.03, '#ff3970', 'fountain')
+  end)
+
+  Prefab.define('moon_checkpoint', function(entity)
+    Node.add_component(entity, 'checkpoint', { active = false })
+    draw_box(entity, 'post', 0, 0.5, 0, 0.08, 0.55, 0.08, '#23315f')
+    draw_sphere(entity, 'lantern', 0, 1.08, 0, 0.22, '#31e7ff')
+    drawing_set_animation(entity, 'lantern', 'pulse', 3.2, 0.2)
+  end)
+
+  Prefab.define('thorn_runner', function(entity)
+    Node.add_component(entity, 'platform_enemy', { origin = 0, range = 1.5, speed = 1.4, direction = 1, health = 1 })
+    draw_sphere(entity, 'body', 0, 0.3, 0, 0.36, '#b35cff')
+    draw_box(entity, 'horns', 0, 0.68, 0, 0.38, 0.08, 0.12, '#ffd45c')
+    drawing_set_animation(entity, 'body', 'pulse', 4.0, 0.1)
+    particle_emitter(entity, 'shadow', 9, 0.4, 1.2, 0.035, '#b35cff', 'orbit')
+  end)
+
+  Prefab.define('star_eater', function(entity)
+    Node.add_component(entity, 'platform_enemy', { origin = 0, range = 2.4, speed = 0.9, direction = 1, health = 6, boss = true })
+    draw_sphere(entity, 'body', 0, 0.7, 0, 0.82, '#55117f')
+    draw_sphere(entity, 'eye', 0, 0.8, 0.72, 0.24, '#ff3970')
+    draw_box(entity, 'crown', 0, 1.62, 0, 0.72, 0.1, 0.3, '#ffd45c')
+    drawing_set_animation(entity, 'body', 'float', 1.6, 0.18)
+    drawing_set_animation(entity, 'eye', 'pulse', 6.0, 0.22)
+    particle_emitter(entity, 'gravity_crown', 30, 1.25, 1.8, 0.055, '#b35cff', 'orbit')
+  end)
 end
 
 return M

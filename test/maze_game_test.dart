@@ -74,7 +74,7 @@ void main() {
       final campaign = await LuaLevelLoader().loadCampaign(
         await File('assets/lua/level.lua').readAsString(),
       );
-      final game = MazeGame(level: campaign.levels.last);
+      final game = MazeGame(level: campaign.levels[4]);
       await game.loadGameScripts(
         autoloadSource: await File('assets/lua/autoload.lua').readAsString(),
         ghostSource: await File('assets/lua/ghost.lua').readAsString(),

@@ -3,6 +3,8 @@ import '../engine/runtime.dart';
 import '../engine/scene_tree.dart';
 import '../scripting/lua_behavior_scheduler.dart';
 import '../scripting/lua_behavior_runtime.dart';
+import '../platformer/platformer_components.dart';
+import '../platformer/platformer_system.dart';
 import 'components.dart';
 import 'level.dart';
 import 'maze.dart';
@@ -12,6 +14,14 @@ class MazeGame {
     : level = level ?? LevelDefinition.defaultFor(maze ?? Maze.demo) {
     runtime.context.events.on<LuaSignal>(scripts.emitSignal);
     runtime.fixedSystems.add(_MovementSystem(this.maze));
+    if (this.level.cameraMode == CameraMode.platformer) {
+      runtime.fixedSystems.add(
+        PlatformerPhysicsSystem(
+          minimumX: 1.2,
+          maximumX: this.level.maze.width - 2.8,
+        ),
+      );
+    }
     runtime.fixedSystems.add(_DungeonInteractionSystem(sceneTree));
     runtime.fixedSystems.add(_PortalSystem());
     runtime.fixedSystems.add(_PelletSystem(this.level.tuning));
@@ -99,14 +109,20 @@ class MazeGame {
           case 'T':
             portalPositions.add((x.toDouble(), y.toDouble()));
           case 'P':
-            player = runtime.context.world.create([
+            final playerComponents = <Object>[
               Transform3(x.toDouble(), .45, y.toDouble()),
               SpawnPoint(x.toDouble(), y.toDouble()),
               GridMover(speed: level.tuning.playerSpeed),
               const PlayerTag(),
               ScriptProperties({'spell': 'none'}),
               ScriptGroups(['player', 'actors']),
-            ]);
+            ];
+            if (level.cameraMode == CameraMode.platformer) {
+              playerComponents.add(
+                PlatformerBody(checkpointX: x.toDouble(), checkpointY: .9),
+              );
+            }
+            player = runtime.context.world.create(playerComponents);
             sceneTree.register('/root/player', player);
           case 'A' || 'B' || 'C' || 'D':
             final profiles = <String, (String, String)>{
@@ -254,13 +270,27 @@ class MazeGame {
     if (phase != GamePhase.playing) return;
     final transform = runtime.context.world.get<Transform3>(player);
     final mover = runtime.context.world.get<GridMover>(player);
-    final direction = useFirstPersonFacing
+    final direction = level.cameraMode == CameraMode.platformer
+        ? ((runtime.context.world
+                                  .maybeGet<ScriptComponents>(player)
+                                  ?.values['character_animation']?['facing']
+                              as num?)
+                          ?.toDouble() ??
+                      1) >=
+                  0
+              ? MoveDirection.right
+              : MoveDirection.left
+        : useFirstPersonFacing
         ? firstPersonFacing
         : (mover.direction == MoveDirection.none
               ? firstPersonFacing
               : mover.direction);
     final bolt = runtime.context.world.create([
-      Transform3(transform.x, .3, transform.z),
+      Transform3(
+        transform.x,
+        level.cameraMode == CameraMode.platformer ? transform.y : .3,
+        transform.z,
+      ),
       ScriptVelocity(
         direction.dx * 7,
         0,

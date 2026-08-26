@@ -32,11 +32,48 @@ class LuaLevelLoader {
     );
   }
 
+  Future<GameCatalog> loadCatalog(String source, {String? scriptPath}) async {
+    final result = await LuaLike().execute(source, scriptPath: scriptPath);
+    final root = _unwrap(result);
+    if (root is! Map) {
+      throw const FormatException('Game catalog script must return a table');
+    }
+    final map = _stringMap(root);
+    final levelMaps = _tableList(map['levels']).map(_stringMap).toList();
+    final levels = [for (final levelMap in levelMaps) _parseLevel(levelMap)];
+    final definitions = _optionalTableList(map['games']).map(_stringMap);
+    final games = <GameDefinition>[];
+    for (final definition in definitions) {
+      final id = _string(definition['id'], fallback: 'unknown_game');
+      final gameLevels = levels.where((level) => level.gameId == id).toList();
+      if (gameLevels.isEmpty) continue;
+      games.add(
+        GameDefinition(
+          id: id,
+          name: _string(definition['name'], fallback: id),
+          tagline: _string(definition['tagline'], fallback: ''),
+          campaign: LevelCampaign(
+            name: _string(definition['campaign'], fallback: id),
+            levels: gameLevels,
+          ),
+        ),
+      );
+    }
+    if (games.isEmpty) {
+      throw const FormatException('Game catalog must contain playable games');
+    }
+    return GameCatalog(
+      name: _string(map['catalog_name'], fallback: 'Node Game Center'),
+      games: games,
+    );
+  }
+
   LevelDefinition _parseLevel(Map<String, Object?> map) {
     final rows = _stringList(map['maze']);
     _validateRows(rows);
     final tuning = _stringMap(map['tuning'] ?? const {});
     return LevelDefinition(
+      gameId: _string(map['game'], fallback: 'node_maze'),
       name: _string(map['name'], fallback: 'Untitled maze'),
       maze: Maze(rows),
       story: _string(map['story'], fallback: ''),

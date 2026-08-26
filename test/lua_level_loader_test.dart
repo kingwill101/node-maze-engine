@@ -27,13 +27,33 @@ void main() {
     final campaign = await LuaLevelLoader().loadCampaign(source);
 
     expect(campaign.name, 'Neon Rift Tour');
-    expect(campaign.levels, hasLength(5));
+    expect(campaign.levels, hasLength(7));
     expect(campaign.levels[1].maze.width, 25);
     expect(campaign.levels[2].maze.width, 35);
     expect(campaign.levels[2].cameraMode.name, 'firstPerson');
     expect(campaign.levels[2].autoRun, isTrue);
     expect(campaign.levels[2].events, hasLength(3));
     expect(campaign.levels[4].cameraMode, CameraMode.platformer);
+  });
+
+  test('loads Node Maze and Moonfall as separate games', () async {
+    final source = await File('assets/lua/level.lua').readAsString();
+
+    final catalog = await LuaLevelLoader().loadCatalog(source);
+
+    expect(catalog.name, 'Node Game Center');
+    expect(catalog.games.map((game) => game.id), [
+      'node_maze',
+      'moonfall_courier',
+    ]);
+    expect(catalog.games.first.campaign.levels, hasLength(4));
+    expect(catalog.games.last.campaign.levels, hasLength(3));
+    expect(
+      catalog.games.last.campaign.levels.every(
+        (level) => level.cameraMode == CameraMode.platformer,
+      ),
+      isTrue,
+    );
   });
 
   test(

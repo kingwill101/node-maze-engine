@@ -9,9 +9,40 @@ local boss = 0
 local boss_phase = 'dormant'
 local projectile_serial = 0
 local platformer_active = false
-local platformer_velocity_y = 0
-local platformer_grounded = false
 local platformer_crystals = 0
+local platformer_total_crystals = 0
+local platformer_respawns = 0
+local platformer_damage_cooldown = 0
+local platformer_checkpoint_x = 2
+local platformer_checkpoint_y = 0.9
+
+local platformer_levels = {
+  ['Moonfall Causeway'] = {
+    platforms = { {4.5,0,6.5}, {9.5,1.65,2.2}, {13.2,3,2}, {17.2,1.5,3.8} },
+    crystals = { {5.5,1}, {9.5,2.65}, {13.2,4}, {17.4,2.5} },
+    hazards = { {7.1,0.38}, {15.1,1.88} },
+    checkpoints = { {10.1,2.65} },
+    enemies = { {11.5,3.68,1.1}, {17.1,2.53,1.3} },
+    exit = {19.1,2.15}, title = 'MOONFALL CAUSEWAY RESTORED',
+  },
+  ['The Bellwood Canopy'] = {
+    platforms = { {4,0,5.5}, {8.2,1.2,2.3}, {12,2.5,2.6}, {16.3,1,3}, {21,3,3.2}, {26.5,1.4,5} },
+    crystals = { {4.8,1}, {8.2,2.2}, {12,3.5}, {16.4,2}, {21,4}, {27,2.4} },
+    hazards = { {6.8,0.38}, {14.3,1.38}, {23.8,1.78} },
+    checkpoints = { {16.2,2} },
+    enemies = { {11.5,3.53,1.1}, {20.8,4.03,1.3}, {27,2.43,1.6} },
+    exit = {29,2.05}, title = 'THE BELLWOOD SINGS AGAIN',
+  },
+  ['Citadel of Inverted Rain'] = {
+    platforms = { {3.8,0,5}, {8,2,2}, {11.5,4,2}, {15,2.2,2.2}, {19,0.5,2.5}, {23,2.8,2}, {27,4.8,2}, {32,2,5} },
+    crystals = { {4.2,1}, {8,3}, {11.5,5}, {15,3.2}, {19,1.5}, {23,3.8}, {27,5.8}, {32.5,3} },
+    hazards = { {6.3,0.38}, {17.1,0.88}, {29.5,2.38} },
+    checkpoints = { {19,1.5}, {27,5.8} },
+    enemies = { {11.5,5.03,1.1}, {19,1.53,1.3}, {31.5,3.03,1.7} },
+    boss = {32,3.05,2.2},
+    exit = {34,2.65}, title = 'THE STAR EATER IS BANISHED',
+  },
+}
 
 local function spawn_platform(path, x, y, width)
   local platform = Prefab.instantiate('platform', path, x, y, 2)
@@ -22,7 +53,7 @@ local function spawn_platform(path, x, y, width)
   return platform
 end
 
-local function setup_platformer(root)
+local function setup_platformer(root, config)
   platformer_active = true
   entity_set_position(player, 2, 0.9, 2)
   Node.add_component(player, 'platformer_player', { grounded = false })
@@ -31,24 +62,39 @@ local function setup_platformer(root)
     Node.queue_free(enemy)
   end
 
-  spawn_platform('/root/platforms/start', 4.5, 0, 6.5)
-  spawn_platform('/root/platforms/step_one', 9.5, 1.65, 2.2)
-  spawn_platform('/root/platforms/step_two', 13.2, 3.0, 2.0)
-  spawn_platform('/root/platforms/final', 17.2, 1.5, 3.8)
-
-  local crystal_positions = {
-    { 5.5, 1.0 }, { 9.5, 2.65 }, { 13.2, 4.0 }, { 17.4, 2.5 },
-  }
-  for index, position in ipairs(crystal_positions) do
+  for index, platform in ipairs(config.platforms) do
+    spawn_platform('/root/platforms/' .. index, platform[1], platform[2], platform[3])
+  end
+  for index, position in ipairs(config.crystals) do
     Prefab.instantiate('crystal', '/root/crystals/' .. index, position[1], position[2], 2)
   end
-  platformer_crystals = #crystal_positions
-  Prefab.instantiate('exit_gate', '/root/platformer_exit', 19.1, 2.15, 2)
+  for index, position in ipairs(config.hazards) do
+    Prefab.instantiate('moon_spike', '/root/hazards/' .. index, position[1], position[2], 2)
+  end
+  for index, position in ipairs(config.checkpoints) do
+    Prefab.instantiate('moon_checkpoint', '/root/checkpoints/' .. index, position[1], position[2], 2)
+  end
+  for index, position in ipairs(config.enemies) do
+    local enemy = Prefab.instantiate('thorn_runner', '/root/platform_enemies/' .. index, position[1], position[2], 2)
+    Node.set_value(enemy, 'platform_enemy', 'origin', position[1])
+    Node.set_value(enemy, 'platform_enemy', 'range', position[3])
+  end
+  if config.boss ~= nil then
+    local moon_boss = Prefab.instantiate('star_eater', '/root/platform_boss', config.boss[1], config.boss[2], 2)
+    Node.set_value(moon_boss, 'platform_enemy', 'origin', config.boss[1])
+    Node.set_value(moon_boss, 'platform_enemy', 'range', config.boss[3])
+    hud_label(root, 'platform_boss', 'STAR EATER 6/6', 'top_left', 20, 58, '#ff3970', 14)
+  end
+  entity_set_property(root, 'platformer_boss_required', config.boss ~= nil)
+  platformer_crystals = #config.crystals
+  platformer_total_crystals = platformer_crystals
+  Prefab.instantiate('exit_gate', '/root/platformer_exit', config.exit[1], config.exit[2], 2)
 
   entity_set_property(root, 'move_axis', 0)
   entity_set_property(root, 'jump_requested', false)
-  hud_label(root, 'platform_help', 'A/D MOVE   SPACE JUMP', 'bottom_left', 20, 24, '#31e7ff', 13)
-  hud_label(root, 'platform_goal', 'STAR CRYSTALS 0/4', 'top_right', 20, 20, '#ffd45c', 14)
+  entity_set_property(root, 'platformer_finish_title', config.title)
+  hud_label(root, 'platform_help', 'A/D MOVE   SPACE JUMP   F STAR BOLT   P PAUSE', 'bottom_left', 20, 24, '#31e7ff', 13)
+  hud_label(root, 'platform_goal', 'STAR CRYSTALS 0/' .. platformer_total_crystals, 'top_right', 20, 20, '#ffd45c', 14)
   emit_signal(root, 'platformer_ready', player)
 end
 
@@ -62,8 +108,9 @@ function ready(root)
   entity_set_property(player, 'scene_ready', true)
   entity_add_component(root, 'hud')
   hud_label(root, 'status', 'LUA HUD INITIALIZING', 'top_right', 20, 20, '#ffffff', 14)
-  if entity_get_property(root, 'scene_name') == 'Moonfall Causeway' then
-    setup_platformer(root)
+  local platformer_config = platformer_levels[entity_get_property(root, 'scene_name')]
+  if platformer_config ~= nil then
+    setup_platformer(root, platformer_config)
     return
   end
   local px = entity_get_x(player)
@@ -97,67 +144,94 @@ function fixed_update(root, delta)
   if platformer_active then
     local x = entity_get_x(player)
     local y = entity_get_y(player)
-    local axis = entity_get_property(root, 'move_axis') or 0
-    local next_x = math.max(1.2, math.min(20.2, x + axis * 5.2 * delta))
+    platformer_damage_cooldown = math.max(0, platformer_damage_cooldown - delta)
+    if Node.get_value(player, 'platformer_player', 'just_jumped') then
+      Node.set_value(player, 'platformer_player', 'just_jumped', false)
+      particle_emitter(player, 'jump_burst', 14, 0.45, 3.2, 0.04, '#31e7ff', 'burst')
+    end
+    local respawns = Node.get_value(player, 'platformer_player', 'respawn_count') or 0
+    if respawns > platformer_respawns then
+      platformer_respawns = respawns
+      hud_label(root, 'platform_message', 'THE VOID RETURNS YOU', 'top_left', 20, 92, '#ff3970', 13)
+    end
 
-    if entity_get_property(root, 'jump_requested') then
-      entity_set_property(root, 'jump_requested', false)
-      if platformer_grounded then
-        platformer_velocity_y = 6.8
-        platformer_grounded = false
-        particle_emitter(player, 'jump_burst', 14, 0.45, 3.2, 0.04, '#31e7ff', 'burst')
+    for _, checkpoint in ipairs(SceneTree.get_nodes_with_component('checkpoint')) do
+      if not Node.get_value(checkpoint, 'checkpoint', 'active') and math.abs(x - entity_get_x(checkpoint)) < 0.55 and math.abs(y - entity_get_y(checkpoint)) < 1.25 then
+        Node.set_value(checkpoint, 'checkpoint', 'active', true)
+        platformer_checkpoint_x = entity_get_x(checkpoint)
+        platformer_checkpoint_y = entity_get_y(checkpoint) + 1
+        platformer_set_checkpoint(player, platformer_checkpoint_x, platformer_checkpoint_y)
+        particle_emitter(checkpoint, 'saved', 28, 0.8, 2.8, 0.045, '#ffd45c', 'burst')
+        hud_label(root, 'platform_message', 'MOON LANTERN LIT — JOURNEY SAVED', 'top_left', 20, 92, '#ffd45c', 13)
       end
     end
 
-    platformer_velocity_y = platformer_velocity_y - 14.5 * delta
-    local next_y = y + platformer_velocity_y * delta
-    platformer_grounded = false
-    if platformer_velocity_y <= 0 then
-      for _, platform in ipairs(SceneTree.get_nodes_with_component('platform')) do
-        local px = entity_get_x(platform)
-        local py = entity_get_y(platform)
-        local width = Node.get_value(platform, 'platform', 'width') or 4
-        local top = py + 0.35
-        if math.abs(next_x - px) <= width / 2 and y - 0.45 >= top - 0.18 and next_y - 0.45 <= top then
-          next_y = top + 0.45
-          platformer_velocity_y = 0
-          platformer_grounded = true
+    for _, hazard in ipairs(SceneTree.get_nodes_with_component('hazard')) do
+      if platformer_damage_cooldown <= 0 and math.abs(x - entity_get_x(hazard)) < 0.48 and math.abs(y - entity_get_y(hazard)) < 0.75 then
+        game_damage_player(Node.get_value(hazard, 'hazard', 'damage') or 1, 'MOON THORNS — ONE HEART LOST')
+        entity_set_position(player, platformer_checkpoint_x, platformer_checkpoint_y, 2)
+        platformer_damage_cooldown = 1.2
+      end
+    end
+
+    for _, enemy in ipairs(SceneTree.get_nodes_with_component('platform_enemy')) do
+      local ex = entity_get_x(enemy)
+      local origin = Node.get_value(enemy, 'platform_enemy', 'origin') or ex
+      local range = Node.get_value(enemy, 'platform_enemy', 'range') or 1.5
+      local speed = Node.get_value(enemy, 'platform_enemy', 'speed') or 1.4
+      local direction = Node.get_value(enemy, 'platform_enemy', 'direction') or 1
+      ex = ex + direction * speed * delta
+      if ex > origin + range then
+        ex = origin + range
+        direction = -1
+      end
+      if ex < origin - range then
+        ex = origin - range
+        direction = 1
+      end
+      entity_set_position(enemy, ex, entity_get_y(enemy), 2)
+      Node.set_value(enemy, 'platform_enemy', 'direction', direction)
+      if platformer_damage_cooldown <= 0 and math.abs(x - ex) < 0.58 and math.abs(y - entity_get_y(enemy)) < 0.8 then
+        game_damage_player(1, 'A THORN RUNNER STEALS A HEART')
+        entity_set_position(player, platformer_checkpoint_x, platformer_checkpoint_y, 2)
+        platformer_damage_cooldown = 1.2
+      end
+      for _, bolt in ipairs(SceneTree.get_nodes_in_group('player_projectiles')) do
+        if math.abs(entity_get_x(bolt) - ex) < 0.6 and math.abs(entity_get_y(bolt) - entity_get_y(enemy)) < 0.9 then
+          Node.queue_free(bolt)
+          local health = (Node.get_value(enemy, 'platform_enemy', 'health') or 1) - 1
+          Node.set_value(enemy, 'platform_enemy', 'health', health)
+          if Node.get_value(enemy, 'platform_enemy', 'boss') then
+            hud_label(root, 'platform_boss', 'STAR EATER ' .. math.max(health, 0) .. '/6', 'top_left', 20, 58, '#ff3970', 14)
+          end
+          if health <= 0 then
+            Node.queue_free(enemy)
+            game_add_score(Node.get_value(enemy, 'platform_enemy', 'boss') and 3000 or 300)
+            if Node.get_value(enemy, 'platform_enemy', 'boss') then
+              hud_label(root, 'platform_message', 'THE STAR EATER BREAKS INTO CONSTELLATIONS', 'top_left', 20, 92, '#ffd45c', 13)
+              hud_remove(root, 'platform_boss')
+            end
+          end
+          particle_emitter(player, 'enemy_burst', 20, 0.7, 3.2, 0.04, '#b35cff', 'burst')
         end
       end
     end
 
-    if next_y < -3 then
-      next_x = 2
-      next_y = 0.9
-      platformer_velocity_y = 0
-      hud_label(root, 'platform_message', 'THE VOID RETURNS YOU', 'top_left', 20, 92, '#ff3970', 13)
-    end
-    entity_set_position(player, next_x, next_y, 2)
-    Node.set_value(player, 'platformer_player', 'grounded', platformer_grounded)
-    Node.set_value(player, 'platformer_player', 'velocity_y', platformer_velocity_y)
-    if axis ~= 0 then Node.set_value(player, 'character_animation', 'facing', axis) end
-    local animation_state = 'idle'
-    if not platformer_grounded then
-      animation_state = platformer_velocity_y >= 0 and 'jump' or 'fall'
-    elseif axis ~= 0 then
-      animation_state = 'run'
-    end
-    Node.set_value(player, 'character_animation', 'state', animation_state)
-
     for _, crystal in ipairs(SceneTree.get_nodes_with_component('crystal')) do
-      if math.abs(next_x - entity_get_x(crystal)) < 0.55 and math.abs(next_y - entity_get_y(crystal)) < 0.8 then
+      if math.abs(x - entity_get_x(crystal)) < 0.55 and math.abs(y - entity_get_y(crystal)) < 0.8 then
         Node.remove_component(crystal, 'crystal')
         Node.queue_free(crystal)
         platformer_crystals = platformer_crystals - 1
         game_add_score(Node.get_value(crystal, 'crystal', 'points') or 250)
         particle_emitter(player, 'star_burst', 24, 0.8, 4.5, 0.055, '#ffd45c', 'burst')
-        hud_label(root, 'platform_goal', 'STAR CRYSTALS ' .. (4 - platformer_crystals) .. '/4', 'top_right', 20, 20, '#ffd45c', 14)
+        hud_label(root, 'platform_goal', 'STAR CRYSTALS ' .. (platformer_total_crystals - platformer_crystals) .. '/' .. platformer_total_crystals, 'top_right', 20, 20, '#ffd45c', 14)
       end
     end
 
     local exit = Node.get('/root/platformer_exit')
-    if platformer_crystals == 0 and exit ~= 0 and math.abs(next_x - entity_get_x(exit)) < 0.8 and math.abs(next_y - entity_get_y(exit)) < 1.4 then
-      game_complete_level('MOONFALL CAUSEWAY RESTORED')
+    local boss_defeated = not entity_get_property(root, 'platformer_boss_required') or Node.get('/root/platform_boss') == 0
+    if platformer_crystals == 0 and boss_defeated and exit ~= 0 and math.abs(x - entity_get_x(exit)) < 0.8 and math.abs(y - entity_get_y(exit)) < 1.4 then
+      game_complete_level(entity_get_property(root, 'platformer_finish_title'))
     end
     return
   end

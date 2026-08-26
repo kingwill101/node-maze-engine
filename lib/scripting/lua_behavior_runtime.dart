@@ -4,6 +4,7 @@ import '../engine/entity.dart';
 import '../engine/runtime.dart';
 import '../engine/scene_tree.dart';
 import '../game/components.dart';
+import '../platformer/platformer_components.dart';
 
 /// LuaLike bridge for Godot-style behavior callbacks.
 ///
@@ -233,6 +234,32 @@ class LuaBehaviorRuntime {
       state.score += _number(args, 0).toInt();
       engine.events.emit(ScoreChanged(state.score));
       return state.score;
+    });
+    _expose('game_damage_player', (args) {
+      final states = engine.world.query<GameState>().toList();
+      if (states.isEmpty) return 0;
+      final state = states.first.$2;
+      final damage = args.isEmpty ? 1 : _number(args, 0).toInt();
+      state.lives = (state.lives - damage).clamp(0, 999);
+      state
+        ..announcement = args.length > 1 ? _string(args, 1) : 'THE VOID BITES'
+        ..announcementSeconds = 2;
+      engine.events.emit(LivesChanged(state.lives));
+      if (state.lives == 0) state.phase = GamePhase.gameOver;
+      return state.lives;
+    });
+    _expose('game_get_lives', (args) {
+      final states = engine.world.query<GameState>().toList();
+      return states.isEmpty ? 0 : states.first.$2.lives;
+    });
+    _expose('platformer_set_checkpoint', (args) {
+      final entity = _entity(args);
+      final body = engine.world.maybeGet<PlatformerBody>(entity);
+      if (body == null) return false;
+      body
+        ..checkpointX = _number(args, 1)
+        ..checkpointY = _number(args, 2);
+      return true;
     });
     _expose('game_complete_level', (args) {
       final states = engine.world.query<GameState>().toList();
