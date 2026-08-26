@@ -64,6 +64,7 @@ flutter:
     - flutter_scene_generated/
     - assets/lua/
     - assets/images/
+    - assets/characters/
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:

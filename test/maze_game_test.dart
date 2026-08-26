@@ -92,6 +92,10 @@ void main() {
         game.runtime.context.world.get<ScriptComponents>(game.player).values,
         contains('platformer_player'),
       );
+      expect(
+        game.runtime.context.world.get<ScriptComponents>(game.player).values,
+        contains('character_animation'),
+      );
       expect(game.scripts.length, 1);
 
       for (var frame = 0; frame < 8; frame++) {
@@ -111,6 +115,12 @@ void main() {
       expect(player.y, greaterThan(groundedY));
       expect(game.runtime.context.world.query<BonusFruitTag>(), isEmpty);
       expect(game.score, greaterThanOrEqualTo(250));
+      expect(
+        game.runtime.context.world
+            .get<ScriptComponents>(game.player)
+            .values['character_animation']?['state'],
+        isIn(['run', 'jump', 'fall']),
+      );
     },
   );
 

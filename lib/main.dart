@@ -11,6 +11,8 @@ import 'engine/world.dart';
 import 'game/components.dart';
 import 'game/level.dart';
 import 'game/maze_game.dart';
+import 'generated/nix_character.g.dart';
+import 'scene/procedural_character.dart';
 import 'scripting/lua_level_loader.dart';
 
 Future<void> main() async {
@@ -395,6 +397,8 @@ class _MazeGameViewState extends State<MazeGameView> {
   PreprocessedMaterial? riftFloorMaterial;
   PreprocessedMaterial? arcaneEnergyMaterial;
   final Map<String, UnlitMaterial> scriptMaterials = {};
+  late final ProceduralCharacterResources nixResources =
+      ProceduralCharacterResources(nixCharacterSpec);
 
   @override
   void initState() {
@@ -1203,6 +1207,9 @@ class _MazeGameViewState extends State<MazeGameView> {
       (transform.z - player.z).abs() <= renderDistance;
 
   Widget _heroine(Entity entity, Transform3 transform) {
+    if (activeCameraMode == CameraMode.platformer) {
+      return _nixCharacter(entity, transform);
+    }
     final mover = game.runtime.context.world.get<GridMover>(entity);
     final moving = mover.direction != MoveDirection.none;
     final stride = moving ? math.sin(animationSeconds * 12) : 0.0;
@@ -1310,6 +1317,58 @@ class _MazeGameViewState extends State<MazeGameView> {
           position: vm.Vector3(.17, .36, .02),
           rotation: vm.Quaternion.axisAngle(vm.Vector3(0, 0, 1), -.55),
           scale: vm.Vector3(1.7, .55, .7),
+        ),
+      ],
+    );
+  }
+
+  Widget _nixCharacter(Entity entity, Transform3 transform) {
+    final animation = game.runtime.context.world
+        .maybeGet<ScriptComponents>(entity)
+        ?.values['character_animation'];
+    final state = animation?['state']?.toString() ?? 'idle';
+    final facing = (animation?['facing'] as num?)?.toDouble() ?? 1;
+    final cycle = math.sin(animationSeconds * 11);
+    final running = state == 'run';
+    final airborne = state == 'jump' || state == 'fall';
+    final stride = running ? cycle * .58 : 0.0;
+    final pose = CharacterPose({
+      'hips': CharacterPartPose(
+        y: running ? cycle.abs() * .035 : math.sin(animationSeconds * 2) * .018,
+        rotationZ: running ? cycle * .045 : 0,
+      ),
+      'left_upper_arm': CharacterPartPose(rotationZ: airborne ? -.72 : stride),
+      'right_upper_arm': CharacterPartPose(rotationZ: airborne ? .72 : -stride),
+      'left_thigh': CharacterPartPose(rotationZ: airborne ? .3 : -stride),
+      'right_thigh': CharacterPartPose(rotationZ: airborne ? -.3 : stride),
+      'left_shin': CharacterPartPose(
+        rotationZ: airborne ? -.42 : math.max(0, stride) * .55,
+      ),
+      'right_shin': CharacterPartPose(
+        rotationZ: airborne ? .42 : math.max(0, -stride) * -.55,
+      ),
+      'cloak': CharacterPartPose(
+        rotationX: running ? .1 + cycle.abs() * .08 : .04,
+        z: running ? -.04 : 0,
+      ),
+      'moon_charm': CharacterPartPose(
+        scale: 1 + math.sin(animationSeconds * 5) * .12,
+      ),
+    });
+    return SceneNode(
+      key: ValueKey<String>('nix-${entity.id}'),
+      name: 'nix_actor',
+      position: _scenePosition(transform),
+      rotation: vm.Quaternion.axisAngle(
+        vm.Vector3(0, 1, 0),
+        facing >= 0 ? math.pi / 2 : -math.pi / 2,
+      ),
+      scale: vm.Vector3.all(.78),
+      children: [
+        ProceduralCharacter(
+          spec: nixCharacterSpec,
+          resources: nixResources,
+          pose: pose,
         ),
       ],
     );

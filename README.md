@@ -96,6 +96,11 @@ Lua creates floating platforms, crystals, and an exit gate, then implements
 gravity, jumping, platform collision, falling recovery, collection, scoring,
 HUD updates, and victory in `autoload.lua`. Dart only forwards platformer input,
 selects the side-view camera, and provides privileged score/completion calls.
+Its Nix character is generated from `assets/characters/nix.character.json` as a
+32-part procedural Dart hierarchy rendered directly by Flutter Scene. Lua owns
+the animation state while Dart poses the generated named joints. See
+`docs/GAME_CENTER_ARCHITECTURE.md` for the asset pipeline and regeneration
+command.
 
 Walls are merged into horizontal runs instead of rendered as one cube per tile.
 Their neon rails use `assets/materials/neon_wall.fmat`, whose `pulse` parameter

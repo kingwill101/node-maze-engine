@@ -79,3 +79,37 @@ prefabs and Flutter Scene primitives.
 
 The initial Nix turnaround is stored at
 `art/concepts/nix-turnaround-v1.png`.
+
+## Procedural Dart character generation
+
+Nix proves the renderer-native path:
+
+```text
+assets/characters/nix.character.json
+        ↓ tool/generate_character.dart
+lib/generated/nix_character.g.dart
+        ↓ ProceduralCharacter
+Flutter Scene SceneNode / SceneMesh hierarchy
+        ↓
+Flutter GPU or WebGL2 backend
+```
+
+Regenerate the factory after editing the neutral specification:
+
+```sh
+fvm dart run tool/generate_character.dart \
+  assets/characters/nix.character.json \
+  lib/generated/nix_character.g.dart
+fvm dart format lib/generated/nix_character.g.dart
+```
+
+Generated files contain immutable, reviewable character data rather than GPU
+objects. `ProceduralCharacterResources` creates each unit geometry and material
+once; the reusable renderer builds the named hierarchy from those cached
+resources. This avoids allocating meshes or materials during animation frames.
+
+Lua writes `character_animation.state` and `character_animation.facing` on the
+player. Dart translates those gameplay states into rotations for generated
+joints such as `left_upper_arm`, `right_thigh`, and `cloak`. Future animation
+graphs can preserve this contract whether a character is procedural Dart or a
+skinned glTF model.

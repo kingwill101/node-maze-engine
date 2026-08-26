@@ -26,6 +26,7 @@ local function setup_platformer(root)
   platformer_active = true
   entity_set_position(player, 2, 0.9, 2)
   Node.add_component(player, 'platformer_player', { grounded = false })
+  Node.add_component(player, 'character_animation', { state = 'idle', facing = 1 })
   for _, enemy in ipairs(SceneTree.get_nodes_in_group('enemies')) do
     Node.queue_free(enemy)
   end
@@ -133,6 +134,15 @@ function fixed_update(root, delta)
     end
     entity_set_position(player, next_x, next_y, 2)
     Node.set_value(player, 'platformer_player', 'grounded', platformer_grounded)
+    Node.set_value(player, 'platformer_player', 'velocity_y', platformer_velocity_y)
+    if axis ~= 0 then Node.set_value(player, 'character_animation', 'facing', axis) end
+    local animation_state = 'idle'
+    if not platformer_grounded then
+      animation_state = platformer_velocity_y >= 0 and 'jump' or 'fall'
+    elseif axis ~= 0 then
+      animation_state = 'run'
+    end
+    Node.set_value(player, 'character_animation', 'state', animation_state)
 
     for _, crystal in ipairs(SceneTree.get_nodes_with_component('crystal')) do
       if math.abs(next_x - entity_get_x(crystal)) < 0.55 and math.abs(next_y - entity_get_y(crystal)) < 0.8 then
