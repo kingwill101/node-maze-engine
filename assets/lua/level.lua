@@ -48,6 +48,33 @@ function generate_maze(width, height, seed)
   return rows
 end
 
+-- Minimal collision shell for side-view games. The actual route is generated
+-- from Lua platform components in autoload.lua; widening this shell expands
+-- native physics bounds and streaming range without hand-writing empty rows.
+function platformer_stage(width)
+  local border = {}
+  local empty = {}
+  local actors = {}
+  for x = 1, width do
+    border[x] = '#'
+    empty[x] = ' '
+    actors[x] = ' '
+  end
+  empty[1] = '#'
+  empty[width] = '#'
+  actors[1] = '#'
+  actors[width] = '#'
+  actors[3] = 'P'
+  actors[width - 2] = 'A'
+  return {
+    table.concat(border),
+    table.concat(empty),
+    table.concat(actors),
+    table.concat(empty),
+    table.concat(border),
+  }
+end
+
 return {
   name = 'Neon Rift Tour',
   catalog_name = 'Node Game Center',
@@ -168,19 +195,13 @@ return {
       game = 'moonfall_courier',
       name = 'Moonfall Causeway',
       story = 'Gravity fractures at the edge of the dream. Nix must climb the floating causeway and relight its gate.',
-      objective = 'Leap across the Lua-built ruins, gather four star crystals, and reach the moon gate',
+      objective = 'Cross the fractured districts, recover seven star crystals, and reach the moon gate',
       camera = 'platformer',
       render_distance = 24,
       events = {
         { after_seconds = 3, message = 'THE CAUSEWAY IS SCRIPTED IN LUA. TRY NOT TO FALL.' },
       },
-      maze = {
-        '#######################',
-        '#                     #',
-        '# P                 A #',
-        '#                     #',
-        '#######################',
-      },
+      maze = platformer_stage(76),
       tuning = { player_speed = 4.0, ghost_speed = 0.1, power_seconds = 6.0,
                  bonus_seconds = 999.0, bonus_points = 1000 },
     },
@@ -195,13 +216,7 @@ return {
         { after_seconds = 4, message = 'THE TREES REMEMBER EVERY COURIER WHO FELL.' },
         { after_seconds = 18, message = 'A BELL ANSWERS FROM BEYOND THE WATERFALL.' },
       },
-      maze = {
-        '#################################',
-        '#                               #',
-        '# P                           A #',
-        '#                               #',
-        '#################################',
-      },
+      maze = platformer_stage(106),
       tuning = { player_speed = 4.4, ghost_speed = 0.1, power_seconds = 6.0,
                  bonus_seconds = 999.0, bonus_points = 1500 },
     },
@@ -216,13 +231,7 @@ return {
         { after_seconds = 3, message = 'THE RAIN FALLS UP. YOU STILL FALL DOWN.' },
         { after_seconds = 22, message = 'THE STAR EATER IS WATCHING THROUGH THE MOON.' },
       },
-      maze = {
-        '#####################################',
-        '#                                   #',
-        '# P                               A #',
-        '#                                   #',
-        '#####################################',
-      },
+      maze = platformer_stage(136),
       tuning = { player_speed = 4.7, ghost_speed = 0.1, power_seconds = 6.0,
                  bonus_seconds = 999.0, bonus_points = 2500 },
     },

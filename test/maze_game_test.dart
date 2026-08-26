@@ -86,7 +86,7 @@ void main() {
         game.runtime.context.world.query<ScriptComponents>().where(
           (entry) => entry.$2.values.containsKey('platform'),
         ),
-        hasLength(4),
+        hasLength(14),
       );
       expect(
         game.runtime.context.world.get<ScriptComponents>(game.player).values,
@@ -121,6 +121,60 @@ void main() {
             .values['character_animation']?['state'],
         isIn(['run', 'jump', 'fall']),
       );
+    },
+  );
+
+  test(
+    'every generated Moonfall route stays inside the jump envelope',
+    () async {
+      final catalog = await LuaLevelLoader().loadCatalog(
+        await File('assets/lua/level.lua').readAsString(),
+      );
+      final moonfall = catalog.games.firstWhere(
+        (game) => game.id == 'moonfall_courier',
+      );
+      final expectedPlatformCounts = [14, 20, 26];
+
+      for (
+        var levelIndex = 0;
+        levelIndex < moonfall.campaign.levels.length;
+        levelIndex++
+      ) {
+        final game = MazeGame(level: moonfall.campaign.levels[levelIndex]);
+        await game.loadGameScripts(
+          autoloadSource: await File('assets/lua/autoload.lua').readAsString(),
+          ghostSource: await File('assets/lua/ghost.lua').readAsString(),
+          prefabSource: await File('assets/lua/prefabs.lua').readAsString(),
+        );
+        final platforms =
+            game.runtime.context.world
+                .query2<Transform3, ScriptComponents>()
+                .where((entry) => entry.$3.values.containsKey('platform'))
+                .toList()
+              ..sort((a, b) => a.$2.x.compareTo(b.$2.x));
+
+        expect(platforms, hasLength(expectedPlatformCounts[levelIndex]));
+        for (var index = 1; index < platforms.length; index++) {
+          final previous = platforms[index - 1];
+          final current = platforms[index];
+          expect(
+            current.$2.y - previous.$2.y,
+            lessThanOrEqualTo(1.25),
+            reason: '${game.level.name} platform $index rises too far',
+          );
+          final previousWidth =
+              (previous.$3.values['platform']!['width'] as num).toDouble();
+          final currentWidth = (current.$3.values['platform']!['width'] as num)
+              .toDouble();
+          final edgeGap =
+              current.$2.x - previous.$2.x - (previousWidth + currentWidth) / 2;
+          expect(
+            edgeGap,
+            lessThanOrEqualTo(1.65),
+            reason: '${game.level.name} platform $index is too far away',
+          );
+        }
+      }
     },
   );
 

@@ -28,6 +28,8 @@ to pause.
 with A/D or Left/Right, jump with Space/W/Up, and fire a Star Bolt with F.
 Collect every crystal, activate checkpoint lanterns, avoid moon thorns, defeat
 patrolling Thorn Runners, and reach each gate. Chapters advance with Enter.
+Its chapters span 76, 106, and 136 world units; Lua expands compact height
+patterns into 14, 20, and 26 reachable platform sections with paced encounters.
 Completed chapters unlock the next destination and are saved across launches on
 web and native. The Game Center accessibility menu persists reduced-motion and
 high-contrast preferences in the same versioned save.

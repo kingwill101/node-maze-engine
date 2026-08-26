@@ -18,31 +18,56 @@ local platformer_checkpoint_y = 0.9
 
 local platformer_levels = {
   ['Moonfall Causeway'] = {
-    platforms = { {4.5,0,6.5}, {9.5,1.65,2.2}, {13.2,3,2}, {17.2,1.5,3.8} },
-    crystals = { {5.5,1}, {9.5,2.65}, {13.2,4}, {17.4,2.5} },
-    hazards = { {7.1,0.38}, {15.1,1.88} },
-    checkpoints = { {10.1,2.65} },
-    enemies = { {11.5,3.68,1.1}, {17.1,2.53,1.3} },
-    exit = {19.1,2.15}, title = 'MOONFALL CAUSEWAY RESTORED',
+    route = { count = 14, spacing = 5, heights = {0,1.2,2.4,1.2,0.2,1.4,2.6,1.3} },
+    title = 'MOONFALL CAUSEWAY RESTORED',
   },
   ['The Bellwood Canopy'] = {
-    platforms = { {4,0,5.5}, {8.2,1.2,2.3}, {12,2.5,2.6}, {16.3,1,3}, {21,3,3.2}, {26.5,1.4,5} },
-    crystals = { {4.8,1}, {8.2,2.2}, {12,3.5}, {16.4,2}, {21,4}, {27,2.4} },
-    hazards = { {6.8,0.38}, {14.3,1.38}, {23.8,1.78} },
-    checkpoints = { {16.2,2} },
-    enemies = { {11.5,3.53,1.1}, {20.8,4.03,1.3}, {27,2.43,1.6} },
-    exit = {29,2.05}, title = 'THE BELLWOOD SINGS AGAIN',
+    route = { count = 20, spacing = 5, heights = {0,1.1,2.3,3.5,2.2,1,2.2,3.4,2.1,0.8} },
+    title = 'THE BELLWOOD SINGS AGAIN',
   },
   ['Citadel of Inverted Rain'] = {
-    platforms = { {3.8,0,5}, {8,2,2}, {11.5,4,2}, {15,2.2,2.2}, {19,0.5,2.5}, {23,2.8,2}, {27,4.8,2}, {32,2,5} },
-    crystals = { {4.2,1}, {8,3}, {11.5,5}, {15,3.2}, {19,1.5}, {23,3.8}, {27,5.8}, {32.5,3} },
-    hazards = { {6.3,0.38}, {17.1,0.88}, {29.5,2.38} },
-    checkpoints = { {19,1.5}, {27,5.8} },
-    enemies = { {11.5,5.03,1.1}, {19,1.53,1.3}, {31.5,3.03,1.7} },
-    boss = {32,3.05,2.2},
-    exit = {34,2.65}, title = 'THE STAR EATER IS BANISHED',
+    route = { count = 26, spacing = 5, boss = true, heights = {0,1.25,2.5,3.7,2.45,1.2,0,1.2,2.4,3.6,2.3,1.1} },
+    title = 'THE STAR EATER IS BANISHED',
   },
 }
+
+-- Builds long, always-reachable routes from a compact Lua description. The
+-- height patterns never rise more than 1.25 units between adjacent platforms,
+-- keeping every generated jump inside the native platformer kernel's envelope.
+local function generate_platformer_route(config)
+  local route = config.route
+  config.platforms = {}
+  config.crystals = {}
+  config.hazards = {}
+  config.checkpoints = {}
+  config.enemies = {}
+  for index = 1, route.count do
+    local x = 4 + (index - 1) * route.spacing
+    local y = route.heights[((index - 1) % #route.heights) + 1]
+    config.platforms[#config.platforms + 1] = { x, y, index == 1 and 6.5 or 3.4 }
+    if index == 1 then
+      config.crystals[#config.crystals + 1] = { x + 1.5, y + 1 }
+    elseif index >= 4 and index % 2 == 0 then
+      config.crystals[#config.crystals + 1] = { x, y + 1 }
+    end
+    if index > 2 and index % 5 == 0 then
+      config.hazards[#config.hazards + 1] = { x + 0.75, y + 0.38 }
+    end
+    if index > 1 and index % 7 == 0 then
+      config.checkpoints[#config.checkpoints + 1] = { x, y + 0.8 }
+    elseif index > 2 and index % 3 == 0 and index < route.count then
+      config.enemies[#config.enemies + 1] = { x, y + 0.83, 1.15 }
+    end
+  end
+  local final_x = 4 + (route.count - 1) * route.spacing
+  local final_y = route.heights[((route.count - 1) % #route.heights) + 1]
+  config.exit = { final_x + 1, final_y + 0.65 }
+  if route.boss then
+    local boss_index = route.count - 1
+    local boss_y = route.heights[((boss_index - 1) % #route.heights) + 1]
+    config.boss = { final_x - route.spacing, boss_y + 0.83, 1.8 }
+  end
+end
 
 local function spawn_platform(path, x, y, width)
   local platform = Prefab.instantiate('platform', path, x, y, 2)
@@ -55,6 +80,7 @@ end
 
 local function setup_platformer(root, config)
   platformer_active = true
+  generate_platformer_route(config)
   hud_remove(root, 'status')
   entity_set_position(player, 2, 0.9, 2)
   Node.add_component(player, 'platformer_player', { grounded = false })

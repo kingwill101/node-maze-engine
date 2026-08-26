@@ -1259,7 +1259,12 @@ class _MazeGameViewState extends State<MazeGameView> {
       );
     }
     if (activeCameraMode == CameraMode.platformer) {
-      return (player + vm.Vector3(0, 3.2, 9.5), player + vm.Vector3(0, 1.4, 0));
+      // Lead the view into the route so Nix begins in the left third instead
+      // of looking as if she entered from the far-right edge.
+      return (
+        player + vm.Vector3(-3.4, 3.2, 9.5),
+        player + vm.Vector3(-3.4, 1.4, 0),
+      );
     }
     return (player + vm.Vector3(0, 10.5, 6.5), player + vm.Vector3(0, 0, -1.2));
   }

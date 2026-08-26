@@ -54,6 +54,10 @@ void main() {
       ),
       isTrue,
     );
+    expect(
+      catalog.games.last.campaign.levels.map((level) => level.maze.width),
+      [76, 106, 136],
+    );
   });
 
   test(
