@@ -41,4 +41,29 @@ void main() {
     expect(values['signal_source'], sender.id);
     expect(values['signal_payload'], 'moon_gate');
   });
+
+  test(
+    'destroyed entities are detached before their next Lua callback',
+    () async {
+      final engine = EngineContext();
+      final scheduler = LuaBehaviorScheduler();
+      final entity = engine.world.create([ScriptProperties()]);
+
+      await scheduler.attach(
+        entity: entity,
+        runtime: LuaBehaviorRuntime(engine),
+        source: '''
+        function fixed_update(entity, delta)
+          entity_set_property(entity, 'should_not_run', true)
+        end
+      ''',
+      );
+      engine.world.destroy(entity);
+
+      scheduler.fixedUpdate(1 / 60);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(scheduler.length, 0);
+    },
+  );
 }

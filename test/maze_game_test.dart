@@ -77,7 +77,7 @@ void main() {
       final game = MazeGame(level: campaign.levels.last);
       await game.loadGameScripts(
         autoloadSource: await File('assets/lua/autoload.lua').readAsString(),
-        ghostSource: '',
+        ghostSource: await File('assets/lua/ghost.lua').readAsString(),
         prefabSource: await File('assets/lua/prefabs.lua').readAsString(),
       );
 
@@ -92,6 +92,7 @@ void main() {
         game.runtime.context.world.get<ScriptComponents>(game.player).values,
         contains('platformer_player'),
       );
+      expect(game.scripts.length, 1);
 
       for (var frame = 0; frame < 8; frame++) {
         game.advance(.05);

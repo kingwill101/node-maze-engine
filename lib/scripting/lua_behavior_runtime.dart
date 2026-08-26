@@ -40,6 +40,8 @@ class LuaBehaviorRuntime {
   final LuaLike _lua = LuaLike();
   final Map<String, _ScriptTimer> _timers = {};
 
+  bool isEntityAlive(Entity entity) => engine.world.isAlive(entity);
+
   void _registerApi() {
     _expose('get_node', (args) {
       final entity = sceneTree?.getNode(_string(args, 0));

@@ -38,6 +38,7 @@ class LuaBehaviorScheduler {
 
   void fixedUpdate(double deltaSeconds) {
     _fixedAccumulator += deltaSeconds;
+    _behaviors.removeWhere((entity, runtime) => !runtime.isEntityAlive(entity));
     if (_fixedBusy || _behaviors.isEmpty) return;
     final delta = _fixedAccumulator;
     _fixedAccumulator = 0;

@@ -320,6 +320,7 @@ class MazeGame {
 
   Future<void> loadGhostBehaviors(String source) async {
     scripts.clear();
+    if (level.cameraMode == CameraMode.platformer) return;
     for (final ghost in ghosts) {
       final script = _createGhostRuntime();
       await scripts.attach(
@@ -352,6 +353,7 @@ $autoloadSource
       source: bootstrapSource,
       scriptPath: 'assets/lua/autoload.lua',
     );
+    if (level.cameraMode == CameraMode.platformer) return;
     for (final ghost in ghosts) {
       await scripts.attach(
         entity: ghost,
