@@ -1837,7 +1837,7 @@ class _MazeGameViewState extends State<MazeGameView> {
       position: _scenePosition(transform),
       rotation: vm.Quaternion.axisAngle(
         vm.Vector3(0, 1, 0),
-        facing >= 0 ? -math.pi / 2 : math.pi / 2,
+        facing >= 0 ? -.48 : .48,
       ),
       scale: vm.Vector3.all(.78),
       children: [

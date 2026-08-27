@@ -137,7 +137,7 @@ const nixCharacterSpec = CharacterSpec(
       primitive: CharacterPrimitive.sphere,
       material: "amber",
       position: [0.0, 0.0, 0.055],
-      scale: [0.52, 0.62, 0.35],
+      scale: [0.065, 0.095, 0.025],
       rotation: [0.0, 0.0, 0.0],
     ),
     CharacterPartSpec(
@@ -145,8 +145,8 @@ const nixCharacterSpec = CharacterSpec(
       parent: "left_iris",
       primitive: CharacterPrimitive.sphere,
       material: "pupil",
-      position: [0.0, 0.0, 0.06],
-      scale: [0.42, 0.55, 0.3],
+      position: [0.0, 0.0, 0.035],
+      scale: [0.032, 0.06, 0.018],
       rotation: [0.0, 0.0, 0.0],
     ),
     CharacterPartSpec(
@@ -164,7 +164,7 @@ const nixCharacterSpec = CharacterSpec(
       primitive: CharacterPrimitive.sphere,
       material: "amber",
       position: [0.0, 0.0, 0.055],
-      scale: [0.52, 0.62, 0.35],
+      scale: [0.065, 0.095, 0.025],
       rotation: [0.0, 0.0, 0.0],
     ),
     CharacterPartSpec(
@@ -172,8 +172,8 @@ const nixCharacterSpec = CharacterSpec(
       parent: "right_iris",
       primitive: CharacterPrimitive.sphere,
       material: "pupil",
-      position: [0.0, 0.0, 0.06],
-      scale: [0.42, 0.55, 0.3],
+      position: [0.0, 0.0, 0.035],
+      scale: [0.032, 0.06, 0.018],
       rotation: [0.0, 0.0, 0.0],
     ),
     CharacterPartSpec(
@@ -190,8 +190,8 @@ const nixCharacterSpec = CharacterSpec(
       parent: "smile",
       primitive: CharacterPrimitive.sphere,
       material: "tongue",
-      position: [0.0, -0.18, 0.04],
-      scale: [0.6, 0.38, 0.5],
+      position: [0.0, -0.045, 0.04],
+      scale: [0.1, 0.045, 0.025],
       rotation: [0.0, 0.0, 0.0],
     ),
     CharacterPartSpec(
