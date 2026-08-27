@@ -41,8 +41,9 @@ the deterministic PCM assets. Audio can be disabled from the accessibility
 menu and the choice persists with campaign progress.
 
 Flutter Scene uses Flutter GPU on native platforms, so native `flutter run`
-commands must include `--enable-flutter-gpu`. The web backend uses WebGL2 and
-does not need this flag.
+commands may include `--enable-flutter-gpu`. The app manifests also enable it
+for macOS, iOS, and Android, so debug/profile/release builds work when launched
+without the flag. The web backend uses WebGL2 and does not need it.
 
 ## Architecture
 
