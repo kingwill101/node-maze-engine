@@ -1283,7 +1283,7 @@ class _MazeGameViewState extends State<MazeGameView> {
       if (activeCameraMode == CameraMode.platformer)
         MoonfallEnvironment(
           resources: moonfallEnvironmentResources,
-          playerX: playerTransform.x * sceneTileScale,
+          playerX: -playerTransform.x * sceneTileScale,
           time: animationSeconds,
         )
       else
@@ -1645,11 +1645,14 @@ class _MazeGameViewState extends State<MazeGameView> {
     return Color(value ?? 0xffffffff);
   }
 
-  vm.Vector3 _scenePosition(Transform3 transform) => vm.Vector3(
-    transform.x * sceneTileScale,
-    transform.y,
-    transform.z * sceneTileScale,
-  );
+  vm.Vector3 _scenePosition(Transform3 transform) {
+    final sceneX = transform.x * sceneTileScale;
+    return vm.Vector3(
+      activeCameraMode == CameraMode.platformer ? -sceneX : sceneX,
+      transform.y,
+      transform.z * sceneTileScale,
+    );
+  }
 
   bool _isVisible(
     Transform3 transform,
@@ -1814,7 +1817,7 @@ class _MazeGameViewState extends State<MazeGameView> {
       position: _scenePosition(transform),
       rotation: vm.Quaternion.axisAngle(
         vm.Vector3(0, 1, 0),
-        facing >= 0 ? math.pi / 2 : -math.pi / 2,
+        facing >= 0 ? -math.pi / 2 : math.pi / 2,
       ),
       scale: vm.Vector3.all(.78),
       children: [
