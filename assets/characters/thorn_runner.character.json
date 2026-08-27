@@ -1,0 +1,30 @@
+{
+  "name": "thorn_runner",
+  "materials": [
+    { "name": "hide", "color": "#24143d" },
+    { "name": "shell", "color": "#65275f" },
+    { "name": "shell_light", "color": "#8a3c79" },
+    { "name": "gold", "color": "#e0a83b" },
+    { "name": "eye", "color": "#31e7ff" },
+    { "name": "claw", "color": "#681f3b" }
+  ],
+  "parts": [
+    { "name": "body", "parent": null, "primitive": "sphere", "material": "hide", "position": [0, 0.48, 0], "scale": [0.62, 0.38, 0.42] },
+    { "name": "head", "parent": "body", "primitive": "sphere", "material": "hide", "position": [0.56, -0.1, 0], "scale": [0.46, 0.32, 0.36] },
+    { "name": "crown_horn", "parent": "head", "primitive": "torus", "material": "gold", "position": [0.2, 0.34, 0], "scale": [0.48, 0.62, 0.2], "rotation": [1.5708, 0, 0.45] },
+    { "name": "left_eye", "parent": "head", "primitive": "sphere", "material": "eye", "position": [0.35, 0.02, 0.28], "scale": [0.12, 0.1, 0.05] },
+    { "name": "right_eye", "parent": "head", "primitive": "sphere", "material": "eye", "position": [0.35, 0.02, -0.28], "scale": [0.12, 0.1, 0.05] },
+    { "name": "front_plate", "parent": "body", "primitive": "box", "material": "shell_light", "position": [0.28, 0.3, 0], "scale": [0.42, 0.12, 0.48], "rotation": [0, 0, -0.18] },
+    { "name": "middle_plate", "parent": "body", "primitive": "box", "material": "shell", "position": [-0.05, 0.38, 0], "scale": [0.42, 0.14, 0.5] },
+    { "name": "rear_plate", "parent": "body", "primitive": "box", "material": "shell_light", "position": [-0.4, 0.28, 0], "scale": [0.38, 0.13, 0.46], "rotation": [0, 0, 0.2] },
+    { "name": "shoulder_thorn", "parent": "body", "primitive": "torus", "material": "gold", "position": [0.05, 0.35, 0], "scale": [0.2, 0.3, 0.12], "rotation": [1.5708, 0, 0] },
+    { "name": "front_left_leg", "parent": "body", "primitive": "sphere", "material": "hide", "position": [0.38, -0.42, 0.3], "scale": [0.16, 0.34, 0.16], "rotation": [0, 0, -0.22] },
+    { "name": "front_left_claw", "parent": "front_left_leg", "primitive": "sphere", "material": "claw", "position": [0.1, -0.38, 0], "scale": [0.2, 0.12, 0.2] },
+    { "name": "front_right_leg", "parent": "body", "primitive": "sphere", "material": "hide", "position": [0.38, -0.42, -0.3], "scale": [0.16, 0.34, 0.16], "rotation": [0, 0, -0.22] },
+    { "name": "front_right_claw", "parent": "front_right_leg", "primitive": "sphere", "material": "claw", "position": [0.1, -0.38, 0], "scale": [0.2, 0.12, 0.2] },
+    { "name": "rear_left_leg", "parent": "body", "primitive": "sphere", "material": "hide", "position": [-0.4, -0.42, 0.3], "scale": [0.18, 0.34, 0.18], "rotation": [0, 0, 0.22] },
+    { "name": "rear_left_claw", "parent": "rear_left_leg", "primitive": "sphere", "material": "claw", "position": [-0.1, -0.38, 0], "scale": [0.22, 0.12, 0.2] },
+    { "name": "rear_right_leg", "parent": "body", "primitive": "sphere", "material": "hide", "position": [-0.4, -0.42, -0.3], "scale": [0.18, 0.34, 0.18], "rotation": [0, 0, 0.22] },
+    { "name": "rear_right_claw", "parent": "rear_right_leg", "primitive": "sphere", "material": "claw", "position": [-0.1, -0.38, 0], "scale": [0.22, 0.12, 0.2] }
+  ]
+}

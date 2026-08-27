@@ -14,6 +14,8 @@ import 'game/game_save.dart';
 import 'game/level.dart';
 import 'game/maze_game.dart';
 import 'generated/nix_character.g.dart';
+import 'generated/star_eater_character.g.dart';
+import 'generated/thorn_runner_character.g.dart';
 import 'scene/moonfall_environment.dart';
 import 'scene/procedural_character.dart';
 import 'scripting/lua_level_loader.dart';
@@ -796,6 +798,10 @@ class _MazeGameViewState extends State<MazeGameView> {
   final Map<String, UnlitMaterial> scriptMaterials = {};
   late final ProceduralCharacterResources nixResources =
       ProceduralCharacterResources(nixCharacterSpec);
+  late final ProceduralCharacterResources thornRunnerResources =
+      ProceduralCharacterResources(thornRunnerCharacterSpec);
+  late final ProceduralCharacterResources starEaterResources =
+      ProceduralCharacterResources(starEaterCharacterSpec);
   final MoonfallEnvironmentResources moonfallEnvironmentResources =
       MoonfallEnvironmentResources();
 
@@ -1335,6 +1341,19 @@ class _MazeGameViewState extends State<MazeGameView> {
         widgets.add(_keyPickup(entity, transform));
         continue;
       }
+      final scriptComponents = game.runtime.context.world
+          .maybeGet<ScriptComponents>(entity);
+      final platformEnemy = scriptComponents?.values['platform_enemy'];
+      if (platformEnemy != null) {
+        widgets.add(_platformEnemyCharacter(entity, transform, platformEnemy));
+        _appendScriptDrawings(
+          widgets,
+          entity,
+          transform,
+          includeDrawings: false,
+        );
+        continue;
+      }
       final door = game.runtime.context.world.maybeGet<DoorTag>(entity);
       if (door != null) {
         if (!door.open) widgets.add(_door(entity, transform));
@@ -1506,8 +1525,9 @@ class _MazeGameViewState extends State<MazeGameView> {
   void _appendScriptDrawings(
     List<Widget> widgets,
     Entity entity,
-    Transform3 transform,
-  ) {
+    Transform3 transform, {
+    bool includeDrawings = true,
+  }) {
     final world = game.runtime.context.world;
     final drawings = world.maybeGet<ScriptDrawings>(entity);
     final emitters = world.maybeGet<ScriptParticleEmitters>(entity);
@@ -1521,7 +1541,7 @@ class _MazeGameViewState extends State<MazeGameView> {
         name: 'script-drawings-${entity.id}',
         position: _scenePosition(transform),
         children: [
-          if (drawings != null)
+          if (includeDrawings && drawings != null)
             for (final drawing in drawings.values.values)
               _scriptDrawing(entity, drawing),
           if (emitters != null)
@@ -1824,6 +1844,102 @@ class _MazeGameViewState extends State<MazeGameView> {
         ProceduralCharacter(
           spec: nixCharacterSpec,
           resources: nixResources,
+          pose: pose,
+        ),
+      ],
+    );
+  }
+
+  Widget _platformEnemyCharacter(
+    Entity entity,
+    Transform3 transform,
+    Map<String, Object?> component,
+  ) {
+    final boss = component['boss'] == true;
+    return boss
+        ? _starEaterCharacter(entity, transform, component)
+        : _thornRunnerCharacter(entity, transform, component);
+  }
+
+  Widget _thornRunnerCharacter(
+    Entity entity,
+    Transform3 transform,
+    Map<String, Object?> component,
+  ) {
+    final direction = (component['direction'] as num?)?.toDouble() ?? 1;
+    final stride = math.sin(animationSeconds * 13 + entity.id) * .48;
+    final charge = math.sin(animationSeconds * 5 + entity.id * .37).abs();
+    final pose = CharacterPose({
+      'body': CharacterPartPose(y: charge * .035, rotationZ: -charge * .035),
+      'head': CharacterPartPose(rotationZ: charge * .08),
+      'crown_horn': CharacterPartPose(rotationZ: charge * .1),
+      'front_left_leg': CharacterPartPose(rotationZ: stride),
+      'front_right_leg': CharacterPartPose(rotationZ: -stride),
+      'rear_left_leg': CharacterPartPose(rotationZ: -stride),
+      'rear_right_leg': CharacterPartPose(rotationZ: stride),
+      'shoulder_thorn': CharacterPartPose(
+        scale: 1 + math.sin(animationSeconds * 7) * .08,
+      ),
+    });
+    return SceneNode(
+      key: ValueKey<String>('thorn-runner-${entity.id}'),
+      name: 'thorn_runner_actor',
+      position: _scenePosition(transform),
+      rotation: vm.Quaternion.axisAngle(
+        vm.Vector3(0, 1, 0),
+        direction >= 0 ? math.pi : 0,
+      ),
+      scale: vm.Vector3.all(.78),
+      children: [
+        ProceduralCharacter(
+          spec: thornRunnerCharacterSpec,
+          resources: thornRunnerResources,
+          pose: pose,
+        ),
+      ],
+    );
+  }
+
+  Widget _starEaterCharacter(
+    Entity entity,
+    Transform3 transform,
+    Map<String, Object?> component,
+  ) {
+    final health = ((component['health'] as num?)?.toDouble() ?? 6).clamp(0, 6);
+    final exposed = 1 - health / 6;
+    final pulse = math.sin(animationSeconds * (3.2 + exposed * 5));
+    final shellGap = .08 + exposed * .32 + pulse.abs() * .035;
+    final pose = CharacterPose({
+      'core': CharacterPartPose(scale: 1 + pulse * (.035 + exposed * .04)),
+      'iris': CharacterPartPose(scale: .9 + pulse.abs() * .28),
+      'upper_shell': CharacterPartPose(y: shellGap, rotationZ: -shellGap * .18),
+      'lower_shell': CharacterPartPose(y: -shellGap, rotationZ: shellGap * .18),
+      'left_shell': CharacterPartPose(x: -shellGap),
+      'right_shell': CharacterPartPose(x: shellGap),
+      'crown_ring': CharacterPartPose(
+        rotationZ: animationSeconds * (.18 + exposed * .45),
+        scale: 1 + exposed * .12,
+      ),
+      'left_arm': CharacterPartPose(rotationZ: pulse * .16 - exposed * .12),
+      'right_arm': CharacterPartPose(rotationZ: -pulse * .16 + exposed * .12),
+      'lower_left_arm': CharacterPartPose(rotationZ: -pulse * .13),
+      'lower_right_arm': CharacterPartPose(rotationZ: pulse * .13),
+    });
+    return SceneNode(
+      key: ValueKey<String>('star-eater-${entity.id}'),
+      name: 'star_eater_actor',
+      position:
+          _scenePosition(transform) +
+          vm.Vector3(0, math.sin(animationSeconds * 1.8) * .12, 0),
+      rotation: vm.Quaternion.axisAngle(
+        vm.Vector3(0, 1, 0),
+        math.sin(animationSeconds * .7) * .08,
+      ),
+      scale: vm.Vector3.all(1.05),
+      children: [
+        ProceduralCharacter(
+          spec: starEaterCharacterSpec,
+          resources: starEaterResources,
           pose: pose,
         ),
       ],

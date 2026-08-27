@@ -1,0 +1,31 @@
+{
+  "name": "star_eater",
+  "materials": [
+    { "name": "void", "color": "#140b25" },
+    { "name": "shell", "color": "#421554" },
+    { "name": "shell_light", "color": "#702468" },
+    { "name": "gold", "color": "#d6a13d" },
+    { "name": "core", "color": "#ff3970" },
+    { "name": "iris", "color": "#130717" }
+  ],
+  "parts": [
+    { "name": "core", "parent": null, "primitive": "sphere", "material": "core", "position": [0, 0.9, 0], "scale": [0.58, 0.58, 0.5] },
+    { "name": "iris", "parent": "core", "primitive": "sphere", "material": "iris", "position": [0, 0, 0.48], "scale": [0.16, 0.38, 0.06] },
+    { "name": "upper_shell", "parent": "core", "primitive": "sphere", "material": "shell", "position": [0, 0.48, -0.05], "scale": [0.86, 0.42, 0.58] },
+    { "name": "lower_shell", "parent": "core", "primitive": "sphere", "material": "shell_light", "position": [0, -0.48, -0.05], "scale": [0.82, 0.38, 0.56] },
+    { "name": "left_shell", "parent": "core", "primitive": "sphere", "material": "void", "position": [-0.62, 0, -0.06], "scale": [0.36, 0.68, 0.52] },
+    { "name": "right_shell", "parent": "core", "primitive": "sphere", "material": "void", "position": [0.62, 0, -0.06], "scale": [0.36, 0.68, 0.52] },
+    { "name": "crown_ring", "parent": "core", "primitive": "torus", "material": "gold", "position": [0, 0.15, -0.38], "scale": [1.55, 1.55, 0.28] },
+    { "name": "crown_top", "parent": "crown_ring", "primitive": "box", "material": "gold", "position": [0, 0.98, 0], "scale": [0.11, 0.32, 0.12], "rotation": [0, 0, 0.78] },
+    { "name": "crown_left", "parent": "crown_ring", "primitive": "box", "material": "gold", "position": [-0.9, 0.18, 0], "scale": [0.11, 0.28, 0.12], "rotation": [0, 0, -0.65] },
+    { "name": "crown_right", "parent": "crown_ring", "primitive": "box", "material": "gold", "position": [0.9, 0.18, 0], "scale": [0.11, 0.28, 0.12], "rotation": [0, 0, 0.65] },
+    { "name": "left_arm", "parent": "core", "primitive": "sphere", "material": "shell", "position": [-0.88, -0.08, 0], "scale": [0.52, 0.15, 0.18], "rotation": [0, 0, -0.28] },
+    { "name": "left_talon", "parent": "left_arm", "primitive": "torus", "material": "gold", "position": [-0.62, -0.08, 0], "scale": [0.5, 0.7, 0.18], "rotation": [1.5708, 0, 0.6] },
+    { "name": "right_arm", "parent": "core", "primitive": "sphere", "material": "shell", "position": [0.88, -0.08, 0], "scale": [0.52, 0.15, 0.18], "rotation": [0, 0, 0.28] },
+    { "name": "right_talon", "parent": "right_arm", "primitive": "torus", "material": "gold", "position": [0.62, -0.08, 0], "scale": [0.5, 0.7, 0.18], "rotation": [1.5708, 0, -0.6] },
+    { "name": "lower_left_arm", "parent": "core", "primitive": "sphere", "material": "shell_light", "position": [-0.58, -0.68, 0], "scale": [0.4, 0.13, 0.16], "rotation": [0, 0, 0.55] },
+    { "name": "lower_left_talon", "parent": "lower_left_arm", "primitive": "torus", "material": "gold", "position": [-0.48, -0.05, 0], "scale": [0.34, 0.48, 0.14], "rotation": [1.5708, 0, 0.45] },
+    { "name": "lower_right_arm", "parent": "core", "primitive": "sphere", "material": "shell_light", "position": [0.58, -0.68, 0], "scale": [0.4, 0.13, 0.16], "rotation": [0, 0, -0.55] },
+    { "name": "lower_right_talon", "parent": "lower_right_arm", "primitive": "torus", "material": "gold", "position": [0.48, -0.05, 0], "scale": [0.34, 0.48, 0.14], "rotation": [1.5708, 0, -0.45] }
+  ]
+}

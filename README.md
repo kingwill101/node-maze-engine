@@ -111,8 +111,10 @@ effects, HUD, scoring, damage, and victory rules. A reusable native platformer
 system provides deterministic movement, gravity, one-way landing, jumping, and
 checkpoint respawning; Lua consumes those states and authors the game rules.
 Its Nix character is generated from `assets/characters/nix.character.json` as a
-32-part procedural Dart hierarchy rendered directly by Flutter Scene. Lua owns
-the animation state while Dart poses the generated named joints. See
+34-part procedural Dart hierarchy rendered directly by Flutter Scene. The Thorn
+Runner and Star Eater use the same JSON-to-Dart rig pipeline, with Lua retaining
+ownership of movement, health, particles, and boss rules while Dart poses the
+generated named joints. See
 `docs/GAME_CENTER_ARCHITECTURE.md` for the asset pipeline and regeneration
 command.
 
