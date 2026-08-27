@@ -20,6 +20,17 @@ import 'scene/moonfall_environment.dart';
 import 'scene/procedural_character.dart';
 import 'scripting/lua_level_loader.dart';
 
+CameraMode nextCameraMode(CameraMode active, CameraMode levelMode) {
+  if (levelMode == CameraMode.platformer) {
+    return active == CameraMode.platformer
+        ? CameraMode.follow
+        : CameraMode.platformer;
+  }
+  return active == CameraMode.follow
+      ? CameraMode.firstPerson
+      : CameraMode.follow;
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await useAssetBundle(rootBundle, assetRoot: 'assets/lua');
@@ -871,8 +882,10 @@ class _MazeGameViewState extends State<MazeGameView> {
     super.dispose();
   }
 
+  bool get _isPlatformerLevel => game.level.cameraMode == CameraMode.platformer;
+
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
-    if (activeCameraMode == CameraMode.platformer && event is KeyUpEvent) {
+    if (_isPlatformerLevel && event is KeyUpEvent) {
       if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
           event.logicalKey == LogicalKeyboardKey.keyA ||
           event.logicalKey == LogicalKeyboardKey.arrowRight ||
@@ -908,7 +921,7 @@ class _MazeGameViewState extends State<MazeGameView> {
       game.firePlayerBolt(
         useFirstPersonFacing: activeCameraMode == CameraMode.firstPerson,
       );
-      if (activeCameraMode == CameraMode.platformer) {
+      if (_isPlatformerLevel) {
         audio.play(GameAudioCue.bolt);
       }
       return KeyEventResult.handled;
@@ -934,7 +947,7 @@ class _MazeGameViewState extends State<MazeGameView> {
     if (activeCameraMode == CameraMode.firstPerson) {
       return _handleFirstPersonKey(event);
     }
-    if (activeCameraMode == CameraMode.platformer) {
+    if (_isPlatformerLevel) {
       return _handlePlatformerKey(event);
     }
     final direction = switch (event.logicalKey) {
@@ -973,9 +986,10 @@ class _MazeGameViewState extends State<MazeGameView> {
 
   void _toggleCameraMode() {
     setState(() {
-      activeCameraMode = activeCameraMode == CameraMode.follow
-          ? CameraMode.firstPerson
-          : CameraMode.follow;
+      activeCameraMode = nextCameraMode(
+        activeCameraMode,
+        game.level.cameraMode,
+      );
       if (activeCameraMode == CameraMode.firstPerson) {
         game.enterFirstPerson();
         _snapCameraYaw();
@@ -1142,7 +1156,7 @@ class _MazeGameViewState extends State<MazeGameView> {
                   padding: const EdgeInsets.all(20),
                   child: Text(
                     game.phase == GamePhase.playing
-                        ? activeCameraMode == CameraMode.platformer
+                        ? _isPlatformerLevel
                               ? 'A / D MOVE   •   SPACE JUMP   •   F STAR BOLT   •   P PAUSE'
                               : 'F FIRE   •   Q STAR PULSE   •   V / TAB SWITCH VIEW   •   ${game.level.objective.toUpperCase()}'
                         : 'ENTER / SPACE TO RESTART',
@@ -1159,7 +1173,12 @@ class _MazeGameViewState extends State<MazeGameView> {
             Positioned(
               right: 20,
               bottom: 52,
-              child: _MapOverlay(game: game, cameraMode: activeCameraMode),
+              child: _MapOverlay(
+                game: game,
+                cameraMode: _isPlatformerLevel
+                    ? CameraMode.platformer
+                    : activeCameraMode,
+              ),
             ),
             if (activeCameraMode == CameraMode.firstPerson)
               const Center(child: _Crosshair()),
@@ -1286,7 +1305,7 @@ class _MazeGameViewState extends State<MazeGameView> {
     );
     final renderDistance = game.level.renderDistance;
     final widgets = <Widget>[
-      if (activeCameraMode == CameraMode.platformer)
+      if (_isPlatformerLevel)
         MoonfallEnvironment(
           resources: moonfallEnvironmentResources,
           playerX: -playerTransform.x * sceneTileScale,
@@ -1668,7 +1687,7 @@ class _MazeGameViewState extends State<MazeGameView> {
   vm.Vector3 _scenePosition(Transform3 transform) {
     final sceneX = transform.x * sceneTileScale;
     return vm.Vector3(
-      activeCameraMode == CameraMode.platformer ? -sceneX : sceneX,
+      _isPlatformerLevel ? -sceneX : sceneX,
       transform.y,
       transform.z * sceneTileScale,
     );
@@ -1683,7 +1702,7 @@ class _MazeGameViewState extends State<MazeGameView> {
       (transform.z - player.z).abs() <= renderDistance;
 
   Widget _heroine(Entity entity, Transform3 transform) {
-    if (activeCameraMode == CameraMode.platformer) {
+    if (_isPlatformerLevel) {
       return _nixCharacter(entity, transform);
     }
     final mover = game.runtime.context.world.get<GridMover>(entity);
