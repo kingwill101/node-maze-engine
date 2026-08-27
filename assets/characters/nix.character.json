@@ -18,12 +18,12 @@
     { "name": "metal", "color": "#b9a57e" }
   ],
   "parts": [
-    { "name": "hips", "parent": null, "primitive": "sphere", "material": "plum_cloth", "position": [0, 0.82, 0], "scale": [0.34, 0.28, 0.25] },
-    { "name": "torso", "parent": "hips", "primitive": "sphere", "material": "plum_cloth", "position": [0, 0.39, 0], "scale": [0.43, 0.43, 0.29] },
+    { "name": "hips", "parent": null, "primitive": "sphere", "material": "plum_cloth", "position": [0, 0.72, 0], "scale": [0.38, 0.27, 0.28] },
+    { "name": "torso", "parent": "hips", "primitive": "sphere", "material": "plum_cloth", "position": [0, 0.34, 0], "scale": [0.46, 0.38, 0.32] },
     { "name": "belt", "parent": "hips", "primitive": "torus", "material": "brown_leather", "position": [0, 0.15, 0], "scale": [0.33, 0.13, 0.27], "rotation": [1.5708, 0, 0] },
     { "name": "cloak", "parent": "torso", "primitive": "sphere", "material": "teal_cloth", "position": [0, 0.11, -0.09], "scale": [0.48, 0.42, 0.18] },
-    { "name": "neck", "parent": "torso", "primitive": "sphere", "material": "skin", "position": [0, 0.45, 0], "scale": [0.12, 0.14, 0.12] },
-    { "name": "head", "parent": "neck", "primitive": "sphere", "material": "skin", "position": [0, 0.36, 0.02], "scale": [0.52, 0.52, 0.46] },
+    { "name": "neck", "parent": "torso", "primitive": "sphere", "material": "skin", "position": [0, 0.34, 0], "scale": [0.13, 0.12, 0.13] },
+    { "name": "head", "parent": "neck", "primitive": "sphere", "material": "skin", "position": [0, 0.38, 0.02], "scale": [0.62, 0.6, 0.54] },
     { "name": "left_ear", "parent": "head", "primitive": "sphere", "material": "skin", "position": [-0.41, 0.02, 0], "scale": [0.18, 0.09, 0.07], "rotation": [0, 0, -0.25] },
     { "name": "right_ear", "parent": "head", "primitive": "sphere", "material": "skin", "position": [0.41, 0.02, 0], "scale": [0.18, 0.09, 0.07], "rotation": [0, 0, 0.25] },
     { "name": "hair_cap", "parent": "head", "primitive": "sphere", "material": "hair_shadow", "position": [0, 0.22, -0.04], "scale": [0.44, 0.34, 0.4] },
@@ -40,17 +40,17 @@
     { "name": "moon_charm", "parent": "torso", "primitive": "torus", "material": "moon_glow", "position": [0, 0.19, 0.27], "scale": [0.12, 0.12, 0.045] },
     { "name": "left_upper_arm", "parent": "torso", "primitive": "sphere", "material": "skin", "position": [-0.43, 0.17, 0], "scale": [0.13, 0.31, 0.13], "rotation": [0, 0, -0.18] },
     { "name": "left_forearm", "parent": "left_upper_arm", "primitive": "sphere", "material": "burgundy_leather", "position": [-0.07, -0.48, 0], "scale": [0.12, 0.29, 0.12], "rotation": [0, 0, 0.12] },
-    { "name": "left_hand", "parent": "left_forearm", "primitive": "sphere", "material": "skin", "position": [0, -0.38, 0], "scale": [0.12, 0.16, 0.1] },
+    { "name": "left_hand", "parent": "left_forearm", "primitive": "sphere", "material": "burgundy_leather", "position": [0, -0.34, 0], "scale": [0.16, 0.17, 0.14] },
     { "name": "right_upper_arm", "parent": "torso", "primitive": "sphere", "material": "skin", "position": [0.43, 0.17, 0], "scale": [0.13, 0.31, 0.13], "rotation": [0, 0, 0.18] },
     { "name": "right_forearm", "parent": "right_upper_arm", "primitive": "sphere", "material": "burgundy_leather", "position": [0.07, -0.48, 0], "scale": [0.12, 0.29, 0.12], "rotation": [0, 0, -0.12] },
-    { "name": "right_hand", "parent": "right_forearm", "primitive": "sphere", "material": "skin", "position": [0, -0.38, 0], "scale": [0.12, 0.16, 0.1] },
-    { "name": "left_thigh", "parent": "hips", "primitive": "sphere", "material": "leggings", "position": [-0.17, -0.38, 0], "scale": [0.16, 0.37, 0.17] },
-    { "name": "left_shin", "parent": "left_thigh", "primitive": "sphere", "material": "leggings", "position": [0, -0.57, 0], "scale": [0.14, 0.35, 0.15] },
-    { "name": "left_boot", "parent": "left_shin", "primitive": "sphere", "material": "burgundy_leather", "position": [0, -0.43, 0.09], "scale": [0.18, 0.2, 0.29] },
-    { "name": "right_thigh", "parent": "hips", "primitive": "sphere", "material": "leggings", "position": [0.17, -0.38, 0], "scale": [0.16, 0.37, 0.17] },
-    { "name": "right_shin", "parent": "right_thigh", "primitive": "sphere", "material": "leggings", "position": [0, -0.57, 0], "scale": [0.14, 0.35, 0.15] },
-    { "name": "right_boot", "parent": "right_shin", "primitive": "sphere", "material": "burgundy_leather", "position": [0, -0.43, 0.09], "scale": [0.18, 0.2, 0.29] },
+    { "name": "right_hand", "parent": "right_forearm", "primitive": "sphere", "material": "burgundy_leather", "position": [0, -0.34, 0], "scale": [0.16, 0.17, 0.14] },
+    { "name": "left_thigh", "parent": "hips", "primitive": "sphere", "material": "leggings", "position": [-0.18, -0.3, 0], "scale": [0.18, 0.27, 0.19] },
+    { "name": "left_shin", "parent": "left_thigh", "primitive": "sphere", "material": "leggings", "position": [0, -0.4, 0], "scale": [0.16, 0.24, 0.17] },
+    { "name": "left_boot", "parent": "left_shin", "primitive": "sphere", "material": "burgundy_leather", "position": [0, -0.3, 0.11], "scale": [0.22, 0.18, 0.32] },
+    { "name": "right_thigh", "parent": "hips", "primitive": "sphere", "material": "leggings", "position": [0.18, -0.3, 0], "scale": [0.18, 0.27, 0.19] },
+    { "name": "right_shin", "parent": "right_thigh", "primitive": "sphere", "material": "leggings", "position": [0, -0.4, 0], "scale": [0.16, 0.24, 0.17] },
+    { "name": "right_boot", "parent": "right_shin", "primitive": "sphere", "material": "burgundy_leather", "position": [0, -0.3, 0.11], "scale": [0.22, 0.18, 0.32] },
     { "name": "satchel", "parent": "hips", "primitive": "sphere", "material": "brown_leather", "position": [0.34, -0.02, 0.08], "scale": [0.2, 0.25, 0.1] },
-    { "name": "satchel_moon", "parent": "satchel", "primitive": "torus", "material": "metal", "position": [0, 0, 0.11], "scale": [0.45, 0.45, 0.16] }
+    { "name": "satchel_moon", "parent": "satchel", "primitive": "torus", "material": "metal", "position": [0, 0, 0.11], "scale": [0.09, 0.09, 0.035] }
   ]
 }

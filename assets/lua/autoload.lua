@@ -176,7 +176,7 @@ function fixed_update(root, delta)
     platformer_damage_cooldown = math.max(0, platformer_damage_cooldown - delta)
     if Node.get_value(player, 'platformer_player', 'just_jumped') then
       Node.set_value(player, 'platformer_player', 'just_jumped', false)
-      particle_emitter(player, 'jump_burst', 14, 0.45, 3.2, 0.04, '#31e7ff', 'burst')
+      particle_emitter(player, 'jump_burst', 10, 0.38, 3.2, 0.04, '#31e7ff', 'burst', 0.45)
     end
     local respawns = Node.get_value(player, 'platformer_player', 'respawn_count') or 0
     if respawns > platformer_respawns then
@@ -241,7 +241,7 @@ function fixed_update(root, delta)
               hud_remove(root, 'platform_boss')
             end
           end
-          particle_emitter(player, 'enemy_burst', 20, 0.7, 3.2, 0.04, '#b35cff', 'burst')
+          particle_emitter(player, 'enemy_burst', 16, 0.6, 3.2, 0.04, '#b35cff', 'burst', 0.55)
         end
       end
     end
@@ -252,7 +252,7 @@ function fixed_update(root, delta)
         Node.queue_free(crystal)
         platformer_crystals = platformer_crystals - 1
         game_add_score(Node.get_value(crystal, 'crystal', 'points') or 250)
-        particle_emitter(player, 'star_burst', 24, 0.8, 4.5, 0.055, '#ffd45c', 'burst')
+        particle_emitter(player, 'star_burst', 18, 0.7, 4.5, 0.055, '#ffd45c', 'burst', 0.65)
         hud_label(root, 'platform_goal', 'STAR CRYSTALS ' .. (platformer_total_crystals - platformer_crystals) .. '/' .. platformer_total_crystals, 'top_right', 20, 20, '#ffd45c', 14)
       end
     end

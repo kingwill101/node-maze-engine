@@ -52,7 +52,7 @@ function M.register()
     Node.add_component(entity, 'crystal', { points = 250 })
     draw_box(entity, 'crystal', 0, 0, 0, 0.18, 0.42, 0.18, '#ffd45c')
     drawing_set_animation(entity, 'crystal', 'spin', 2.8, 0)
-    particle_emitter(entity, 'glitter', 10, 0.45, 1.2, 0.035, '#ffd45c', 'orbit')
+    particle_emitter(entity, 'glitter', 6, 0.22, 1.2, 0.03, '#ffd45c', 'orbit')
   end)
 
   Prefab.define('exit_gate', function(entity)

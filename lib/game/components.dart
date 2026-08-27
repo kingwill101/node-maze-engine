@@ -174,6 +174,7 @@ class ScriptParticleEmitter {
     required this.size,
     required this.color,
     required this.pattern,
+    this.remainingSeconds,
   });
 
   final String name;
@@ -183,6 +184,7 @@ class ScriptParticleEmitter {
   double size;
   String color;
   String pattern;
+  double? remainingSeconds;
 }
 
 class ScriptParticleEmitters {

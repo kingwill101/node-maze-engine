@@ -361,6 +361,7 @@ class LuaBehaviorRuntime {
         size: _number(args, 5),
         color: _string(args, 6),
         pattern: _string(args, 7),
+        remainingSeconds: _optionalNumber(args, 8),
       );
       return null;
     });
@@ -536,6 +537,11 @@ class LuaBehaviorRuntime {
 
   double _number(List<Object?> arguments, int index) =>
       (_argument(arguments, index) as num).toDouble();
+
+  double? _optionalNumber(List<Object?> arguments, int index) {
+    final value = _argument(arguments, index);
+    return value is num ? value.toDouble() : null;
+  }
 
   String _string(List<Object?> arguments, int index) =>
       _argument(arguments, index).toString();

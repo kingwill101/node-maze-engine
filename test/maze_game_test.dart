@@ -9,6 +9,26 @@ import 'package:node/platformer/platformer_components.dart';
 import 'package:node/scripting/lua_level_loader.dart';
 
 void main() {
+  test('temporary script particle emitters expire during simulation', () {
+    final game = MazeGame();
+    final particles = ScriptParticleEmitters();
+    particles.values['flash'] = ScriptParticleEmitter(
+      name: 'flash',
+      count: 8,
+      radius: .5,
+      speed: 3,
+      size: .04,
+      color: '#ffffff',
+      pattern: 'burst',
+      remainingSeconds: .1,
+    );
+    game.runtime.context.world.add(game.player, particles);
+
+    game.advance(.15);
+
+    expect(particles.values, isEmpty);
+  });
+
   test('Lua projectile simulation damages the player and expires', () {
     final game = MazeGame();
     final player = game.runtime.context.world.get<Transform3>(game.player);

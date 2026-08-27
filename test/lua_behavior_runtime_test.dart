@@ -233,6 +233,7 @@ void main() {
       function ready(entity)
         particle_emitter(entity, 'aura', 24, 1.2, 2.5, 0.05, '#31e7ff', 'orbit')
         particle_emitter(entity, 'too_many', 999, 2, 1, 0.1, '#ffffff', 'burst')
+        particle_emitter(entity, 'flash', 8, 1, 3, 0.05, '#ffffff', 'burst', 0.4)
         particle_remove(entity, 'too_many')
       end
     ''');
@@ -240,10 +241,11 @@ void main() {
     await lua.ready(entity);
 
     final particles = engine.world.get<ScriptParticleEmitters>(entity).values;
-    expect(particles, hasLength(1));
+    expect(particles, hasLength(2));
     expect(particles['aura']!.count, 24);
     expect(particles['aura']!.radius, 1.2);
     expect(particles['aura']!.speed, 2.5);
     expect(particles['aura']!.pattern, 'orbit');
+    expect(particles['flash']!.remainingSeconds, 0.4);
   });
 }

@@ -30,6 +30,7 @@ class MazeGame {
     runtime.fixedSystems.add(_BonusFruitSystem(this.level));
     runtime.fixedSystems.add(_LevelEventSystem(this.level));
     runtime.fixedSystems.add(_ScriptSceneStateSystem(this.level));
+    runtime.fixedSystems.add(_ParticleLifetimeSystem());
     runtime.fixedSystems.add(_GhostCollisionSystem());
     _buildWorld();
     if (this.level.cameraMode == CameraMode.firstPerson) {
@@ -541,6 +542,22 @@ class _ScriptSceneStateSystem implements EngineSystem {
       'pellets_remaining': state.pelletsRemaining,
       'pellets_total': state.pelletsTotal,
     });
+  }
+}
+
+class _ParticleLifetimeSystem implements EngineSystem {
+  @override
+  void update(EngineContext context, double deltaSeconds) {
+    for (final (_, emitters) in context.world.query<ScriptParticleEmitters>()) {
+      for (final entry in emitters.values.entries.toList()) {
+        final remaining = entry.value.remainingSeconds;
+        if (remaining == null) continue;
+        entry.value.remainingSeconds = remaining - deltaSeconds;
+        if (entry.value.remainingSeconds! <= 0) {
+          emitters.values.remove(entry.key);
+        }
+      }
+    }
   }
 }
 
