@@ -1259,11 +1259,16 @@ class _MazeGameViewState extends State<MazeGameView> {
       );
     }
     if (activeCameraMode == CameraMode.platformer) {
-      // Lead the view into the route so Nix begins in the left third instead
-      // of looking as if she entered from the far-right edge.
+      // A fixed world offset shifts too strongly in narrow windows. Scale the
+      // route lead by viewport aspect so Nix stays near 40% of the screen.
+      final viewport = MediaQuery.sizeOf(context);
+      final aspect = viewport.height == 0
+          ? 16 / 9
+          : viewport.width / viewport.height;
+      final routeLead = (-1.05 * aspect).clamp(-2.2, -1.2);
       return (
-        player + vm.Vector3(-3.4, 3.2, 9.5),
-        player + vm.Vector3(-3.4, 1.4, 0),
+        player + vm.Vector3(routeLead, 3.2, 9.5),
+        player + vm.Vector3(routeLead, 1.4, 0),
       );
     }
     return (player + vm.Vector3(0, 10.5, 6.5), player + vm.Vector3(0, 0, -1.2));

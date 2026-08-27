@@ -82,7 +82,10 @@ local function setup_platformer(root, config)
   platformer_active = true
   generate_platformer_route(config)
   hud_remove(root, 'status')
-  entity_set_position(player, 2, 0.9, 2)
+  platformer_checkpoint_x = 4
+  platformer_checkpoint_y = 0.9
+  entity_set_position(player, platformer_checkpoint_x, platformer_checkpoint_y, 2)
+  platformer_set_checkpoint(player, platformer_checkpoint_x, platformer_checkpoint_y)
   Node.add_component(player, 'platformer_player', { grounded = false })
   Node.add_component(player, 'character_animation', { state = 'idle', facing = 1 })
   for _, enemy in ipairs(SceneTree.get_nodes_in_group('enemies')) do

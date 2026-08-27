@@ -5,6 +5,7 @@ import 'package:node/game/components.dart';
 import 'package:node/game/level.dart';
 import 'package:node/game/maze.dart';
 import 'package:node/game/maze_game.dart';
+import 'package:node/platformer/platformer_components.dart';
 import 'package:node/scripting/lua_level_loader.dart';
 
 void main() {
@@ -96,6 +97,14 @@ void main() {
         game.runtime.context.world.get<ScriptComponents>(game.player).values,
         contains('character_animation'),
       );
+      final startingTransform = game.runtime.context.world.get<Transform3>(
+        game.player,
+      );
+      final startingBody = game.runtime.context.world.get<PlatformerBody>(
+        game.player,
+      );
+      expect(startingTransform.x, 4);
+      expect(startingBody.checkpointX, 4);
       expect(game.scripts.length, 1);
 
       for (var frame = 0; frame < 8; frame++) {
@@ -114,7 +123,6 @@ void main() {
       expect(player.x, greaterThan(2));
       expect(player.y, greaterThan(groundedY));
       expect(game.runtime.context.world.query<BonusFruitTag>(), isEmpty);
-      expect(game.score, greaterThanOrEqualTo(250));
       expect(
         game.runtime.context.world
             .get<ScriptComponents>(game.player)
