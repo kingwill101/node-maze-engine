@@ -16,6 +16,13 @@ void main() {
     expect(annotations, contains('function scene_set_mesh'));
     expect(annotations, contains('function Scene.mesh(entity, options)'));
     expect(annotations, contains('function World.query(...)'));
+    expect(
+      annotations,
+      contains(
+        '---@private\n'
+        '---Internal Node Engine compatibility binding `has_node`.',
+      ),
+    );
     expect(metadata, contains('query_components'));
     expect(metadata, contains('QueryFilter'));
   });

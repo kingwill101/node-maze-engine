@@ -46,67 +46,80 @@
 ---@return integer # Entity identifier, or 0 when absent.
 function get_node(path) end
 
----Node Engine native function `has_node`.
+---@private
+---Internal Node Engine compatibility binding `has_node`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function has_node(...) end
 
----Node Engine native function `get_node_path`.
+---@private
+---Internal Node Engine compatibility binding `get_node_path`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function get_node_path(...) end
 
----Node Engine native function `get_scene_paths`.
+---@private
+---Internal Node Engine compatibility binding `get_scene_paths`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function get_scene_paths(...) end
 
----Node Engine native function `get_nodes_in_group`.
+---@private
+---Internal Node Engine compatibility binding `get_nodes_in_group`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function get_nodes_in_group(...) end
 
----Node Engine native function `_engine_instantiate_empty`.
+---@private
+---Internal Node Engine compatibility binding `_engine_instantiate_empty`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function _engine_instantiate_empty(...) end
 
----Node Engine native function `entity_set_path`.
+---@private
+---Internal Node Engine compatibility binding `entity_set_path`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_set_path(...) end
 
----Node Engine native function `entity_set_velocity`.
+---@private
+---Internal Node Engine compatibility binding `entity_set_velocity`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_set_velocity(...) end
 
----Node Engine native function `entity_is_alive`.
+---@private
+---Internal Node Engine compatibility binding `entity_is_alive`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_is_alive(...) end
 
----Node Engine native function `entity_has_component`.
+---@private
+---Internal Node Engine compatibility binding `entity_has_component`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_has_component(...) end
 
----Node Engine native function `add_component`.
+---@private
+---Internal Node Engine compatibility binding `add_component`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function add_component(...) end
 
----Node Engine native function `remove_component`.
+---@private
+---Internal Node Engine compatibility binding `remove_component`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function remove_component(...) end
 
----Node Engine native function `has_component`.
+---@private
+---Internal Node Engine compatibility binding `has_component`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function has_component(...) end
 
----Node Engine native function `get_component`.
+---@private
+---Internal Node Engine compatibility binding `get_component`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function get_component(...) end
@@ -126,7 +139,8 @@ function get_component_value(entity, component, field) end
 ---@param value any # New value.
 function set_component_value(entity, component, field, value) end
 
----Node Engine native function `get_nodes_with_component`.
+---@private
+---Internal Node Engine compatibility binding `get_nodes_with_component`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function get_nodes_with_component(...) end
@@ -160,22 +174,26 @@ function scene_set_light(entity, options) end
 ---@param entity integer # Entity identifier.
 function scene_remove_light(entity) end
 
----Node Engine native function `scene_set_camera`.
+---@private
+---Internal Node Engine compatibility binding `scene_set_camera`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function scene_set_camera(...) end
 
----Node Engine native function `scene_set_asset`.
+---@private
+---Internal Node Engine compatibility binding `scene_set_asset`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function scene_set_asset(...) end
 
----Node Engine native function `scene_set_particles`.
+---@private
+---Internal Node Engine compatibility binding `scene_set_particles`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function scene_set_particles(...) end
 
----Node Engine native function `scene_set_environment`.
+---@private
+---Internal Node Engine compatibility binding `scene_set_environment`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function scene_set_environment(...) end
@@ -191,17 +209,20 @@ function entity_add_component(entity, component, data) end
 ---@param component string # Registered component name.
 function entity_remove_component(entity, component) end
 
----Node Engine native function `entity_get_x`.
+---@private
+---Internal Node Engine compatibility binding `entity_get_x`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_get_x(...) end
 
----Node Engine native function `entity_get_y`.
+---@private
+---Internal Node Engine compatibility binding `entity_get_y`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_get_y(...) end
 
----Node Engine native function `entity_get_z`.
+---@private
+---Internal Node Engine compatibility binding `entity_get_z`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_get_z(...) end
@@ -213,152 +234,182 @@ function entity_get_z(...) end
 ---@param z number # World Z coordinate.
 function entity_set_position(entity, x, y, z) end
 
----Node Engine native function `game_add_score`.
+---@private
+---Internal Node Engine compatibility binding `game_add_score`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function game_add_score(...) end
 
----Node Engine native function `game_damage_player`.
+---@private
+---Internal Node Engine compatibility binding `game_damage_player`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function game_damage_player(...) end
 
----Node Engine native function `game_get_lives`.
+---@private
+---Internal Node Engine compatibility binding `game_get_lives`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function game_get_lives(...) end
 
----Node Engine native function `platformer_set_checkpoint`.
+---@private
+---Internal Node Engine compatibility binding `platformer_set_checkpoint`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function platformer_set_checkpoint(...) end
 
----Node Engine native function `platformer_launch`.
+---@private
+---Internal Node Engine compatibility binding `platformer_launch`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function platformer_launch(...) end
 
----Node Engine native function `game_complete_level`.
+---@private
+---Internal Node Engine compatibility binding `game_complete_level`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function game_complete_level(...) end
 
----Node Engine native function `door_set_open`.
+---@private
+---Internal Node Engine compatibility binding `door_set_open`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function door_set_open(...) end
 
----Node Engine native function `platformer_move_platform`.
+---@private
+---Internal Node Engine compatibility binding `platformer_move_platform`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function platformer_move_platform(...) end
 
----Node Engine native function `door_is_open`.
+---@private
+---Internal Node Engine compatibility binding `door_is_open`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function door_is_open(...) end
 
----Node Engine native function `trap_set_active`.
+---@private
+---Internal Node Engine compatibility binding `trap_set_active`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function trap_set_active(...) end
 
----Node Engine native function `entity_destroy`.
+---@private
+---Internal Node Engine compatibility binding `entity_destroy`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_destroy(...) end
 
----Node Engine native function `draw_sphere`.
+---@private
+---Internal Node Engine compatibility binding `draw_sphere`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function draw_sphere(...) end
 
----Node Engine native function `draw_box`.
+---@private
+---Internal Node Engine compatibility binding `draw_box`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function draw_box(...) end
 
----Node Engine native function `drawing_set_animation`.
+---@private
+---Internal Node Engine compatibility binding `drawing_set_animation`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function drawing_set_animation(...) end
 
----Node Engine native function `drawing_remove`.
+---@private
+---Internal Node Engine compatibility binding `drawing_remove`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function drawing_remove(...) end
 
----Node Engine native function `drawing_clear`.
+---@private
+---Internal Node Engine compatibility binding `drawing_clear`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function drawing_clear(...) end
 
----Node Engine native function `particle_emitter`.
+---@private
+---Internal Node Engine compatibility binding `particle_emitter`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function particle_emitter(...) end
 
----Node Engine native function `particle_remove`.
+---@private
+---Internal Node Engine compatibility binding `particle_remove`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function particle_remove(...) end
 
----Node Engine native function `particle_clear`.
+---@private
+---Internal Node Engine compatibility binding `particle_clear`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function particle_clear(...) end
 
----Node Engine native function `hud_label`.
+---@private
+---Internal Node Engine compatibility binding `hud_label`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function hud_label(...) end
 
----Node Engine native function `hud_bar`.
+---@private
+---Internal Node Engine compatibility binding `hud_bar`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function hud_bar(...) end
 
----Node Engine native function `hud_remove`.
+---@private
+---Internal Node Engine compatibility binding `hud_remove`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function hud_remove(...) end
 
----Node Engine native function `hud_clear`.
+---@private
+---Internal Node Engine compatibility binding `hud_clear`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function hud_clear(...) end
 
----Node Engine native function `entity_get_property`.
+---@private
+---Internal Node Engine compatibility binding `entity_get_property`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_get_property(...) end
 
----Node Engine native function `entity_set_property`.
+---@private
+---Internal Node Engine compatibility binding `entity_set_property`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_set_property(...) end
 
----Node Engine native function `entity_add_to_group`.
+---@private
+---Internal Node Engine compatibility binding `entity_add_to_group`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_add_to_group(...) end
 
----Node Engine native function `entity_remove_from_group`.
+---@private
+---Internal Node Engine compatibility binding `entity_remove_from_group`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_remove_from_group(...) end
 
----Node Engine native function `entity_is_in_group`.
+---@private
+---Internal Node Engine compatibility binding `entity_is_in_group`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_is_in_group(...) end
 
----Node Engine native function `group_count`.
+---@private
+---Internal Node Engine compatibility binding `group_count`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function group_count(...) end
 
----Node Engine native function `group_nearest`.
+---@private
+---Internal Node Engine compatibility binding `group_nearest`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function group_nearest(...) end
@@ -375,52 +426,62 @@ function emit_signal(name, payload) end
 ---@return integer # Timer identifier.
 function set_timer(seconds, callback) end
 
----Node Engine native function `cancel_timer`.
+---@private
+---Internal Node Engine compatibility binding `cancel_timer`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function cancel_timer(...) end
 
----Node Engine native function `entity_request_move`.
+---@private
+---Internal Node Engine compatibility binding `entity_request_move`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_request_move(...) end
 
----Node Engine native function `entity_can_move`.
+---@private
+---Internal Node Engine compatibility binding `entity_can_move`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_can_move(...) end
 
----Node Engine native function `ghost_personality`.
+---@private
+---Internal Node Engine compatibility binding `ghost_personality`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function ghost_personality(...) end
 
----Node Engine native function `player_get_x`.
+---@private
+---Internal Node Engine compatibility binding `player_get_x`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function player_get_x(...) end
 
----Node Engine native function `player_get_z`.
+---@private
+---Internal Node Engine compatibility binding `player_get_z`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function player_get_z(...) end
 
----Node Engine native function `player_get_dx`.
+---@private
+---Internal Node Engine compatibility binding `player_get_dx`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function player_get_dx(...) end
 
----Node Engine native function `player_get_dz`.
+---@private
+---Internal Node Engine compatibility binding `player_get_dz`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function player_get_dz(...) end
 
----Node Engine native function `power_active`.
+---@private
+---Internal Node Engine compatibility binding `power_active`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function power_active(...) end
 
----Node Engine native function `entity_request_target`.
+---@private
+---Internal Node Engine compatibility binding `entity_request_target`.
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function entity_request_target(...) end

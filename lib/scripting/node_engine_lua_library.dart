@@ -41,11 +41,12 @@ class NodeEngineLuaLibrary extends NodeEngineDocumentedLibrary {
   }
 
   static FunctionDoc _fallback(String name) => FunctionDoc(
-    summary: 'Node Engine native function `$name`.',
+    summary: 'Internal Node Engine compatibility binding `$name`.',
     params: const [DocParam('...', 'any', 'Native function arguments.')],
     returns: 'The operation result, or nil.',
     returnType: 'any',
-    category: 'engine-native',
+    category: 'engine-internal',
+    scope: AccessScope.private,
   );
 
   static const docs = <String, FunctionDoc>{

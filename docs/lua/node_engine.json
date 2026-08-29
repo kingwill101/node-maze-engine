@@ -32,9 +32,9 @@
           "qualifiedName": "has_node",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "has_node ...",
-          "summary": "Node Engine native function `has_node`.",
+          "summary": "Internal Node Engine compatibility binding `has_node`.",
           "params": [
             {
               "name": "...",
@@ -44,16 +44,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "get_node_path",
           "qualifiedName": "get_node_path",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "get_node_path ...",
-          "summary": "Node Engine native function `get_node_path`.",
+          "summary": "Internal Node Engine compatibility binding `get_node_path`.",
           "params": [
             {
               "name": "...",
@@ -63,16 +64,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "get_scene_paths",
           "qualifiedName": "get_scene_paths",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "get_scene_paths ...",
-          "summary": "Node Engine native function `get_scene_paths`.",
+          "summary": "Internal Node Engine compatibility binding `get_scene_paths`.",
           "params": [
             {
               "name": "...",
@@ -82,16 +84,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "get_nodes_in_group",
           "qualifiedName": "get_nodes_in_group",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "get_nodes_in_group ...",
-          "summary": "Node Engine native function `get_nodes_in_group`.",
+          "summary": "Internal Node Engine compatibility binding `get_nodes_in_group`.",
           "params": [
             {
               "name": "...",
@@ -101,16 +104,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "_engine_instantiate_empty",
           "qualifiedName": "_engine_instantiate_empty",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "_engine_instantiate_empty ...",
-          "summary": "Node Engine native function `_engine_instantiate_empty`.",
+          "summary": "Internal Node Engine compatibility binding `_engine_instantiate_empty`.",
           "params": [
             {
               "name": "...",
@@ -120,16 +124,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_set_path",
           "qualifiedName": "entity_set_path",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_set_path ...",
-          "summary": "Node Engine native function `entity_set_path`.",
+          "summary": "Internal Node Engine compatibility binding `entity_set_path`.",
           "params": [
             {
               "name": "...",
@@ -139,16 +144,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_set_velocity",
           "qualifiedName": "entity_set_velocity",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_set_velocity ...",
-          "summary": "Node Engine native function `entity_set_velocity`.",
+          "summary": "Internal Node Engine compatibility binding `entity_set_velocity`.",
           "params": [
             {
               "name": "...",
@@ -158,16 +164,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_is_alive",
           "qualifiedName": "entity_is_alive",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_is_alive ...",
-          "summary": "Node Engine native function `entity_is_alive`.",
+          "summary": "Internal Node Engine compatibility binding `entity_is_alive`.",
           "params": [
             {
               "name": "...",
@@ -177,16 +184,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_has_component",
           "qualifiedName": "entity_has_component",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_has_component ...",
-          "summary": "Node Engine native function `entity_has_component`.",
+          "summary": "Internal Node Engine compatibility binding `entity_has_component`.",
           "params": [
             {
               "name": "...",
@@ -196,16 +204,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "add_component",
           "qualifiedName": "add_component",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "add_component ...",
-          "summary": "Node Engine native function `add_component`.",
+          "summary": "Internal Node Engine compatibility binding `add_component`.",
           "params": [
             {
               "name": "...",
@@ -215,16 +224,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "remove_component",
           "qualifiedName": "remove_component",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "remove_component ...",
-          "summary": "Node Engine native function `remove_component`.",
+          "summary": "Internal Node Engine compatibility binding `remove_component`.",
           "params": [
             {
               "name": "...",
@@ -234,16 +244,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "has_component",
           "qualifiedName": "has_component",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "has_component ...",
-          "summary": "Node Engine native function `has_component`.",
+          "summary": "Internal Node Engine compatibility binding `has_component`.",
           "params": [
             {
               "name": "...",
@@ -253,16 +264,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "get_component",
           "qualifiedName": "get_component",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "get_component ...",
-          "summary": "Node Engine native function `get_component`.",
+          "summary": "Internal Node Engine compatibility binding `get_component`.",
           "params": [
             {
               "name": "...",
@@ -272,7 +284,8 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "get_component_value",
@@ -346,9 +359,9 @@
           "qualifiedName": "get_nodes_with_component",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "get_nodes_with_component ...",
-          "summary": "Node Engine native function `get_nodes_with_component`.",
+          "summary": "Internal Node Engine compatibility binding `get_nodes_with_component`.",
           "params": [
             {
               "name": "...",
@@ -358,7 +371,8 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "query_components",
@@ -488,9 +502,9 @@
           "qualifiedName": "scene_set_camera",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "scene_set_camera ...",
-          "summary": "Node Engine native function `scene_set_camera`.",
+          "summary": "Internal Node Engine compatibility binding `scene_set_camera`.",
           "params": [
             {
               "name": "...",
@@ -500,16 +514,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "scene_set_asset",
           "qualifiedName": "scene_set_asset",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "scene_set_asset ...",
-          "summary": "Node Engine native function `scene_set_asset`.",
+          "summary": "Internal Node Engine compatibility binding `scene_set_asset`.",
           "params": [
             {
               "name": "...",
@@ -519,16 +534,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "scene_set_particles",
           "qualifiedName": "scene_set_particles",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "scene_set_particles ...",
-          "summary": "Node Engine native function `scene_set_particles`.",
+          "summary": "Internal Node Engine compatibility binding `scene_set_particles`.",
           "params": [
             {
               "name": "...",
@@ -538,16 +554,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "scene_set_environment",
           "qualifiedName": "scene_set_environment",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "scene_set_environment ...",
-          "summary": "Node Engine native function `scene_set_environment`.",
+          "summary": "Internal Node Engine compatibility binding `scene_set_environment`.",
           "params": [
             {
               "name": "...",
@@ -557,7 +574,8 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_add_component",
@@ -616,9 +634,9 @@
           "qualifiedName": "entity_get_x",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_get_x ...",
-          "summary": "Node Engine native function `entity_get_x`.",
+          "summary": "Internal Node Engine compatibility binding `entity_get_x`.",
           "params": [
             {
               "name": "...",
@@ -628,16 +646,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_get_y",
           "qualifiedName": "entity_get_y",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_get_y ...",
-          "summary": "Node Engine native function `entity_get_y`.",
+          "summary": "Internal Node Engine compatibility binding `entity_get_y`.",
           "params": [
             {
               "name": "...",
@@ -647,16 +666,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_get_z",
           "qualifiedName": "entity_get_z",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_get_z ...",
-          "summary": "Node Engine native function `entity_get_z`.",
+          "summary": "Internal Node Engine compatibility binding `entity_get_z`.",
           "params": [
             {
               "name": "...",
@@ -666,7 +686,8 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_set_position",
@@ -708,9 +729,9 @@
           "qualifiedName": "game_add_score",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "game_add_score ...",
-          "summary": "Node Engine native function `game_add_score`.",
+          "summary": "Internal Node Engine compatibility binding `game_add_score`.",
           "params": [
             {
               "name": "...",
@@ -720,16 +741,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "game_damage_player",
           "qualifiedName": "game_damage_player",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "game_damage_player ...",
-          "summary": "Node Engine native function `game_damage_player`.",
+          "summary": "Internal Node Engine compatibility binding `game_damage_player`.",
           "params": [
             {
               "name": "...",
@@ -739,16 +761,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "game_get_lives",
           "qualifiedName": "game_get_lives",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "game_get_lives ...",
-          "summary": "Node Engine native function `game_get_lives`.",
+          "summary": "Internal Node Engine compatibility binding `game_get_lives`.",
           "params": [
             {
               "name": "...",
@@ -758,16 +781,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "platformer_set_checkpoint",
           "qualifiedName": "platformer_set_checkpoint",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "platformer_set_checkpoint ...",
-          "summary": "Node Engine native function `platformer_set_checkpoint`.",
+          "summary": "Internal Node Engine compatibility binding `platformer_set_checkpoint`.",
           "params": [
             {
               "name": "...",
@@ -777,16 +801,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "platformer_launch",
           "qualifiedName": "platformer_launch",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "platformer_launch ...",
-          "summary": "Node Engine native function `platformer_launch`.",
+          "summary": "Internal Node Engine compatibility binding `platformer_launch`.",
           "params": [
             {
               "name": "...",
@@ -796,16 +821,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "game_complete_level",
           "qualifiedName": "game_complete_level",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "game_complete_level ...",
-          "summary": "Node Engine native function `game_complete_level`.",
+          "summary": "Internal Node Engine compatibility binding `game_complete_level`.",
           "params": [
             {
               "name": "...",
@@ -815,16 +841,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "door_set_open",
           "qualifiedName": "door_set_open",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "door_set_open ...",
-          "summary": "Node Engine native function `door_set_open`.",
+          "summary": "Internal Node Engine compatibility binding `door_set_open`.",
           "params": [
             {
               "name": "...",
@@ -834,16 +861,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "platformer_move_platform",
           "qualifiedName": "platformer_move_platform",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "platformer_move_platform ...",
-          "summary": "Node Engine native function `platformer_move_platform`.",
+          "summary": "Internal Node Engine compatibility binding `platformer_move_platform`.",
           "params": [
             {
               "name": "...",
@@ -853,16 +881,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "door_is_open",
           "qualifiedName": "door_is_open",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "door_is_open ...",
-          "summary": "Node Engine native function `door_is_open`.",
+          "summary": "Internal Node Engine compatibility binding `door_is_open`.",
           "params": [
             {
               "name": "...",
@@ -872,16 +901,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "trap_set_active",
           "qualifiedName": "trap_set_active",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "trap_set_active ...",
-          "summary": "Node Engine native function `trap_set_active`.",
+          "summary": "Internal Node Engine compatibility binding `trap_set_active`.",
           "params": [
             {
               "name": "...",
@@ -891,16 +921,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_destroy",
           "qualifiedName": "entity_destroy",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_destroy ...",
-          "summary": "Node Engine native function `entity_destroy`.",
+          "summary": "Internal Node Engine compatibility binding `entity_destroy`.",
           "params": [
             {
               "name": "...",
@@ -910,16 +941,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "draw_sphere",
           "qualifiedName": "draw_sphere",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "draw_sphere ...",
-          "summary": "Node Engine native function `draw_sphere`.",
+          "summary": "Internal Node Engine compatibility binding `draw_sphere`.",
           "params": [
             {
               "name": "...",
@@ -929,16 +961,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "draw_box",
           "qualifiedName": "draw_box",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "draw_box ...",
-          "summary": "Node Engine native function `draw_box`.",
+          "summary": "Internal Node Engine compatibility binding `draw_box`.",
           "params": [
             {
               "name": "...",
@@ -948,16 +981,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "drawing_set_animation",
           "qualifiedName": "drawing_set_animation",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "drawing_set_animation ...",
-          "summary": "Node Engine native function `drawing_set_animation`.",
+          "summary": "Internal Node Engine compatibility binding `drawing_set_animation`.",
           "params": [
             {
               "name": "...",
@@ -967,16 +1001,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "drawing_remove",
           "qualifiedName": "drawing_remove",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "drawing_remove ...",
-          "summary": "Node Engine native function `drawing_remove`.",
+          "summary": "Internal Node Engine compatibility binding `drawing_remove`.",
           "params": [
             {
               "name": "...",
@@ -986,16 +1021,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "drawing_clear",
           "qualifiedName": "drawing_clear",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "drawing_clear ...",
-          "summary": "Node Engine native function `drawing_clear`.",
+          "summary": "Internal Node Engine compatibility binding `drawing_clear`.",
           "params": [
             {
               "name": "...",
@@ -1005,16 +1041,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "particle_emitter",
           "qualifiedName": "particle_emitter",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "particle_emitter ...",
-          "summary": "Node Engine native function `particle_emitter`.",
+          "summary": "Internal Node Engine compatibility binding `particle_emitter`.",
           "params": [
             {
               "name": "...",
@@ -1024,16 +1061,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "particle_remove",
           "qualifiedName": "particle_remove",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "particle_remove ...",
-          "summary": "Node Engine native function `particle_remove`.",
+          "summary": "Internal Node Engine compatibility binding `particle_remove`.",
           "params": [
             {
               "name": "...",
@@ -1043,16 +1081,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "particle_clear",
           "qualifiedName": "particle_clear",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "particle_clear ...",
-          "summary": "Node Engine native function `particle_clear`.",
+          "summary": "Internal Node Engine compatibility binding `particle_clear`.",
           "params": [
             {
               "name": "...",
@@ -1062,16 +1101,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "hud_label",
           "qualifiedName": "hud_label",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "hud_label ...",
-          "summary": "Node Engine native function `hud_label`.",
+          "summary": "Internal Node Engine compatibility binding `hud_label`.",
           "params": [
             {
               "name": "...",
@@ -1081,16 +1121,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "hud_bar",
           "qualifiedName": "hud_bar",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "hud_bar ...",
-          "summary": "Node Engine native function `hud_bar`.",
+          "summary": "Internal Node Engine compatibility binding `hud_bar`.",
           "params": [
             {
               "name": "...",
@@ -1100,16 +1141,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "hud_remove",
           "qualifiedName": "hud_remove",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "hud_remove ...",
-          "summary": "Node Engine native function `hud_remove`.",
+          "summary": "Internal Node Engine compatibility binding `hud_remove`.",
           "params": [
             {
               "name": "...",
@@ -1119,16 +1161,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "hud_clear",
           "qualifiedName": "hud_clear",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "hud_clear ...",
-          "summary": "Node Engine native function `hud_clear`.",
+          "summary": "Internal Node Engine compatibility binding `hud_clear`.",
           "params": [
             {
               "name": "...",
@@ -1138,16 +1181,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_get_property",
           "qualifiedName": "entity_get_property",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_get_property ...",
-          "summary": "Node Engine native function `entity_get_property`.",
+          "summary": "Internal Node Engine compatibility binding `entity_get_property`.",
           "params": [
             {
               "name": "...",
@@ -1157,16 +1201,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_set_property",
           "qualifiedName": "entity_set_property",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_set_property ...",
-          "summary": "Node Engine native function `entity_set_property`.",
+          "summary": "Internal Node Engine compatibility binding `entity_set_property`.",
           "params": [
             {
               "name": "...",
@@ -1176,16 +1221,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_add_to_group",
           "qualifiedName": "entity_add_to_group",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_add_to_group ...",
-          "summary": "Node Engine native function `entity_add_to_group`.",
+          "summary": "Internal Node Engine compatibility binding `entity_add_to_group`.",
           "params": [
             {
               "name": "...",
@@ -1195,16 +1241,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_remove_from_group",
           "qualifiedName": "entity_remove_from_group",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_remove_from_group ...",
-          "summary": "Node Engine native function `entity_remove_from_group`.",
+          "summary": "Internal Node Engine compatibility binding `entity_remove_from_group`.",
           "params": [
             {
               "name": "...",
@@ -1214,16 +1261,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_is_in_group",
           "qualifiedName": "entity_is_in_group",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_is_in_group ...",
-          "summary": "Node Engine native function `entity_is_in_group`.",
+          "summary": "Internal Node Engine compatibility binding `entity_is_in_group`.",
           "params": [
             {
               "name": "...",
@@ -1233,16 +1281,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "group_count",
           "qualifiedName": "group_count",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "group_count ...",
-          "summary": "Node Engine native function `group_count`.",
+          "summary": "Internal Node Engine compatibility binding `group_count`.",
           "params": [
             {
               "name": "...",
@@ -1252,16 +1301,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "group_nearest",
           "qualifiedName": "group_nearest",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "group_nearest ...",
-          "summary": "Node Engine native function `group_nearest`.",
+          "summary": "Internal Node Engine compatibility binding `group_nearest`.",
           "params": [
             {
               "name": "...",
@@ -1271,7 +1321,8 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "emit_signal",
@@ -1327,9 +1378,9 @@
           "qualifiedName": "cancel_timer",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "cancel_timer ...",
-          "summary": "Node Engine native function `cancel_timer`.",
+          "summary": "Internal Node Engine compatibility binding `cancel_timer`.",
           "params": [
             {
               "name": "...",
@@ -1339,16 +1390,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_request_move",
           "qualifiedName": "entity_request_move",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_request_move ...",
-          "summary": "Node Engine native function `entity_request_move`.",
+          "summary": "Internal Node Engine compatibility binding `entity_request_move`.",
           "params": [
             {
               "name": "...",
@@ -1358,16 +1410,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_can_move",
           "qualifiedName": "entity_can_move",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_can_move ...",
-          "summary": "Node Engine native function `entity_can_move`.",
+          "summary": "Internal Node Engine compatibility binding `entity_can_move`.",
           "params": [
             {
               "name": "...",
@@ -1377,16 +1430,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "ghost_personality",
           "qualifiedName": "ghost_personality",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "ghost_personality ...",
-          "summary": "Node Engine native function `ghost_personality`.",
+          "summary": "Internal Node Engine compatibility binding `ghost_personality`.",
           "params": [
             {
               "name": "...",
@@ -1396,16 +1450,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "player_get_x",
           "qualifiedName": "player_get_x",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "player_get_x ...",
-          "summary": "Node Engine native function `player_get_x`.",
+          "summary": "Internal Node Engine compatibility binding `player_get_x`.",
           "params": [
             {
               "name": "...",
@@ -1415,16 +1470,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "player_get_z",
           "qualifiedName": "player_get_z",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "player_get_z ...",
-          "summary": "Node Engine native function `player_get_z`.",
+          "summary": "Internal Node Engine compatibility binding `player_get_z`.",
           "params": [
             {
               "name": "...",
@@ -1434,16 +1490,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "player_get_dx",
           "qualifiedName": "player_get_dx",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "player_get_dx ...",
-          "summary": "Node Engine native function `player_get_dx`.",
+          "summary": "Internal Node Engine compatibility binding `player_get_dx`.",
           "params": [
             {
               "name": "...",
@@ -1453,16 +1510,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "player_get_dz",
           "qualifiedName": "player_get_dz",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "player_get_dz ...",
-          "summary": "Node Engine native function `player_get_dz`.",
+          "summary": "Internal Node Engine compatibility binding `player_get_dz`.",
           "params": [
             {
               "name": "...",
@@ -1472,16 +1530,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "power_active",
           "qualifiedName": "power_active",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "power_active ...",
-          "summary": "Node Engine native function `power_active`.",
+          "summary": "Internal Node Engine compatibility binding `power_active`.",
           "params": [
             {
               "name": "...",
@@ -1491,16 +1550,17 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         },
         {
           "name": "entity_request_target",
           "qualifiedName": "entity_request_target",
           "kind": "function",
           "library": "base",
-          "category": "engine-native",
+          "category": "engine-internal",
           "signature": "entity_request_target ...",
-          "summary": "Node Engine native function `entity_request_target`.",
+          "summary": "Internal Node Engine compatibility binding `entity_request_target`.",
           "params": [
             {
               "name": "...",
@@ -1510,7 +1570,8 @@
             }
           ],
           "returns": "The operation result, or nil.",
-          "returnType": "any"
+          "returnType": "any",
+          "scope": "private"
         }
       ],
       "tables": [
