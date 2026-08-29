@@ -1,3 +1,4 @@
+import '../engine/entity.dart';
 import '../engine/runtime.dart';
 import '../game/components.dart';
 import 'platformer_components.dart';
@@ -33,15 +34,17 @@ class PlatformerPhysicsSystem implements EngineSystem {
     if (jumpRequested && body.grounded) {
       body
         ..velocityY = body.jumpSpeed
-        ..grounded = false;
+        ..grounded = false
+        ..groundedPlatform = null;
       justJumped = true;
     }
 
     body.velocityY -= body.gravity * deltaSeconds;
     var nextY = transform.y + body.velocityY * deltaSeconds;
     body.grounded = false;
+    body.groundedPlatform = null;
     if (body.velocityY <= 0) {
-      for (final (_, platformTransform, components)
+      for (final (platformEntity, platformTransform, components)
           in context.world.query2<Transform3, ScriptComponents>()) {
         final platform = components.values['platform'];
         if (platform == null) continue;
@@ -56,7 +59,8 @@ class PlatformerPhysicsSystem implements EngineSystem {
           nextY = top + body.halfHeight;
           body
             ..velocityY = 0
-            ..grounded = true;
+            ..grounded = true
+            ..groundedPlatform = platformEntity;
           break;
         }
       }
@@ -69,7 +73,8 @@ class PlatformerPhysicsSystem implements EngineSystem {
         ..y = body.checkpointY;
       body
         ..velocityY = 0
-        ..grounded = false;
+        ..grounded = false
+        ..groundedPlatform = null;
       body.respawnCount++;
       respawned = true;
     } else {
@@ -97,5 +102,43 @@ class PlatformerPhysicsSystem implements EngineSystem {
           ? 'run'
           : 'idle';
     }
+  }
+}
+
+/// Moves a platform and every entity currently riding it by the same delta.
+///
+/// Physics-controlled actors are attached automatically when they land. Other
+/// scripted actors opt in with `platform_rider.platform = platformEntity`.
+void movePlatformAndRiders(
+  EngineContext context,
+  Entity platformEntity,
+  double x,
+  double y,
+  double z,
+) {
+  final platform = context.world.get<Transform3>(platformEntity);
+  final dx = x - platform.x;
+  final dy = y - platform.y;
+  final dz = z - platform.z;
+  if (dx == 0 && dy == 0 && dz == 0) return;
+
+  platform
+    ..x = x
+    ..y = y
+    ..z = z;
+
+  for (final (entity, transform) in context.world.query<Transform3>()) {
+    if (entity == platformEntity) continue;
+    final body = context.world.maybeGet<PlatformerBody>(entity);
+    final scripts = context.world.maybeGet<ScriptComponents>(entity);
+    final riderPlatform = scripts?.values['platform_rider']?['platform'];
+    final attached =
+        body?.groundedPlatform == platformEntity ||
+        (riderPlatform is num && riderPlatform.toInt() == platformEntity.id);
+    if (!attached) continue;
+    transform
+      ..x += dx
+      ..y += dy
+      ..z += dz;
   }
 }

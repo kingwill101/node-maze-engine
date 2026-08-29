@@ -72,4 +72,31 @@ void main() {
     expect(transform.y, 1.2);
     expect(body.respawnCount, 1);
   });
+
+  test('moving platforms carry grounded and scripted riders', () {
+    final context = EngineContext();
+    final platform = context.world.create([
+      Transform3(4, 1, 2),
+      ScriptComponents({
+        'platform': {'width': 4, 'height': .4},
+      }),
+    ]);
+    final body = PlatformerBody(checkpointX: 4, checkpointY: 2)
+      ..grounded = true
+      ..groundedPlatform = platform;
+    final player = context.world.create([Transform3(4, 1.85, 2), body]);
+    final enemy = context.world.create([
+      Transform3(4.5, 1.5, 2),
+      ScriptComponents({
+        'platform_rider': {'platform': platform.id},
+      }),
+    ]);
+
+    movePlatformAndRiders(context, platform, 4.5, 1.75, 2);
+
+    expect(context.world.get<Transform3>(player).x, 4.5);
+    expect(context.world.get<Transform3>(player).y, 2.6);
+    expect(context.world.get<Transform3>(enemy).x, 5);
+    expect(context.world.get<Transform3>(enemy).y, 2.25);
+  });
 }

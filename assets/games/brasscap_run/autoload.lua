@@ -59,7 +59,7 @@ local function build_level(root, config)
     local x = 3 + (index - 1) * spacing
     local y = config.heights[((index - 1) % #config.heights) + 1]
     local width = index == 1 and 6.5 or 3.6
-    platform('/root/platforms/' .. index, x, y, width, config.moving and index % 6 == 0)
+    local landing = platform('/root/platforms/' .. index, x, y, width, config.moving and index % 6 == 0)
     if index > 1 and index < config.count then
       Prefab.instantiate('gear_coin', '/root/gears/' .. index, x, y + 1.0, 2)
       gears_left, gears_total = gears_left + 1, gears_total + 1
@@ -68,6 +68,7 @@ local function build_level(root, config)
       -- Feet end at local -0.06; +0.445 puts them on grass at +0.385.
       local bug = Prefab.instantiate('beetle', '/root/beetles/' .. index, x + 0.45, y + 0.445, 2)
       Node.set_value(bug, 'walker', 'origin', x + 0.45)
+      Node.add_component(bug, 'platform_rider', { platform = landing })
     end
     if index > 2 and index % 7 == 0 then
       Prefab.instantiate('spring', '/root/springs/' .. index, x - 0.7, y + 0.4, 2)
@@ -174,7 +175,7 @@ function fixed_update(root, delta)
   for _, moving in ipairs(SceneTree.get_nodes_with_component('moving_platform')) do
     local origin = Node.get_value(moving, 'moving_platform', 'origin') or entity_get_y(moving)
     local phase = Node.get_value(moving, 'moving_platform', 'phase') or 0
-    entity_set_position(moving, entity_get_x(moving), origin + math.sin(phase + x * 0.02) * 0.65, 2)
+    platformer_move_platform(moving, entity_get_x(moving), origin + math.sin(phase + x * 0.02) * 0.65, 2)
     Node.set_value(moving, 'moving_platform', 'phase', phase + delta * 1.4)
   end
 

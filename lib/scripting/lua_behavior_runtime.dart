@@ -5,6 +5,7 @@ import '../engine/runtime.dart';
 import '../engine/scene_tree.dart';
 import '../game/components.dart';
 import '../platformer/platformer_components.dart';
+import '../platformer/platformer_system.dart';
 
 /// LuaLike bridge for Godot-style behavior callbacks.
 ///
@@ -286,6 +287,17 @@ class LuaBehaviorRuntime {
       final open = _scalar(args, 1) == true;
       engine.world.get<DoorTag>(entity).open = open;
       _properties(entity).values['open'] = open;
+      return null;
+    });
+    _expose('platformer_move_platform', (args) {
+      final platform = _entity(args);
+      movePlatformAndRiders(
+        engine,
+        platform,
+        _number(args, 1),
+        _number(args, 2),
+        _number(args, 3),
+      );
       return null;
     });
     _expose(

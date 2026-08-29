@@ -1,3 +1,5 @@
+import '../engine/entity.dart';
+
 class PlatformerBody {
   PlatformerBody({
     this.moveSpeed = 5.2,
@@ -18,5 +20,6 @@ class PlatformerBody {
   double checkpointY;
   double velocityY = 0;
   bool grounded = false;
+  Entity? groundedPlatform;
   int respawnCount = 0;
 }
