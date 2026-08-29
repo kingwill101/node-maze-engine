@@ -77,6 +77,21 @@ systems.
 
 ## Plugin boundary
 
+`DefaultPlugins` is the reusable baseline and currently installs:
+
+- `TimePlugin`: separate render-frame and deterministic fixed-step clocks;
+- `InputPlugin`: platform-neutral button transitions and named action maps;
+- `TransformPlugin`: local/global transforms plus parent/children propagation.
+
+Platform adapters feed stable button codes into `ButtonInput<String>` before
+`GameApp.update`. Game code consumes named actions through `ActionInput`, so
+keyboard, controller and touch mappings do not leak into gameplay systems.
+
+Hierarchy is represented by `Parent` and `Children`, while
+`TransformPropagationSystem` computes `GlobalTransform` from `LocalTransform`.
+Cycles and references to dead parents fail loudly rather than producing corrupt
+render transforms.
+
 Game-specific rules must move out of the host application. The intended plugin
 layers are:
 

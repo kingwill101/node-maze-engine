@@ -4,6 +4,7 @@ library;
 export 'engine/app.dart';
 export 'engine/behavior.dart';
 export 'engine/commands.dart';
+export 'engine/core_plugins.dart';
 export 'engine/entity.dart';
 export 'engine/events.dart';
 export 'engine/plugin.dart';
