@@ -15,4 +15,6 @@ export 'engine/schedule.dart';
 export 'engine/state.dart';
 export 'engine/world.dart';
 export 'scene/render_components.dart';
+export 'scene/render_plugin.dart';
+export 'scene/flutter_scene_adapter.dart';
 export 'scripting/node_engine_lua_library.dart';

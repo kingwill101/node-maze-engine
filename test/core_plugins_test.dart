@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:node/engine/app.dart';
 import 'package:node/engine/core_plugins.dart';
-import 'package:vector_math/vector_math_64.dart';
+import 'package:vector_math/vector_math.dart';
 
 void main() {
   test('default plugins install deterministic frame and fixed clocks', () {

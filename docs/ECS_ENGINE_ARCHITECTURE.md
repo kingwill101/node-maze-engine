@@ -92,6 +92,13 @@ Hierarchy is represented by `Parent` and `Children`, while
 Cycles and references to dead parents fail loudly rather than producing corrupt
 render transforms.
 
+`SceneRenderPlugin` performs a distinct extraction stage in the `last`
+schedule. It copies gameplay-side mesh, material, light, camera, asset,
+particle and environment components into an immutable `ExtractedScene`. The
+`FlutterSceneAdapter` realizes that snapshot with cached Flutter Scene geometry
+and light components. This separation keeps GPU objects out of the ECS world
+and makes an alternate renderer or headless server possible.
+
 Game-specific rules must move out of the host application. The intended plugin
 layers are:
 
