@@ -1,3 +1,10 @@
+import 'dart:async';
+
+/// Implemented by resources that own subscriptions, native handles, or files.
+abstract interface class DisposableResource {
+  FutureOr<void> dispose();
+}
+
 /// Type-indexed singleton storage, equivalent to Bevy resources.
 class Resources {
   final Map<Type, Object> _values = <Type, Object>{};
@@ -16,4 +23,6 @@ class Resources {
   T? remove<T extends Object>() => _values.remove(T) as T?;
 
   Iterable<Type> get types => _values.keys;
+
+  Iterable<Object> get values => _values.values;
 }

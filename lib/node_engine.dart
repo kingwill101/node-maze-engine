@@ -14,6 +14,7 @@ export 'engine/scene_tree.dart';
 export 'engine/schedule.dart';
 export 'engine/state.dart';
 export 'engine/world.dart';
+export 'physics/physics_plugin.dart';
 export 'scene/render_components.dart';
 export 'scene/render_plugin.dart';
 export 'scene/flutter_scene_adapter.dart';

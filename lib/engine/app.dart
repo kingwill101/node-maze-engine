@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'plugin.dart';
+import 'resources.dart';
 import 'runtime.dart';
 import 'schedule.dart';
 import 'state.dart';
@@ -9,7 +12,9 @@ class GameApp {
     this.fixedDelta = 1 / 60,
     this.maxFrameDelta = .25,
     EngineContext? context,
-  }) : context = context ?? EngineContext();
+  }) : context = context ?? EngineContext() {
+    this.context.resources.insert(FixedInterpolation());
+  }
 
   final double fixedDelta;
   final double maxFrameDelta;
@@ -76,6 +81,7 @@ class GameApp {
       _accumulator -= fixedDelta;
       if (_accumulator.abs() < 1e-12) _accumulator = 0;
     }
+    context.resources.get<FixedInterpolation>().alpha = interpolationAlpha;
     _run(ScheduleLabel.update, delta);
     _run(ScheduleLabel.postUpdate, delta);
     _run(ScheduleLabel.last, delta);
@@ -88,8 +94,20 @@ class GameApp {
     }
   }
 
+  /// Releases resources owned by plugins. Safe to call more than once.
+  Future<void> dispose() async {
+    for (final resource in List<Object>.of(context.resources.values).reversed) {
+      if (resource is DisposableResource) await resource.dispose();
+    }
+  }
+
   void _run(ScheduleLabel label, double delta) {
     schedules[label]!.run(context, delta);
     context.world.flush();
   }
+}
+
+/// Fraction between the previous and current fixed simulation snapshots.
+class FixedInterpolation {
+  double alpha = 0;
 }

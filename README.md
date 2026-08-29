@@ -69,6 +69,17 @@ frame systems, an event bus, Godot-style behavior lifecycle contracts, a restric
 bridge, a maze, movement, joined wall geometry, pellets, scoring, and a procedural Flutter Scene
 presentation.
 
+`PhysicsPlugin` binds ECS entities to Flutter Scene's pluggable
+`PhysicsSimulation` contract. `PhysicsBody3d` and `PhysicsCollider3d` support
+fixed, kinematic, and solver-backed dynamic bodies; every Flutter Scene shape
+(including compound, convex-hull, triangle-mesh, and height-field shapes) can
+be supplied directly. The ECS-facing runtime maps ray casts, shape casts,
+overlaps, collision/trigger events, filters, forces, and impulses back to
+entities. The pure-Dart `BasicSimulation` is the deterministic default for
+queries and triggers; inject a solver implementation into `PhysicsPlugin` for
+dynamic rigid bodies. Plugin resources implement `DisposableResource`, so
+`await app.dispose()` releases subscriptions and backend/native state.
+
 The current game loop also includes ECS-owned session state, power pellets,
 frightened ghost scoring, lives and respawning, win/game-over phases, restart
 controls, a Lua-driven ghost, and a composed 3D heroine based on the checked-in
