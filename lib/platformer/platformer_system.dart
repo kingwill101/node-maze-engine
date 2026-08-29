@@ -24,10 +24,41 @@ class PlatformerPhysicsSystem implements EngineSystem {
     final transform = players.first.$2;
     final body = players.first.$3;
     final axis = ((session['move_axis'] as num?)?.toDouble() ?? 0).clamp(-1, 1);
-    final nextX = (transform.x + axis * body.moveSpeed * deltaSeconds).clamp(
+    var nextX = (transform.x + axis * body.moveSpeed * deltaSeconds).clamp(
       minimumX,
       maximumX,
     );
+
+    // Resolve solid platform sides before vertical movement. Standing exactly
+    // on a platform is not vertical overlap, so actors can still walk across
+    // its top and leave an edge naturally.
+    for (final (_, platformTransform, components)
+        in context.world.query2<Transform3, ScriptComponents>()) {
+      final platform = components.values['platform'];
+      if (platform == null || platform['one_way'] == true) continue;
+      final width = (platform['width'] as num?)?.toDouble() ?? 4;
+      final halfHeight = (platform['height'] as num?)?.toDouble() ?? .35;
+      final left = platformTransform.x - width / 2;
+      final right = platformTransform.x + width / 2;
+      final bottom = platformTransform.y - halfHeight;
+      final top = platformTransform.y + halfHeight;
+      final actorBottom = transform.y - body.halfHeight;
+      final actorTop = transform.y + body.halfHeight;
+      final overlapsVertically =
+          actorBottom < top - .0001 && actorTop > bottom + .0001;
+      if (!overlapsVertically) continue;
+      final currentLeft = transform.x - body.halfWidth;
+      final currentRight = transform.x + body.halfWidth;
+      final nextLeft = nextX - body.halfWidth;
+      final nextRight = nextX + body.halfWidth;
+      if (axis > 0 && currentRight <= left + .0001 && nextRight >= left) {
+        nextX = left - body.halfWidth;
+      } else if (axis < 0 &&
+          currentLeft >= right - .0001 &&
+          nextLeft <= right) {
+        nextX = right + body.halfWidth;
+      }
+    }
 
     final jumpRequested = session.remove('jump_requested') == true;
     var justJumped = false;
@@ -61,6 +92,26 @@ class PlatformerPhysicsSystem implements EngineSystem {
             ..velocityY = 0
             ..grounded = true
             ..groundedPlatform = platformEntity;
+          break;
+        }
+      }
+    } else {
+      // Solid platforms also stop upward motion at their underside. Lua can
+      // set platform.one_way=true to retain jump-through behavior.
+      for (final (_, platformTransform, components)
+          in context.world.query2<Transform3, ScriptComponents>()) {
+        final platform = components.values['platform'];
+        if (platform == null || platform['one_way'] == true) continue;
+        final width = (platform['width'] as num?)?.toDouble() ?? 4;
+        final halfHeight = (platform['height'] as num?)?.toDouble() ?? .35;
+        final bottom = platformTransform.y - halfHeight;
+        final previousHead = transform.y + body.halfHeight;
+        final nextHead = nextY + body.halfHeight;
+        if ((nextX - platformTransform.x).abs() <= width / 2 + body.halfWidth &&
+            previousHead <= bottom + .0001 &&
+            nextHead >= bottom) {
+          nextY = bottom - body.halfHeight;
+          body.velocityY = 0;
           break;
         }
       }

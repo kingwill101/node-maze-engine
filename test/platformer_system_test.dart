@@ -99,4 +99,64 @@ void main() {
     expect(context.world.get<Transform3>(enemy).x, 5);
     expect(context.world.get<Transform3>(enemy).y, 2.25);
   });
+
+  test('solid platforms block actors at sides and underneath', () {
+    final context = EngineContext();
+    final session = context.world.create([
+      ScriptProperties({'scene_name': 'Test', 'move_axis': 1}),
+    ]);
+    final body = PlatformerBody(checkpointX: 1, checkpointY: 1, gravity: 0);
+    final player = context.world.create([
+      Transform3(1, 0, 2),
+      body,
+      ScriptComponents({'platformer_player': {}}),
+    ]);
+    context.world.create([
+      Transform3(2, 0, 2),
+      ScriptComponents({
+        'platform': {'width': 1, 'height': .35},
+      }),
+    ]);
+    const system = PlatformerPhysicsSystem(minimumX: 0, maximumX: 20);
+
+    for (var frame = 0; frame < 10; frame++) {
+      system.update(context, 1 / 60);
+    }
+    expect(context.world.get<Transform3>(player).x, closeTo(1.22, .0001));
+
+    final transform = context.world.get<Transform3>(player)
+      ..x = 2
+      ..y = -1;
+    body.velocityY = 8;
+    context.world.get<ScriptProperties>(session).values['move_axis'] = 0;
+    for (var frame = 0; frame < 10; frame++) {
+      system.update(context, 1 / 60);
+    }
+    expect(transform.y + body.halfHeight, lessThanOrEqualTo(-.35 + .0001));
+    expect(body.velocityY, lessThanOrEqualTo(0));
+  });
+
+  test('one-way platforms retain pass-through behavior', () {
+    final context = EngineContext();
+    context.world.create([
+      ScriptProperties({'scene_name': 'Test', 'move_axis': 1}),
+    ]);
+    final player = context.world.create([
+      Transform3(1, 0, 2),
+      PlatformerBody(checkpointX: 1, checkpointY: 1, gravity: 0),
+      ScriptComponents({'platformer_player': {}}),
+    ]);
+    context.world.create([
+      Transform3(2, 0, 2),
+      ScriptComponents({
+        'platform': {'width': 1, 'height': .35, 'one_way': true},
+      }),
+    ]);
+
+    const system = PlatformerPhysicsSystem(minimumX: 0, maximumX: 20);
+    for (var frame = 0; frame < 12; frame++) {
+      system.update(context, 1 / 60);
+    }
+    expect(context.world.get<Transform3>(player).x, greaterThan(1.5));
+  });
 }
