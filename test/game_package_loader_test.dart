@@ -96,7 +96,7 @@ void main() {
     expect(playerDrawings.keys, contains('cap'));
     final boot = playerDrawings['boot_left']!;
     final body = world.get<PlatformerBody>(game.player);
-    expect(boot.y - boot.scaleY, closeTo(-body.halfHeight, .0001));
+    expect(boot.y - boot.scaleY / 2, closeTo(-body.halfHeight, .0001));
 
     final firstPlatform = world
         .query2<Transform3, ScriptComponents>()
@@ -127,8 +127,8 @@ void main() {
               : closest,
         );
     expect(
-      beetle.$2.y + beetleFoot.y - beetleFoot.scaleY,
-      closeTo(beetlePlatform.$2.y + .43, .0001),
+      beetle.$2.y + beetleFoot.y - beetleFoot.scaleY / 2,
+      closeTo(beetlePlatform.$2.y + .385, .0001),
     );
 
     game.setPlatformerAxis(1);

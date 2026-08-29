@@ -9,7 +9,9 @@ local animation_time = 0
 -- Scripted platformer rigs use the entity origin at the collider centre.
 -- Tavi's original art was authored from the soles upward, so translate the
 -- whole rig to put the lowest boot point at PlatformerBody.halfHeight (-0.45).
-local rig_y = -0.49
+-- A boot is centred at 0.20 and draw_box's 0.16 height is a full extent, so
+-- its unshifted sole is 0.12; 0.12 - 0.57 = -0.45.
+local rig_y = -0.57
 
 local chapters = {
   ['Clover Gearway'] = { count = 16, heights = {0,0.8,1.7,0.7,0,1.1,2.0,1.0}, moving = false },
@@ -63,8 +65,8 @@ local function build_level(root, config)
       gears_left, gears_total = gears_left + 1, gears_total + 1
     end
     if index > 2 and index % 4 == 0 then
-      -- Beetle feet sit at local -0.10, so +0.53 puts them on grass at +0.43.
-      local bug = Prefab.instantiate('beetle', '/root/beetles/' .. index, x + 0.45, y + 0.53, 2)
+      -- Feet end at local -0.06; +0.445 puts them on grass at +0.385.
+      local bug = Prefab.instantiate('beetle', '/root/beetles/' .. index, x + 0.45, y + 0.445, 2)
       Node.set_value(bug, 'walker', 'origin', x + 0.45)
     end
     if index > 2 and index % 7 == 0 then
