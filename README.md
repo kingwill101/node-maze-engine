@@ -86,6 +86,16 @@ escalate through 200, 400, 800, and 1,600 points until power mode ends.
 ## Authoring
 
 `assets/lua/level.lua` owns the level name, maze layout, and gameplay tuning.
+
+The native Lua surface is registered with LuaLike's `LibraryBuilder`, so the
+runtime definitions also produce editor metadata. Regenerate the committed
+LuaLS annotations and JSON API manifest after changing the bridge:
+
+```sh
+fvm dart run tool/generate_lua_api_docs.dart
+```
+
+The included `.luarc.json` makes Lua Language Server index `docs/lua`.
 Edit the ASCII maze to build another level: `#` is a wall, `.` a pellet, `o` a
 power pellet, `P` the player spawn, `A` through `D` are ghost spawns, `K` is a
 Star Key, `|` a locked door, and `^` a rift trap. The

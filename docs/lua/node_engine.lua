@@ -1,0 +1,549 @@
+---@meta _
+---Generated LuaLS annotations for node_engine.
+---Do not execute this file; add it to LuaLS as a library.
+---Generator: lualike.docs
+---Schema: 2
+
+---@class QueryFilter
+---Dynamic ECS query filters used by World.query.
+---
+---@field all? string[] # Components that must all be present.
+---@field any? string[] # At least one component must be present.
+---@field none? string[] # Components that must be absent.
+---@field groups? string[] # Required scene groups.
+
+---@class SceneMeshOptions
+---Backend-neutral primitive mesh definition.
+---
+---@field primitive? "box"|"sphere"|"plane"|"cylinder"|"capsule" # Primitive shape.
+---@field width? number # Width in world units.
+---@field height? number # Height in world units.
+---@field depth? number # Depth in world units.
+---@field radius? number # Radius for rounded primitives.
+
+---@class SceneMaterialOptions
+---Portable material values realized by the renderer.
+---
+---@field kind? "unlit"|"standard" # Shading model.
+---@field color? integer # ARGB color value.
+---@field metallic? number # Metallic response from 0 to 1.
+---@field roughness? number # Surface roughness from 0 to 1.
+---@field emissive? number # Emission strength.
+
+---@class SceneLightOptions
+---Portable light definition realized by Flutter Scene.
+---
+---@field kind? "directional"|"point"|"spot"|"area" # Light shape.
+---@field color? integer # ARGB light color.
+---@field intensity? number # Light intensity.
+---@field range? number # Maximum influence distance.
+---@field inner_angle? number # Spot inner angle in radians.
+---@field outer_angle? number # Spot outer angle in radians.
+
+---@nodiscard
+---Finds an entity by its scene-tree path.
+---@param path string # Scene-tree path.
+---@return integer # Entity identifier, or 0 when absent.
+function get_node(path) end
+
+---Node Engine native function `has_node`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function has_node(...) end
+
+---Node Engine native function `get_node_path`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function get_node_path(...) end
+
+---Node Engine native function `get_scene_paths`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function get_scene_paths(...) end
+
+---Node Engine native function `get_nodes_in_group`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function get_nodes_in_group(...) end
+
+---Node Engine native function `_engine_instantiate_empty`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function _engine_instantiate_empty(...) end
+
+---Node Engine native function `entity_set_path`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_set_path(...) end
+
+---Node Engine native function `entity_set_velocity`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_set_velocity(...) end
+
+---Node Engine native function `entity_is_alive`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_is_alive(...) end
+
+---Node Engine native function `entity_has_component`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_has_component(...) end
+
+---Node Engine native function `add_component`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function add_component(...) end
+
+---Node Engine native function `remove_component`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function remove_component(...) end
+
+---Node Engine native function `has_component`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function has_component(...) end
+
+---Node Engine native function `get_component`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function get_component(...) end
+
+---@nodiscard
+---Reads a script-defined component field.
+---@param entity integer # Entity identifier.
+---@param component string # Component name.
+---@param field string # Field name.
+---@return any # Stored value, or nil.
+function get_component_value(entity, component, field) end
+
+---Writes a script-defined component field.
+---@param entity integer # Entity identifier.
+---@param component string # Component name.
+---@param field string # Field name.
+---@param value any # New value.
+function set_component_value(entity, component, field, value) end
+
+---Node Engine native function `get_nodes_with_component`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function get_nodes_with_component(...) end
+
+---@nodiscard
+---Queries entities using component and group filters.
+---@param filter QueryFilter # Query selection rules.
+---@return integer[] # Matching entity identifiers.
+function query_components(filter) end
+
+---Creates or updates a backend-neutral 3D mesh.
+---@param entity integer # Entity identifier.
+---@param options SceneMeshOptions # Primitive dimensions.
+function scene_set_mesh(entity, options) end
+
+---Creates or updates a backend-neutral material.
+---@param entity integer # Entity identifier.
+---@param options SceneMaterialOptions # Material properties.
+function scene_set_material(entity, options) end
+
+---Removes the mesh from an entity.
+---@param entity integer # Entity identifier.
+function scene_remove_mesh(entity) end
+
+---Creates or updates a backend-neutral scene light.
+---@param entity integer # Entity identifier.
+---@param options SceneLightOptions # Light properties.
+function scene_set_light(entity, options) end
+
+---Removes the light from an entity.
+---@param entity integer # Entity identifier.
+function scene_remove_light(entity) end
+
+---Adds or replaces a script-defined component.
+---@param entity integer # Entity identifier.
+---@param component string # Registered component name.
+---@param data? table # Component fields.
+function entity_add_component(entity, component, data) end
+
+---Removes a script-defined component.
+---@param entity integer # Entity identifier.
+---@param component string # Registered component name.
+function entity_remove_component(entity, component) end
+
+---Node Engine native function `entity_get_x`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_get_x(...) end
+
+---Node Engine native function `entity_get_y`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_get_y(...) end
+
+---Node Engine native function `entity_get_z`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_get_z(...) end
+
+---Sets an entity world position.
+---@param entity integer # Entity identifier.
+---@param x number # World X coordinate.
+---@param y number # World Y coordinate.
+---@param z number # World Z coordinate.
+function entity_set_position(entity, x, y, z) end
+
+---Node Engine native function `game_add_score`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function game_add_score(...) end
+
+---Node Engine native function `game_damage_player`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function game_damage_player(...) end
+
+---Node Engine native function `game_get_lives`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function game_get_lives(...) end
+
+---Node Engine native function `platformer_set_checkpoint`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function platformer_set_checkpoint(...) end
+
+---Node Engine native function `platformer_launch`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function platformer_launch(...) end
+
+---Node Engine native function `game_complete_level`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function game_complete_level(...) end
+
+---Node Engine native function `door_set_open`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function door_set_open(...) end
+
+---Node Engine native function `platformer_move_platform`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function platformer_move_platform(...) end
+
+---Node Engine native function `door_is_open`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function door_is_open(...) end
+
+---Node Engine native function `trap_set_active`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function trap_set_active(...) end
+
+---Node Engine native function `entity_destroy`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_destroy(...) end
+
+---Node Engine native function `draw_sphere`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function draw_sphere(...) end
+
+---Node Engine native function `draw_box`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function draw_box(...) end
+
+---Node Engine native function `drawing_set_animation`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function drawing_set_animation(...) end
+
+---Node Engine native function `drawing_remove`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function drawing_remove(...) end
+
+---Node Engine native function `drawing_clear`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function drawing_clear(...) end
+
+---Node Engine native function `particle_emitter`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function particle_emitter(...) end
+
+---Node Engine native function `particle_remove`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function particle_remove(...) end
+
+---Node Engine native function `particle_clear`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function particle_clear(...) end
+
+---Node Engine native function `hud_label`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function hud_label(...) end
+
+---Node Engine native function `hud_bar`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function hud_bar(...) end
+
+---Node Engine native function `hud_remove`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function hud_remove(...) end
+
+---Node Engine native function `hud_clear`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function hud_clear(...) end
+
+---Node Engine native function `entity_get_property`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_get_property(...) end
+
+---Node Engine native function `entity_set_property`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_set_property(...) end
+
+---Node Engine native function `entity_add_to_group`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_add_to_group(...) end
+
+---Node Engine native function `entity_remove_from_group`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_remove_from_group(...) end
+
+---Node Engine native function `entity_is_in_group`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_is_in_group(...) end
+
+---Node Engine native function `group_count`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function group_count(...) end
+
+---Node Engine native function `group_nearest`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function group_nearest(...) end
+
+---Emits an engine signal with an optional payload.
+---@param name string # Signal name.
+---@param payload? any # Signal payload.
+function emit_signal(name, payload) end
+
+---@nodiscard
+---Schedules a Lua callback after a delay.
+---@param seconds number # Delay in seconds.
+---@param callback fun() # Function to invoke.
+---@return integer # Timer identifier.
+function set_timer(seconds, callback) end
+
+---Node Engine native function `cancel_timer`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function cancel_timer(...) end
+
+---Node Engine native function `entity_request_move`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_request_move(...) end
+
+---Node Engine native function `entity_can_move`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_can_move(...) end
+
+---Node Engine native function `ghost_personality`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function ghost_personality(...) end
+
+---Node Engine native function `player_get_x`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function player_get_x(...) end
+
+---Node Engine native function `player_get_z`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function player_get_z(...) end
+
+---Node Engine native function `player_get_dx`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function player_get_dx(...) end
+
+---Node Engine native function `player_get_dz`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function player_get_dz(...) end
+
+---Node Engine native function `power_active`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function power_active(...) end
+
+---Node Engine native function `entity_request_target`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function entity_request_target(...) end
+
+---@type table
+World = World or {}
+
+---@nodiscard
+---Returns entities containing every requested component.
+---@param ... string # Required component names.
+---@return integer[] # Matching entity identifiers.
+function World.query(...) end
+
+---@nodiscard
+---Returns entities matching include and exclude component lists.
+---@param with_components string[] # Required components.
+---@param without_components string[] # Excluded components.
+---@return integer[] # Matching entity identifiers.
+function World.query_filtered(with_components, without_components) end
+
+---@nodiscard
+---Returns a component table for an entity.
+---@param entity integer # Entity identifier.
+---@param component string # Component name.
+---@return table|nil # Live component data, or nil.
+function World.get(entity, component) end
+
+---@nodiscard
+---Tests whether an entity contains a component.
+---@param entity integer # Entity identifier.
+---@param component string # Component name.
+---@return boolean # True when the component exists.
+function World.has(entity, component) end
+
+---@type table
+Scene = Scene or {}
+
+---Creates or updates an entity mesh.
+---@param entity integer # Entity identifier.
+---@param options SceneMeshOptions # Mesh definition.
+function Scene.mesh(entity, options) end
+
+---Creates or updates an entity material.
+---@param entity integer # Entity identifier.
+---@param options SceneMaterialOptions # Material definition.
+function Scene.material(entity, options) end
+
+---Creates or updates an entity light.
+---@param entity integer # Entity identifier.
+---@param options SceneLightOptions # Light definition.
+function Scene.light(entity, options) end
+
+---Removes an entity mesh.
+---@param entity integer # Entity identifier.
+function Scene.remove_mesh(entity) end
+
+---Removes an entity light.
+---@param entity integer # Entity identifier.
+function Scene.remove_light(entity) end
+
+---@type table
+Node = Node or {}
+
+---@nodiscard
+---Finds an entity by path.
+---@param path string # Scene-tree path.
+function Node.get(path) end
+
+---@nodiscard
+---Tests whether a path exists.
+---@param path string # Scene-tree path.
+function Node.has(path) end
+
+---@nodiscard
+---Returns an entity scene path.
+---@param entity integer # Entity identifier.
+function Node.path(entity) end
+
+---Queues an entity for destruction.
+---@param entity integer # Entity identifier.
+function Node.queue_free(entity) end
+
+---Adds an entity to a group.
+---@param entity integer # Entity identifier.
+---@param group string # Group name.
+function Node.add_to_group(entity, group) end
+
+---Removes an entity from a group.
+---@param entity integer # Entity identifier.
+---@param group string # Group name.
+function Node.remove_from_group(entity, group) end
+
+---@nodiscard
+---Tests entity group membership.
+---@param entity integer # Entity identifier.
+---@param group string # Group name.
+function Node.is_in_group(entity, group) end
+
+---Removes a dynamic component.
+---@param entity integer # Entity identifier.
+---@param component string # Component name.
+function Node.remove_component(entity, component) end
+
+---@nodiscard
+---Tests component membership.
+---@param entity integer # Entity identifier.
+---@param component string # Component name.
+function Node.has_component(entity, component) end
+
+---@nodiscard
+---Returns component data.
+---@param entity integer # Entity identifier.
+---@param component string # Component name.
+function Node.get_component(entity, component) end
+
+---@nodiscard
+---Reads a component field.
+---@param entity integer # Entity identifier.
+---@param component string # Component name.
+---@param key string # Field name.
+function Node.get_value(entity, component, key) end
+
+---Writes a component field.
+---@param entity integer # Entity identifier.
+---@param component string # Component name.
+---@param key string # Field name.
+---@param value any # New value.
+function Node.set_value(entity, component, key, value) end
+
+---@type table
+SceneTree = SceneTree or {}
+
+---@nodiscard
+---Returns entities in a group.
+---@param group string # Group name.
+function SceneTree.get_nodes_in_group(group) end
+
+---@nodiscard
+---Returns entities with a component.
+---@param component string # Component name.
+function SceneTree.get_nodes_with_component(component) end
+
+---@nodiscard
+---Returns registered scene node count.
+function SceneTree.node_count() end
+

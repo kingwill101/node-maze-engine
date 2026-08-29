@@ -1,0 +1,5 @@
+{
+  "workspace.library": ["docs/lua"],
+  "runtime.version": "Lua 5.4",
+  "diagnostics.globals": ["App", "Component", "HUD", "Node", "Resource", "Scene", "World"]
+}

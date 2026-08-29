@@ -13,3 +13,5 @@ export 'engine/scene_tree.dart';
 export 'engine/schedule.dart';
 export 'engine/state.dart';
 export 'engine/world.dart';
+export 'scene/render_components.dart';
+export 'scripting/node_engine_lua_library.dart';

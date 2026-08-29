@@ -2,9 +2,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:node/engine/runtime.dart';
 import 'package:node/engine/scene_tree.dart';
 import 'package:node/game/components.dart';
+import 'package:node/scene/render_components.dart';
 import 'package:node/scripting/lua_behavior_runtime.dart';
 
 void main() {
+  test('Lua API publishes editor documentation through LibraryBuilder', () {
+    final lua = LuaBehaviorRuntime(EngineContext());
+    final annotations = lua.renderLuaLanguageServerAnnotations();
+    final metadata = lua.renderLuaApiJson();
+
+    expect(annotations, contains('---@class SceneMeshOptions'));
+    expect(annotations, contains('---@param options SceneMeshOptions'));
+    expect(annotations, contains('function scene_set_mesh'));
+    expect(annotations, contains('function Scene.mesh(entity, options)'));
+    expect(annotations, contains('function World.query(...)'));
+    expect(metadata, contains('query_components'));
+    expect(metadata, contains('QueryFilter'));
+  });
+
   test(
     'Lua defines components, resources, queries, and scheduled systems',
     () async {
@@ -59,6 +74,36 @@ void main() {
       );
     },
   );
+
+  test('Lua authors backend-neutral scene meshes and materials', () async {
+    final engine = EngineContext();
+    final entity = engine.world.create([Transform3(0, 0, 0)]);
+    final lua = LuaBehaviorRuntime(engine);
+    await lua.load('''
+      function ready(entity)
+        Scene.mesh(entity, {
+          primitive = 'capsule', width = 2, height = 3, depth = 1,
+          cast_shadows = true, render_layer = 4,
+        })
+        Scene.material(entity, {
+          kind = 'pbr', color = '#44ccff', metallic = 0.7,
+          roughness = 0.2, parameters = { glow = 3 },
+        })
+      end
+    ''');
+
+    await lua.ready(entity);
+
+    final mesh = engine.world.get<SceneMesh3d>(entity);
+    final material = engine.world.get<SceneMaterial3d>(entity);
+    expect(mesh.primitive, ScenePrimitive.capsule);
+    expect((mesh.width, mesh.height, mesh.depth), (2, 3, 1));
+    expect(mesh.renderLayer, 4);
+    expect(material.kind, SceneMaterialKind.physicallyBased);
+    expect(material.color, '#44ccff');
+    expect(material.metallic, .7);
+    expect(material.parameters['glow'], 3);
+  });
 
   test(
     'Lua behavior can mutate an entity through the restricted bridge',

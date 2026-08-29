@@ -1,0 +1,2147 @@
+{
+  "schemaVersion": 2,
+  "generator": "lualike.docs",
+  "package": "node_engine",
+  "libraries": [
+    {
+      "name": "base",
+      "description": "",
+      "functions": [
+        {
+          "name": "get_node",
+          "qualifiedName": "get_node",
+          "kind": "function",
+          "library": "base",
+          "category": "scene-tree",
+          "signature": "get_node path",
+          "summary": "Finds an entity by its scene-tree path.",
+          "params": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": "Scene-tree path.",
+              "optional": false
+            }
+          ],
+          "returns": "Entity identifier, or 0 when absent.",
+          "returnType": "integer",
+          "nodiscard": true
+        },
+        {
+          "name": "has_node",
+          "qualifiedName": "has_node",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "has_node ...",
+          "summary": "Node Engine native function `has_node`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "get_node_path",
+          "qualifiedName": "get_node_path",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "get_node_path ...",
+          "summary": "Node Engine native function `get_node_path`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "get_scene_paths",
+          "qualifiedName": "get_scene_paths",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "get_scene_paths ...",
+          "summary": "Node Engine native function `get_scene_paths`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "get_nodes_in_group",
+          "qualifiedName": "get_nodes_in_group",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "get_nodes_in_group ...",
+          "summary": "Node Engine native function `get_nodes_in_group`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "_engine_instantiate_empty",
+          "qualifiedName": "_engine_instantiate_empty",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "_engine_instantiate_empty ...",
+          "summary": "Node Engine native function `_engine_instantiate_empty`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_set_path",
+          "qualifiedName": "entity_set_path",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_set_path ...",
+          "summary": "Node Engine native function `entity_set_path`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_set_velocity",
+          "qualifiedName": "entity_set_velocity",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_set_velocity ...",
+          "summary": "Node Engine native function `entity_set_velocity`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_is_alive",
+          "qualifiedName": "entity_is_alive",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_is_alive ...",
+          "summary": "Node Engine native function `entity_is_alive`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_has_component",
+          "qualifiedName": "entity_has_component",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_has_component ...",
+          "summary": "Node Engine native function `entity_has_component`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "add_component",
+          "qualifiedName": "add_component",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "add_component ...",
+          "summary": "Node Engine native function `add_component`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "remove_component",
+          "qualifiedName": "remove_component",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "remove_component ...",
+          "summary": "Node Engine native function `remove_component`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "has_component",
+          "qualifiedName": "has_component",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "has_component ...",
+          "summary": "Node Engine native function `has_component`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "get_component",
+          "qualifiedName": "get_component",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "get_component ...",
+          "summary": "Node Engine native function `get_component`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "get_component_value",
+          "qualifiedName": "get_component_value",
+          "kind": "function",
+          "library": "base",
+          "category": "ecs",
+          "signature": "get_component_value entity component field",
+          "summary": "Reads a script-defined component field.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "description": "Field name.",
+              "optional": false
+            }
+          ],
+          "returns": "Stored value, or nil.",
+          "returnType": "any",
+          "nodiscard": true
+        },
+        {
+          "name": "set_component_value",
+          "qualifiedName": "set_component_value",
+          "kind": "function",
+          "library": "base",
+          "category": "ecs",
+          "signature": "set_component_value entity component field value",
+          "summary": "Writes a script-defined component field.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            },
+            {
+              "name": "field",
+              "type": "string",
+              "description": "Field name.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "New value.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "get_nodes_with_component",
+          "qualifiedName": "get_nodes_with_component",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "get_nodes_with_component ...",
+          "summary": "Node Engine native function `get_nodes_with_component`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "query_components",
+          "qualifiedName": "query_components",
+          "kind": "function",
+          "library": "base",
+          "category": "ecs",
+          "signature": "query_components filter",
+          "summary": "Queries entities using component and group filters.",
+          "params": [
+            {
+              "name": "filter",
+              "type": "QueryFilter",
+              "description": "Query selection rules.",
+              "optional": false
+            }
+          ],
+          "returns": "Matching entity identifiers.",
+          "returnType": "integer[]",
+          "nodiscard": true
+        },
+        {
+          "name": "scene_set_mesh",
+          "qualifiedName": "scene_set_mesh",
+          "kind": "function",
+          "library": "base",
+          "category": "rendering",
+          "signature": "scene_set_mesh entity options",
+          "summary": "Creates or updates a backend-neutral 3D mesh.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "SceneMeshOptions",
+              "description": "Primitive dimensions.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "scene_set_material",
+          "qualifiedName": "scene_set_material",
+          "kind": "function",
+          "library": "base",
+          "category": "rendering",
+          "signature": "scene_set_material entity options",
+          "summary": "Creates or updates a backend-neutral material.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "SceneMaterialOptions",
+              "description": "Material properties.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "scene_remove_mesh",
+          "qualifiedName": "scene_remove_mesh",
+          "kind": "function",
+          "library": "base",
+          "category": "rendering",
+          "signature": "scene_remove_mesh entity",
+          "summary": "Removes the mesh from an entity.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "scene_set_light",
+          "qualifiedName": "scene_set_light",
+          "kind": "function",
+          "library": "base",
+          "category": "rendering",
+          "signature": "scene_set_light entity options",
+          "summary": "Creates or updates a backend-neutral scene light.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "SceneLightOptions",
+              "description": "Light properties.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "scene_remove_light",
+          "qualifiedName": "scene_remove_light",
+          "kind": "function",
+          "library": "base",
+          "category": "rendering",
+          "signature": "scene_remove_light entity",
+          "summary": "Removes the light from an entity.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "entity_add_component",
+          "qualifiedName": "entity_add_component",
+          "kind": "function",
+          "library": "base",
+          "category": "ecs",
+          "signature": "entity_add_component entity component [data]",
+          "summary": "Adds or replaces a script-defined component.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Registered component name.",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "table",
+              "description": "Component fields.",
+              "optional": true
+            }
+          ]
+        },
+        {
+          "name": "entity_remove_component",
+          "qualifiedName": "entity_remove_component",
+          "kind": "function",
+          "library": "base",
+          "category": "ecs",
+          "signature": "entity_remove_component entity component",
+          "summary": "Removes a script-defined component.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Registered component name.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "entity_get_x",
+          "qualifiedName": "entity_get_x",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_get_x ...",
+          "summary": "Node Engine native function `entity_get_x`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_get_y",
+          "qualifiedName": "entity_get_y",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_get_y ...",
+          "summary": "Node Engine native function `entity_get_y`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_get_z",
+          "qualifiedName": "entity_get_z",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_get_z ...",
+          "summary": "Node Engine native function `entity_get_z`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_set_position",
+          "qualifiedName": "entity_set_position",
+          "kind": "function",
+          "library": "base",
+          "category": "transform",
+          "signature": "entity_set_position entity x y z",
+          "summary": "Sets an entity world position.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "number",
+              "description": "World Z coordinate.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "game_add_score",
+          "qualifiedName": "game_add_score",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "game_add_score ...",
+          "summary": "Node Engine native function `game_add_score`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "game_damage_player",
+          "qualifiedName": "game_damage_player",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "game_damage_player ...",
+          "summary": "Node Engine native function `game_damage_player`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "game_get_lives",
+          "qualifiedName": "game_get_lives",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "game_get_lives ...",
+          "summary": "Node Engine native function `game_get_lives`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "platformer_set_checkpoint",
+          "qualifiedName": "platformer_set_checkpoint",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "platformer_set_checkpoint ...",
+          "summary": "Node Engine native function `platformer_set_checkpoint`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "platformer_launch",
+          "qualifiedName": "platformer_launch",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "platformer_launch ...",
+          "summary": "Node Engine native function `platformer_launch`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "game_complete_level",
+          "qualifiedName": "game_complete_level",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "game_complete_level ...",
+          "summary": "Node Engine native function `game_complete_level`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "door_set_open",
+          "qualifiedName": "door_set_open",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "door_set_open ...",
+          "summary": "Node Engine native function `door_set_open`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "platformer_move_platform",
+          "qualifiedName": "platformer_move_platform",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "platformer_move_platform ...",
+          "summary": "Node Engine native function `platformer_move_platform`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "door_is_open",
+          "qualifiedName": "door_is_open",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "door_is_open ...",
+          "summary": "Node Engine native function `door_is_open`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "trap_set_active",
+          "qualifiedName": "trap_set_active",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "trap_set_active ...",
+          "summary": "Node Engine native function `trap_set_active`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_destroy",
+          "qualifiedName": "entity_destroy",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_destroy ...",
+          "summary": "Node Engine native function `entity_destroy`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "draw_sphere",
+          "qualifiedName": "draw_sphere",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "draw_sphere ...",
+          "summary": "Node Engine native function `draw_sphere`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "draw_box",
+          "qualifiedName": "draw_box",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "draw_box ...",
+          "summary": "Node Engine native function `draw_box`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "drawing_set_animation",
+          "qualifiedName": "drawing_set_animation",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "drawing_set_animation ...",
+          "summary": "Node Engine native function `drawing_set_animation`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "drawing_remove",
+          "qualifiedName": "drawing_remove",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "drawing_remove ...",
+          "summary": "Node Engine native function `drawing_remove`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "drawing_clear",
+          "qualifiedName": "drawing_clear",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "drawing_clear ...",
+          "summary": "Node Engine native function `drawing_clear`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "particle_emitter",
+          "qualifiedName": "particle_emitter",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "particle_emitter ...",
+          "summary": "Node Engine native function `particle_emitter`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "particle_remove",
+          "qualifiedName": "particle_remove",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "particle_remove ...",
+          "summary": "Node Engine native function `particle_remove`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "particle_clear",
+          "qualifiedName": "particle_clear",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "particle_clear ...",
+          "summary": "Node Engine native function `particle_clear`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "hud_label",
+          "qualifiedName": "hud_label",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "hud_label ...",
+          "summary": "Node Engine native function `hud_label`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "hud_bar",
+          "qualifiedName": "hud_bar",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "hud_bar ...",
+          "summary": "Node Engine native function `hud_bar`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "hud_remove",
+          "qualifiedName": "hud_remove",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "hud_remove ...",
+          "summary": "Node Engine native function `hud_remove`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "hud_clear",
+          "qualifiedName": "hud_clear",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "hud_clear ...",
+          "summary": "Node Engine native function `hud_clear`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_get_property",
+          "qualifiedName": "entity_get_property",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_get_property ...",
+          "summary": "Node Engine native function `entity_get_property`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_set_property",
+          "qualifiedName": "entity_set_property",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_set_property ...",
+          "summary": "Node Engine native function `entity_set_property`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_add_to_group",
+          "qualifiedName": "entity_add_to_group",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_add_to_group ...",
+          "summary": "Node Engine native function `entity_add_to_group`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_remove_from_group",
+          "qualifiedName": "entity_remove_from_group",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_remove_from_group ...",
+          "summary": "Node Engine native function `entity_remove_from_group`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_is_in_group",
+          "qualifiedName": "entity_is_in_group",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_is_in_group ...",
+          "summary": "Node Engine native function `entity_is_in_group`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "group_count",
+          "qualifiedName": "group_count",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "group_count ...",
+          "summary": "Node Engine native function `group_count`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "group_nearest",
+          "qualifiedName": "group_nearest",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "group_nearest ...",
+          "summary": "Node Engine native function `group_nearest`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "emit_signal",
+          "qualifiedName": "emit_signal",
+          "kind": "function",
+          "library": "base",
+          "category": "events",
+          "signature": "emit_signal name [payload]",
+          "summary": "Emits an engine signal with an optional payload.",
+          "params": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Signal name.",
+              "optional": false
+            },
+            {
+              "name": "payload",
+              "type": "any",
+              "description": "Signal payload.",
+              "optional": true
+            }
+          ]
+        },
+        {
+          "name": "set_timer",
+          "qualifiedName": "set_timer",
+          "kind": "function",
+          "library": "base",
+          "category": "time",
+          "signature": "set_timer seconds callback",
+          "summary": "Schedules a Lua callback after a delay.",
+          "params": [
+            {
+              "name": "seconds",
+              "type": "number",
+              "description": "Delay in seconds.",
+              "optional": false
+            },
+            {
+              "name": "callback",
+              "type": "fun()",
+              "description": "Function to invoke.",
+              "optional": false
+            }
+          ],
+          "returns": "Timer identifier.",
+          "returnType": "integer",
+          "nodiscard": true
+        },
+        {
+          "name": "cancel_timer",
+          "qualifiedName": "cancel_timer",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "cancel_timer ...",
+          "summary": "Node Engine native function `cancel_timer`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_request_move",
+          "qualifiedName": "entity_request_move",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_request_move ...",
+          "summary": "Node Engine native function `entity_request_move`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_can_move",
+          "qualifiedName": "entity_can_move",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_can_move ...",
+          "summary": "Node Engine native function `entity_can_move`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "ghost_personality",
+          "qualifiedName": "ghost_personality",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "ghost_personality ...",
+          "summary": "Node Engine native function `ghost_personality`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "player_get_x",
+          "qualifiedName": "player_get_x",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "player_get_x ...",
+          "summary": "Node Engine native function `player_get_x`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "player_get_z",
+          "qualifiedName": "player_get_z",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "player_get_z ...",
+          "summary": "Node Engine native function `player_get_z`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "player_get_dx",
+          "qualifiedName": "player_get_dx",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "player_get_dx ...",
+          "summary": "Node Engine native function `player_get_dx`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "player_get_dz",
+          "qualifiedName": "player_get_dz",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "player_get_dz ...",
+          "summary": "Node Engine native function `player_get_dz`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "power_active",
+          "qualifiedName": "power_active",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "power_active ...",
+          "summary": "Node Engine native function `power_active`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "entity_request_target",
+          "qualifiedName": "entity_request_target",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "entity_request_target ...",
+          "summary": "Node Engine native function `entity_request_target`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        }
+      ],
+      "tables": [
+        {
+          "name": "QueryFilter",
+          "description": "Dynamic ECS query filters used by World.query.",
+          "fields": [
+            {
+              "key": "all",
+              "type": "string[]",
+              "description": "Components that must all be present.",
+              "required": false
+            },
+            {
+              "key": "any",
+              "type": "string[]",
+              "description": "At least one component must be present.",
+              "required": false
+            },
+            {
+              "key": "none",
+              "type": "string[]",
+              "description": "Components that must be absent.",
+              "required": false
+            },
+            {
+              "key": "groups",
+              "type": "string[]",
+              "description": "Required scene groups.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "SceneMeshOptions",
+          "description": "Backend-neutral primitive mesh definition.",
+          "fields": [
+            {
+              "key": "primitive",
+              "type": "\"box\"|\"sphere\"|\"plane\"|\"cylinder\"|\"capsule\"",
+              "description": "Primitive shape.",
+              "required": false
+            },
+            {
+              "key": "width",
+              "type": "number",
+              "description": "Width in world units.",
+              "required": false
+            },
+            {
+              "key": "height",
+              "type": "number",
+              "description": "Height in world units.",
+              "required": false
+            },
+            {
+              "key": "depth",
+              "type": "number",
+              "description": "Depth in world units.",
+              "required": false
+            },
+            {
+              "key": "radius",
+              "type": "number",
+              "description": "Radius for rounded primitives.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "SceneMaterialOptions",
+          "description": "Portable material values realized by the renderer.",
+          "fields": [
+            {
+              "key": "kind",
+              "type": "\"unlit\"|\"standard\"",
+              "description": "Shading model.",
+              "required": false
+            },
+            {
+              "key": "color",
+              "type": "integer",
+              "description": "ARGB color value.",
+              "required": false
+            },
+            {
+              "key": "metallic",
+              "type": "number",
+              "description": "Metallic response from 0 to 1.",
+              "required": false
+            },
+            {
+              "key": "roughness",
+              "type": "number",
+              "description": "Surface roughness from 0 to 1.",
+              "required": false
+            },
+            {
+              "key": "emissive",
+              "type": "number",
+              "description": "Emission strength.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "SceneLightOptions",
+          "description": "Portable light definition realized by Flutter Scene.",
+          "fields": [
+            {
+              "key": "kind",
+              "type": "\"directional\"|\"point\"|\"spot\"|\"area\"",
+              "description": "Light shape.",
+              "required": false
+            },
+            {
+              "key": "color",
+              "type": "integer",
+              "description": "ARGB light color.",
+              "required": false
+            },
+            {
+              "key": "intensity",
+              "type": "number",
+              "description": "Light intensity.",
+              "required": false
+            },
+            {
+              "key": "range",
+              "type": "number",
+              "description": "Maximum influence distance.",
+              "required": false
+            },
+            {
+              "key": "inner_angle",
+              "type": "number",
+              "description": "Spot inner angle in radians.",
+              "required": false
+            },
+            {
+              "key": "outer_angle",
+              "type": "number",
+              "description": "Spot outer angle in radians.",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "World",
+      "description": "Dynamic ECS world access for Lua systems and behaviors.",
+      "functions": [
+        {
+          "name": "query",
+          "qualifiedName": "World.query",
+          "kind": "function",
+          "library": "World",
+          "category": "scripting",
+          "signature": "query ...",
+          "summary": "Returns entities containing every requested component.",
+          "params": [
+            {
+              "name": "...",
+              "type": "string",
+              "description": "Required component names.",
+              "optional": false
+            }
+          ],
+          "returns": "Matching entity identifiers.",
+          "returnType": "integer[]",
+          "nodiscard": true
+        },
+        {
+          "name": "query_filtered",
+          "qualifiedName": "World.query_filtered",
+          "kind": "function",
+          "library": "World",
+          "category": "scripting",
+          "signature": "query_filtered with_components without_components",
+          "summary": "Returns entities matching include and exclude component lists.",
+          "params": [
+            {
+              "name": "with_components",
+              "type": "string[]",
+              "description": "Required components.",
+              "optional": false
+            },
+            {
+              "name": "without_components",
+              "type": "string[]",
+              "description": "Excluded components.",
+              "optional": false
+            }
+          ],
+          "returns": "Matching entity identifiers.",
+          "returnType": "integer[]",
+          "nodiscard": true
+        },
+        {
+          "name": "get",
+          "qualifiedName": "World.get",
+          "kind": "function",
+          "library": "World",
+          "category": "scripting",
+          "signature": "get entity component",
+          "summary": "Returns a component table for an entity.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            }
+          ],
+          "returns": "Live component data, or nil.",
+          "returnType": "table|nil",
+          "nodiscard": true
+        },
+        {
+          "name": "has",
+          "qualifiedName": "World.has",
+          "kind": "function",
+          "library": "World",
+          "category": "scripting",
+          "signature": "has entity component",
+          "summary": "Tests whether an entity contains a component.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            }
+          ],
+          "returns": "True when the component exists.",
+          "returnType": "boolean",
+          "nodiscard": true
+        }
+      ]
+    },
+    {
+      "name": "Scene",
+      "description": "Backend-neutral Flutter Scene authoring API.",
+      "functions": [
+        {
+          "name": "mesh",
+          "qualifiedName": "Scene.mesh",
+          "kind": "function",
+          "library": "Scene",
+          "category": "scripting",
+          "signature": "mesh entity options",
+          "summary": "Creates or updates an entity mesh.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "SceneMeshOptions",
+              "description": "Mesh definition.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "material",
+          "qualifiedName": "Scene.material",
+          "kind": "function",
+          "library": "Scene",
+          "category": "scripting",
+          "signature": "material entity options",
+          "summary": "Creates or updates an entity material.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "SceneMaterialOptions",
+              "description": "Material definition.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "light",
+          "qualifiedName": "Scene.light",
+          "kind": "function",
+          "library": "Scene",
+          "category": "scripting",
+          "signature": "light entity options",
+          "summary": "Creates or updates an entity light.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "SceneLightOptions",
+              "description": "Light definition.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "remove_mesh",
+          "qualifiedName": "Scene.remove_mesh",
+          "kind": "function",
+          "library": "Scene",
+          "category": "scripting",
+          "signature": "remove_mesh entity",
+          "summary": "Removes an entity mesh.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "remove_light",
+          "qualifiedName": "Scene.remove_light",
+          "kind": "function",
+          "library": "Scene",
+          "category": "scripting",
+          "signature": "remove_light entity",
+          "summary": "Removes an entity light.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Node",
+      "description": "Godot-style entity and scene-tree operations.",
+      "functions": [
+        {
+          "name": "get",
+          "qualifiedName": "Node.get",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "get path",
+          "summary": "Finds an entity by path.",
+          "params": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": "Scene-tree path.",
+              "optional": false
+            }
+          ],
+          "returnType": "integer",
+          "nodiscard": true
+        },
+        {
+          "name": "has",
+          "qualifiedName": "Node.has",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "has path",
+          "summary": "Tests whether a path exists.",
+          "params": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": "Scene-tree path.",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "nodiscard": true
+        },
+        {
+          "name": "path",
+          "qualifiedName": "Node.path",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "path entity",
+          "summary": "Returns an entity scene path.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            }
+          ],
+          "returnType": "string",
+          "nodiscard": true
+        },
+        {
+          "name": "queue_free",
+          "qualifiedName": "Node.queue_free",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "queue_free entity",
+          "summary": "Queues an entity for destruction.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "add_to_group",
+          "qualifiedName": "Node.add_to_group",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "add_to_group entity group",
+          "summary": "Adds an entity to a group.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Group name.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "remove_from_group",
+          "qualifiedName": "Node.remove_from_group",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "remove_from_group entity group",
+          "summary": "Removes an entity from a group.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Group name.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "is_in_group",
+          "qualifiedName": "Node.is_in_group",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "is_in_group entity group",
+          "summary": "Tests entity group membership.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Group name.",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "nodiscard": true
+        },
+        {
+          "name": "remove_component",
+          "qualifiedName": "Node.remove_component",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "remove_component entity component",
+          "summary": "Removes a dynamic component.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "has_component",
+          "qualifiedName": "Node.has_component",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "has_component entity component",
+          "summary": "Tests component membership.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            }
+          ],
+          "returnType": "boolean",
+          "nodiscard": true
+        },
+        {
+          "name": "get_component",
+          "qualifiedName": "Node.get_component",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "get_component entity component",
+          "summary": "Returns component data.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            }
+          ],
+          "returnType": "table|nil",
+          "nodiscard": true
+        },
+        {
+          "name": "get_value",
+          "qualifiedName": "Node.get_value",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "get_value entity component key",
+          "summary": "Reads a component field.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Field name.",
+              "optional": false
+            }
+          ],
+          "returnType": "any",
+          "nodiscard": true
+        },
+        {
+          "name": "set_value",
+          "qualifiedName": "Node.set_value",
+          "kind": "function",
+          "library": "Node",
+          "category": "scripting",
+          "signature": "set_value entity component key value",
+          "summary": "Writes a component field.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Field name.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "New value.",
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SceneTree",
+      "description": "Queries over paths, groups, and dynamic components.",
+      "functions": [
+        {
+          "name": "get_nodes_in_group",
+          "qualifiedName": "SceneTree.get_nodes_in_group",
+          "kind": "function",
+          "library": "SceneTree",
+          "category": "scripting",
+          "signature": "get_nodes_in_group group",
+          "summary": "Returns entities in a group.",
+          "params": [
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Group name.",
+              "optional": false
+            }
+          ],
+          "returnType": "integer[]",
+          "nodiscard": true
+        },
+        {
+          "name": "get_nodes_with_component",
+          "qualifiedName": "SceneTree.get_nodes_with_component",
+          "kind": "function",
+          "library": "SceneTree",
+          "category": "scripting",
+          "signature": "get_nodes_with_component component",
+          "summary": "Returns entities with a component.",
+          "params": [
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Component name.",
+              "optional": false
+            }
+          ],
+          "returnType": "integer[]",
+          "nodiscard": true
+        },
+        {
+          "name": "node_count",
+          "qualifiedName": "SceneTree.node_count",
+          "kind": "function",
+          "library": "SceneTree",
+          "category": "scripting",
+          "signature": "node_count",
+          "summary": "Returns registered scene node count.",
+          "params": [],
+          "returnType": "integer",
+          "nodiscard": true
+        }
+      ]
+    }
+  ]
+}

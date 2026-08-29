@@ -19,6 +19,7 @@ import 'generated/thorn_runner_character.g.dart';
 import 'scene/moonfall_environment.dart';
 import 'scene/platform_environment.dart';
 import 'scene/procedural_character.dart';
+import 'scene/render_components.dart';
 import 'scripting/lua_game_package_loader.dart';
 
 CameraMode nextCameraMode(CameraMode active, CameraMode levelMode) {
@@ -792,6 +793,18 @@ class _MazeGameViewState extends State<MazeGameView> {
   final SphereGeometry detailGeometry = SphereGeometry(radius: .12);
   final SphereGeometry scriptSphereGeometry = SphereGeometry(radius: 1);
   final CuboidGeometry scriptBoxGeometry = CuboidGeometry(vm.Vector3.all(1));
+  final SphereGeometry ecsSphereGeometry = SphereGeometry(radius: .5);
+  final IcosphereGeometry ecsIcosphereGeometry = IcosphereGeometry(radius: .5);
+  final PlaneGeometry ecsPlaneGeometry = PlaneGeometry();
+  final CylinderGeometry ecsCylinderGeometry = CylinderGeometry();
+  final CapsuleGeometry ecsCapsuleGeometry = CapsuleGeometry(
+    radius: .25,
+    height: .5,
+  );
+  final TorusGeometry ecsTorusGeometry = TorusGeometry();
+  final DiscGeometry ecsDiscGeometry = DiscGeometry();
+  final RingGeometry ecsRingGeometry = RingGeometry();
+  final WedgeGeometry ecsWedgeGeometry = WedgeGeometry(vm.Vector3.all(1));
   final CuboidGeometry floorGeometry = CuboidGeometry(vm.Vector3(1, .08, 1));
   final CuboidGeometry runeGeometry = CuboidGeometry(vm.Vector3(.12, .3, .12));
   final TorusGeometry portalGeometry = TorusGeometry(
@@ -1358,6 +1371,20 @@ class _MazeGameViewState extends State<MazeGameView> {
     for (final (entity, transform)
         in game.runtime.context.world.query<Transform3>()) {
       if (!_isVisible(transform, playerTransform, renderDistance)) continue;
+      final ecsLight = game.runtime.context.world.maybeGet<SceneLight3d>(
+        entity,
+      );
+      if (ecsLight != null) {
+        widgets.add(_ecsSceneLight(entity, transform, ecsLight));
+      }
+      final ecsMesh = game.runtime.context.world.maybeGet<SceneMesh3d>(entity);
+      if (ecsMesh != null && ecsMesh.visible) {
+        widgets.add(_ecsSceneMesh(entity, transform, ecsMesh));
+        if (ecsMesh.replacesDefault) {
+          _appendScriptDrawings(widgets, entity, transform);
+          continue;
+        }
+      }
       if (game.runtime.context.world.has<PlayerTag>(entity)) {
         if (activeCameraMode == CameraMode.firstPerson) continue;
         if (widget.game.playerRenderer != 'script') {
@@ -1432,6 +1459,82 @@ class _MazeGameViewState extends State<MazeGameView> {
       _appendScriptDrawings(widgets, entity, transform);
     }
     return widgets;
+  }
+
+  Widget _ecsSceneMesh(Entity entity, Transform3 transform, SceneMesh3d mesh) {
+    final material = game.runtime.context.world.maybeGet<SceneMaterial3d>(
+      entity,
+    );
+    return SceneMesh(
+      key: ValueKey<String>('ecs-scene-mesh-${entity.id}'),
+      name: 'ecs-scene-mesh-${entity.id}',
+      geometry: switch (mesh.primitive) {
+        ScenePrimitive.box => scriptBoxGeometry,
+        ScenePrimitive.sphere => ecsSphereGeometry,
+        ScenePrimitive.icosphere => ecsIcosphereGeometry,
+        ScenePrimitive.plane => ecsPlaneGeometry,
+        ScenePrimitive.cylinder => ecsCylinderGeometry,
+        ScenePrimitive.capsule => ecsCapsuleGeometry,
+        ScenePrimitive.torus => ecsTorusGeometry,
+        ScenePrimitive.disc => ecsDiscGeometry,
+        ScenePrimitive.ring => ecsRingGeometry,
+        ScenePrimitive.wedge => ecsWedgeGeometry,
+      },
+      material: _scriptMaterial(material?.color ?? mesh.material),
+      position: _scenePosition(transform),
+      scale: vm.Vector3(mesh.width, mesh.height, mesh.depth),
+    );
+  }
+
+  Widget _ecsSceneLight(
+    Entity entity,
+    Transform3 transform,
+    SceneLight3d light,
+  ) {
+    final color = _scriptColor(light.color);
+    final linearColor = vm.Vector3(color.r, color.g, color.b);
+    final component = switch (light.kind) {
+      SceneLightKind.directional => DirectionalLightComponent.aimed(
+        DirectionalLight(
+          color: linearColor,
+          intensity: light.intensity,
+          castsShadow: light.castShadows,
+        ),
+        vm.Vector3(0, 0, 1),
+      ),
+      SceneLightKind.point => PointLightComponent(
+        PointLight(
+          color: linearColor,
+          intensity: light.intensity,
+          range: light.range,
+        ),
+      ),
+      SceneLightKind.spot => SpotLightComponent(
+        SpotLight(
+          color: linearColor,
+          intensity: light.intensity,
+          range: light.range,
+          innerConeAngle: light.innerAngle,
+          outerConeAngle: light.outerAngle,
+          castsShadow: light.castShadows,
+        ),
+      ),
+      SceneLightKind.area => RectAreaLightComponent(
+        RectAreaLight(
+          color: linearColor,
+          intensity: light.intensity,
+          range: light.range,
+          width: light.width,
+          height: light.height,
+        ),
+      ),
+    };
+    return SceneNode(
+      key: ValueKey<String>('ecs-scene-light-${entity.id}'),
+      name: 'ecs-scene-light-${entity.id}',
+      position: _scenePosition(transform),
+      components: [component],
+    );
   }
 
   Widget _portal(Entity entity, Transform3 transform) => SceneNode(

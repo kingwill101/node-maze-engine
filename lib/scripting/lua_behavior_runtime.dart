@@ -1,3 +1,4 @@
+import 'package:lualike/docs.dart';
 import 'package:lualike/lualike.dart';
 
 import '../engine/entity.dart';
@@ -6,6 +7,8 @@ import '../engine/scene_tree.dart';
 import '../game/components.dart';
 import '../platformer/platformer_components.dart';
 import '../platformer/platformer_system.dart';
+import '../scene/render_components.dart';
+import 'node_engine_lua_library.dart';
 
 /// LuaLike bridge for Godot-style behavior callbacks.
 ///
@@ -23,6 +26,8 @@ class LuaBehaviorRuntime {
     this.sceneTree,
   }) {
     _registerApi();
+    _lua.register(NodeEngineLuaLibrary(_bindings));
+    _registerFacadeLibraries();
   }
 
   final EngineContext engine;
@@ -40,9 +45,251 @@ class LuaBehaviorRuntime {
   final void Function(LuaSignal signal)? emitSignal;
   final SceneTree? sceneTree;
   final LuaLike _lua = LuaLike();
+  final Map<String, NodeLuaCallback> _bindings = {};
   final Map<String, _ScriptTimer> _timers = {};
 
   bool isEntityAlive(Entity entity) => engine.world.isAlive(entity);
+
+  void _registerFacadeLibraries() {
+    NodeLuaCallback native(String name) =>
+        (arguments) => _bindings[name]!(arguments);
+    FunctionDoc doc(
+      String summary,
+      List<DocParam> params, {
+      String? returns,
+      String? returnType,
+    }) => FunctionDoc(
+      summary: summary,
+      params: params,
+      returns: returns,
+      returnType: returnType,
+      category: 'scripting',
+      nodiscard: returnType != null,
+    );
+
+    _lua.register(
+      NodeEngineFacadeLibrary(
+        namespace: 'World',
+        summary: 'Dynamic ECS world access for Lua systems and behaviors.',
+        functions: {
+          'query': (
+            callback: (args) =>
+                _bindings['query_components']!([args, const []]),
+            doc: doc(
+              'Returns entities containing every requested component.',
+              [DocParam('...', 'string', 'Required component names.')],
+              returns: 'Matching entity identifiers.',
+              returnType: 'integer[]',
+            ),
+          ),
+          'query_filtered': (
+            callback: native('query_components'),
+            doc: doc(
+              'Returns entities matching include and exclude component lists.',
+              [
+                DocParam('with_components', 'string[]', 'Required components.'),
+                DocParam(
+                  'without_components',
+                  'string[]',
+                  'Excluded components.',
+                ),
+              ],
+              returns: 'Matching entity identifiers.',
+              returnType: 'integer[]',
+            ),
+          ),
+          'get': (
+            callback: native('get_component'),
+            doc: doc(
+              'Returns a component table for an entity.',
+              [
+                DocParam('entity', 'integer', 'Entity identifier.'),
+                DocParam('component', 'string', 'Component name.'),
+              ],
+              returns: 'Live component data, or nil.',
+              returnType: 'table|nil',
+            ),
+          ),
+          'has': (
+            callback: native('entity_has_component'),
+            doc: doc(
+              'Tests whether an entity contains a component.',
+              [
+                DocParam('entity', 'integer', 'Entity identifier.'),
+                DocParam('component', 'string', 'Component name.'),
+              ],
+              returns: 'True when the component exists.',
+              returnType: 'boolean',
+            ),
+          ),
+        },
+      ),
+    );
+    _lua.register(
+      NodeEngineFacadeLibrary(
+        namespace: 'Scene',
+        summary: 'Backend-neutral Flutter Scene authoring API.',
+        functions: {
+          'mesh': (
+            callback: native('scene_set_mesh'),
+            doc: doc('Creates or updates an entity mesh.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('options', 'SceneMeshOptions', 'Mesh definition.'),
+            ]),
+          ),
+          'material': (
+            callback: native('scene_set_material'),
+            doc: doc('Creates or updates an entity material.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam(
+                'options',
+                'SceneMaterialOptions',
+                'Material definition.',
+              ),
+            ]),
+          ),
+          'light': (
+            callback: native('scene_set_light'),
+            doc: doc('Creates or updates an entity light.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('options', 'SceneLightOptions', 'Light definition.'),
+            ]),
+          ),
+          'remove_mesh': (
+            callback: native('scene_remove_mesh'),
+            doc: doc('Removes an entity mesh.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+            ]),
+          ),
+          'remove_light': (
+            callback: native('scene_remove_light'),
+            doc: doc('Removes an entity light.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+            ]),
+          ),
+        },
+      ),
+    );
+    _lua.register(
+      NodeEngineFacadeLibrary(
+        namespace: 'Node',
+        summary: 'Godot-style entity and scene-tree operations.',
+        functions: {
+          'get': (
+            callback: native('get_node'),
+            doc: doc('Finds an entity by path.', [
+              DocParam('path', 'string', 'Scene-tree path.'),
+            ], returnType: 'integer'),
+          ),
+          'has': (
+            callback: native('has_node'),
+            doc: doc('Tests whether a path exists.', [
+              DocParam('path', 'string', 'Scene-tree path.'),
+            ], returnType: 'boolean'),
+          ),
+          'path': (
+            callback: native('get_node_path'),
+            doc: doc('Returns an entity scene path.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+            ], returnType: 'string'),
+          ),
+          'queue_free': (
+            callback: native('entity_destroy'),
+            doc: doc('Queues an entity for destruction.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+            ]),
+          ),
+          'add_to_group': (
+            callback: native('entity_add_to_group'),
+            doc: doc('Adds an entity to a group.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('group', 'string', 'Group name.'),
+            ]),
+          ),
+          'remove_from_group': (
+            callback: native('entity_remove_from_group'),
+            doc: doc('Removes an entity from a group.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('group', 'string', 'Group name.'),
+            ]),
+          ),
+          'is_in_group': (
+            callback: native('entity_is_in_group'),
+            doc: doc('Tests entity group membership.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('group', 'string', 'Group name.'),
+            ], returnType: 'boolean'),
+          ),
+          'remove_component': (
+            callback: native('remove_component'),
+            doc: doc('Removes a dynamic component.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('component', 'string', 'Component name.'),
+            ]),
+          ),
+          'has_component': (
+            callback: native('entity_has_component'),
+            doc: doc('Tests component membership.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('component', 'string', 'Component name.'),
+            ], returnType: 'boolean'),
+          ),
+          'get_component': (
+            callback: native('get_component'),
+            doc: doc('Returns component data.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('component', 'string', 'Component name.'),
+            ], returnType: 'table|nil'),
+          ),
+          'get_value': (
+            callback: native('get_component_value'),
+            doc: doc('Reads a component field.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('component', 'string', 'Component name.'),
+              DocParam('key', 'string', 'Field name.'),
+            ], returnType: 'any'),
+          ),
+          'set_value': (
+            callback: native('set_component_value'),
+            doc: doc('Writes a component field.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('component', 'string', 'Component name.'),
+              DocParam('key', 'string', 'Field name.'),
+              DocParam('value', 'any', 'New value.'),
+            ]),
+          ),
+        },
+      ),
+    );
+    _lua.register(
+      NodeEngineFacadeLibrary(
+        namespace: 'SceneTree',
+        summary: 'Queries over paths, groups, and dynamic components.',
+        functions: {
+          'get_nodes_in_group': (
+            callback: native('get_nodes_in_group'),
+            doc: doc('Returns entities in a group.', [
+              DocParam('group', 'string', 'Group name.'),
+            ], returnType: 'integer[]'),
+          ),
+          'get_nodes_with_component': (
+            callback: native('get_nodes_with_component'),
+            doc: doc('Returns entities with a component.', [
+              DocParam('component', 'string', 'Component name.'),
+            ], returnType: 'integer[]'),
+          ),
+          'node_count': (
+            callback: (_) => sceneTree?.paths.length ?? 0,
+            doc: doc(
+              'Returns registered scene node count.',
+              const [],
+              returnType: 'integer',
+            ),
+          ),
+        },
+      ),
+    );
+  }
 
   void _registerApi() {
     _expose('get_node', (args) {
@@ -186,6 +433,71 @@ class LuaBehaviorRuntime {
           if (_matchesScriptQuery(entity, withComponents, withoutComponents))
             entity.id,
       ];
+    });
+    _expose('scene_set_mesh', (args) {
+      final entity = _entity(args);
+      final data = _stringObjectMap(_argument(args, 1));
+      _replaceComponent(
+        entity,
+        SceneMesh3d(
+          primitive: _scenePrimitive(data['primitive']?.toString()),
+          material: data['material']?.toString() ?? 'default',
+          width: _mapNumber(data, 'width', 1),
+          height: _mapNumber(data, 'height', 1),
+          depth: _mapNumber(data, 'depth', 1),
+          visible: data['visible'] != false,
+          replacesDefault: data['replaces_default'] != false,
+          castShadows: data['cast_shadows'] != false,
+          receiveShadows: data['receive_shadows'] != false,
+          renderLayer: _mapNumber(data, 'render_layer', 1).toInt(),
+        ),
+      );
+      return entity.id;
+    });
+    _expose('scene_set_material', (args) {
+      final entity = _entity(args);
+      final data = _stringObjectMap(_argument(args, 1));
+      _replaceComponent(
+        entity,
+        SceneMaterial3d(
+          kind: _sceneMaterialKind(data['kind']?.toString()),
+          color: data['color']?.toString() ?? '#ffffff',
+          asset: data['asset']?.toString(),
+          metallic: _mapNumber(data, 'metallic', 0),
+          roughness: _mapNumber(data, 'roughness', 1),
+          emissive: _mapNumber(data, 'emissive', 0),
+          opacity: _mapNumber(data, 'opacity', 1),
+          parameters: _stringObjectMap(data['parameters']),
+        ),
+      );
+      return entity.id;
+    });
+    _expose('scene_remove_mesh', (args) {
+      engine.world.remove<SceneMesh3d>(_entity(args));
+      return null;
+    });
+    _expose('scene_set_light', (args) {
+      final entity = _entity(args);
+      final data = _stringObjectMap(_argument(args, 1));
+      _replaceComponent(
+        entity,
+        SceneLight3d(
+          kind: _sceneLightKind(data['kind']?.toString()),
+          color: data['color']?.toString() ?? '#ffffff',
+          intensity: _mapNumber(data, 'intensity', 1),
+          range: _mapNumber(data, 'range', 10),
+          innerAngle: _mapNumber(data, 'inner_angle', .35),
+          outerAngle: _mapNumber(data, 'outer_angle', .65),
+          castShadows: data['cast_shadows'] == true,
+          width: _mapNumber(data, 'width', 1),
+          height: _mapNumber(data, 'height', 1),
+        ),
+      );
+      return entity.id;
+    });
+    _expose('scene_remove_light', (args) {
+      engine.world.remove<SceneLight3d>(_entity(args));
+      return null;
     });
     _expose('entity_add_component', (args) {
       final entity = _entity(args);
@@ -555,7 +867,20 @@ class LuaBehaviorRuntime {
   void _expose(
     String name,
     Object? Function(List<Object?> arguments) callback,
-  ) => _lua.expose(name, (List<Object?> arguments) => callback(arguments));
+  ) => _bindings[name] = callback;
+
+  /// LuaLS annotations for the exact API installed in this runtime.
+  String renderLuaLanguageServerAnnotations() =>
+      renderLuaLsAnnotations(_engineLibraries, packageName: 'node_engine');
+
+  /// Machine-readable API metadata for editor integrations.
+  String renderLuaApiJson() =>
+      renderDocsJson(_engineLibraries, packageName: 'node_engine');
+
+  List<Library> get _engineLibraries =>
+      documentedLibrariesForRuntime(_lua.vm)
+          .whereType<NodeEngineDocumentedLibrary>()
+          .toList(growable: false);
 
   Object? _argument(List<Object?> arguments, int index) {
     if (index >= arguments.length) return null;
@@ -633,16 +958,6 @@ function Resource.remove(name)
   return value
 end
 
-World = {}
-function World.query(...)
-  return query_components({...}, {})
-end
-function World.query_filtered(with_components, without_components)
-  return query_components(with_components or {}, without_components or {})
-end
-function World.get(entity, component) return get_component(entity, component) end
-function World.has(entity, component) return entity_has_component(entity, component) end
-
 Commands = {}
 function Commands.despawn(entity) return entity_destroy(entity) end
 function Commands.add(entity, component, values)
@@ -676,27 +991,9 @@ function App.add_system(name, schedule, query, handler)
   return System.add(name, schedule, query, handler)
 end
 
-Node = {}
-function Node.get(path) return get_node(path) end
-function Node.has(path) return has_node(path) end
-function Node.path(entity) return get_node_path(entity) end
-function Node.queue_free(entity) return entity_destroy(entity) end
-function Node.add_to_group(entity, group) return entity_add_to_group(entity, group) end
-function Node.remove_from_group(entity, group) return entity_remove_from_group(entity, group) end
-function Node.is_in_group(entity, group) return entity_is_in_group(entity, group) end
 function Node.add_component(entity, component, data)
   return add_component(entity, component, Component.new(component, data))
 end
-function Node.remove_component(entity, component) return remove_component(entity, component) end
-function Node.has_component(entity, component) return entity_has_component(entity, component) end
-function Node.get_component(entity, component) return get_component(entity, component) end
-function Node.get_value(entity, component, key) return get_component_value(entity, component, key) end
-function Node.set_value(entity, component, key, value) return set_component_value(entity, component, key, value) end
-
-SceneTree = {}
-function SceneTree.get_nodes_in_group(group) return get_nodes_in_group(group) end
-function SceneTree.get_nodes_with_component(component) return get_nodes_with_component(component) end
-function SceneTree.node_count() return #get_scene_paths() end
 
 Prefab = {}
 function Prefab.define(name, factory) __node_prefabs[name] = factory end
@@ -848,6 +1145,45 @@ end
     }
 
     return withComponents.every(has) && !withoutComponents.any(has);
+  }
+
+  double _mapNumber(Map<String, Object?> values, String key, double fallback) =>
+      switch (values[key]) {
+        final num value => value.toDouble(),
+        _ => fallback,
+      };
+
+  ScenePrimitive _scenePrimitive(String? value) => switch (value) {
+    'sphere' => ScenePrimitive.sphere,
+    'icosphere' => ScenePrimitive.icosphere,
+    'plane' => ScenePrimitive.plane,
+    'cylinder' => ScenePrimitive.cylinder,
+    'capsule' => ScenePrimitive.capsule,
+    'torus' => ScenePrimitive.torus,
+    'disc' => ScenePrimitive.disc,
+    'ring' => ScenePrimitive.ring,
+    'wedge' => ScenePrimitive.wedge,
+    _ => ScenePrimitive.box,
+  };
+
+  SceneMaterialKind _sceneMaterialKind(String? value) => switch (value) {
+    'pbr' || 'physically_based' => SceneMaterialKind.physicallyBased,
+    'sprite' => SceneMaterialKind.sprite,
+    'shader' => SceneMaterialKind.shader,
+    'fmat' => SceneMaterialKind.fmat,
+    _ => SceneMaterialKind.unlit,
+  };
+
+  SceneLightKind _sceneLightKind(String? value) => switch (value) {
+    'directional' => SceneLightKind.directional,
+    'spot' => SceneLightKind.spot,
+    'area' || 'rect_area' => SceneLightKind.area,
+    _ => SceneLightKind.point,
+  };
+
+  void _replaceComponent<T extends Object>(Entity entity, T component) {
+    if (engine.world.has<T>(entity)) engine.world.remove<T>(entity);
+    engine.world.add<T>(entity, component);
   }
 
   ScriptProperties _properties(Entity entity) {
