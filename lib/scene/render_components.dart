@@ -144,6 +144,14 @@ class SceneEnvironment3d {
     this.depthOfField = false,
     this.autoExposure = false,
     this.temporalAntiAliasing = false,
+    this.exposure = 1,
+    this.environmentIntensity = 1,
+    this.bloom = false,
+    this.bloomIntensity = .15,
+    this.lensFlare = false,
+    this.vignette = false,
+    this.chromaticAberration = false,
+    this.filmGrain = false,
   });
 
   String? environmentAsset;
@@ -156,4 +164,12 @@ class SceneEnvironment3d {
   bool depthOfField;
   bool autoExposure;
   bool temporalAntiAliasing;
+  double exposure;
+  double environmentIntensity;
+  bool bloom;
+  double bloomIntensity;
+  bool lensFlare;
+  bool vignette;
+  bool chromaticAberration;
+  bool filmGrain;
 }

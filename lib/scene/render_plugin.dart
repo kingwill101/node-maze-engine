@@ -182,5 +182,13 @@ class ExtractSceneSystem implements EngineSystem {
         depthOfField: value.depthOfField,
         autoExposure: value.autoExposure,
         temporalAntiAliasing: value.temporalAntiAliasing,
+        exposure: value.exposure,
+        environmentIntensity: value.environmentIntensity,
+        bloom: value.bloom,
+        bloomIntensity: value.bloomIntensity,
+        lensFlare: value.lensFlare,
+        vignette: value.vignette,
+        chromaticAberration: value.chromaticAberration,
+        filmGrain: value.filmGrain,
       );
 }

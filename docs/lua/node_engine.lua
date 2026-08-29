@@ -160,6 +160,26 @@ function scene_set_light(entity, options) end
 ---@param entity integer # Entity identifier.
 function scene_remove_light(entity) end
 
+---Node Engine native function `scene_set_camera`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function scene_set_camera(...) end
+
+---Node Engine native function `scene_set_asset`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function scene_set_asset(...) end
+
+---Node Engine native function `scene_set_particles`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function scene_set_particles(...) end
+
+---Node Engine native function `scene_set_environment`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function scene_set_environment(...) end
+
 ---Adds or replaces a script-defined component.
 ---@param entity integer # Entity identifier.
 ---@param component string # Registered component name.
@@ -460,6 +480,26 @@ function Scene.remove_mesh(entity) end
 ---Removes an entity light.
 ---@param entity integer # Entity identifier.
 function Scene.remove_light(entity) end
+
+---Creates or updates an entity camera.
+---@param entity integer # Entity identifier.
+---@param options table # Perspective camera definition.
+function Scene.camera(entity, options) end
+
+---Loads an animated 3D model on an entity.
+---@param entity integer # Entity identifier.
+---@param options table # Model asset and animation settings.
+function Scene.model(entity, options) end
+
+---Creates or updates a Flutter Scene particle emitter.
+---@param entity integer # Entity identifier.
+---@param options table # Emitter and module settings.
+function Scene.particles(entity, options) end
+
+---Configures scene lighting and post-processing.
+---@param entity integer # Entity identifier.
+---@param options table # Environment effect settings.
+function Scene.environment(entity, options) end
 
 ---@type table
 Node = Node or {}

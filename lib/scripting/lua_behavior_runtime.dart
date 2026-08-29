@@ -167,6 +167,38 @@ class LuaBehaviorRuntime {
               DocParam('entity', 'integer', 'Entity identifier.'),
             ]),
           ),
+          'camera': (
+            callback: native('scene_set_camera'),
+            doc: doc('Creates or updates an entity camera.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('options', 'table', 'Perspective camera definition.'),
+            ]),
+          ),
+          'model': (
+            callback: native('scene_set_asset'),
+            doc: doc('Loads an animated 3D model on an entity.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam(
+                'options',
+                'table',
+                'Model asset and animation settings.',
+              ),
+            ]),
+          ),
+          'particles': (
+            callback: native('scene_set_particles'),
+            doc: doc('Creates or updates a Flutter Scene particle emitter.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('options', 'table', 'Emitter and module settings.'),
+            ]),
+          ),
+          'environment': (
+            callback: native('scene_set_environment'),
+            doc: doc('Configures scene lighting and post-processing.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('options', 'table', 'Environment effect settings.'),
+            ]),
+          ),
         },
       ),
     );
@@ -498,6 +530,79 @@ class LuaBehaviorRuntime {
     _expose('scene_remove_light', (args) {
       engine.world.remove<SceneLight3d>(_entity(args));
       return null;
+    });
+    _expose('scene_set_camera', (args) {
+      final entity = _entity(args);
+      final data = _stringObjectMap(_argument(args, 1));
+      _replaceComponent(
+        entity,
+        SceneCamera3d(
+          active: data['active'] == true,
+          fovRadians: _mapNumber(data, 'fov', 1),
+          near: _mapNumber(data, 'near', .05),
+          far: _mapNumber(data, 'far', 500),
+        ),
+      );
+      return entity.id;
+    });
+    _expose('scene_set_asset', (args) {
+      final entity = _entity(args);
+      final data = _stringObjectMap(_argument(args, 1));
+      _replaceComponent(
+        entity,
+        SceneAsset3d(
+          data['path']?.toString() ?? '',
+          subtree: data['variant']?.toString() ?? data['subtree']?.toString(),
+          animation: data['animation']?.toString(),
+          autoPlay: data['auto_play'] != false,
+        ),
+      );
+      return entity.id;
+    });
+    _expose('scene_set_particles', (args) {
+      final entity = _entity(args);
+      final data = _stringObjectMap(_argument(args, 1));
+      _replaceComponent(
+        entity,
+        SceneParticle3d(
+          maxParticles: _mapNumber(data, 'max_particles', 128).toInt(),
+          rate: _mapNumber(data, 'rate', 10),
+          lifetime: _mapNumber(data, 'lifetime', 1),
+          shape: data['shape']?.toString() ?? 'point',
+          color: data['color']?.toString() ?? '#ffffff',
+          size: _mapNumber(data, 'size', .1),
+          modules: _stringList(data['modules']),
+        ),
+      );
+      return entity.id;
+    });
+    _expose('scene_set_environment', (args) {
+      final entity = _entity(args);
+      final data = _stringObjectMap(_argument(args, 1));
+      _replaceComponent(
+        entity,
+        SceneEnvironment3d(
+          environmentAsset: data['environment_asset']?.toString(),
+          skyAsset: data['sky_asset']?.toString(),
+          fog: data['fog'] == true,
+          ambientOcclusion: data['ambient_occlusion'] == true,
+          globalIllumination: data['global_illumination'] == true,
+          screenSpaceReflections: data['screen_space_reflections'] == true,
+          godRays: data['god_rays'] == true,
+          depthOfField: data['depth_of_field'] == true,
+          autoExposure: data['auto_exposure'] == true,
+          temporalAntiAliasing: data['temporal_anti_aliasing'] == true,
+          exposure: _mapNumber(data, 'exposure', 1),
+          environmentIntensity: _mapNumber(data, 'environment_intensity', 1),
+          bloom: data['bloom'] == true,
+          bloomIntensity: _mapNumber(data, 'bloom_intensity', .15),
+          lensFlare: data['lens_flare'] == true,
+          vignette: data['vignette'] == true,
+          chromaticAberration: data['chromatic_aberration'] == true,
+          filmGrain: data['film_grain'] == true,
+        ),
+      );
+      return entity.id;
     });
     _expose('entity_add_component', (args) {
       final entity = _entity(args);

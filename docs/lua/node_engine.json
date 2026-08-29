@@ -484,6 +484,82 @@
           ]
         },
         {
+          "name": "scene_set_camera",
+          "qualifiedName": "scene_set_camera",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "scene_set_camera ...",
+          "summary": "Node Engine native function `scene_set_camera`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "scene_set_asset",
+          "qualifiedName": "scene_set_asset",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "scene_set_asset ...",
+          "summary": "Node Engine native function `scene_set_asset`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "scene_set_particles",
+          "qualifiedName": "scene_set_particles",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "scene_set_particles ...",
+          "summary": "Node Engine native function `scene_set_particles`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
+          "name": "scene_set_environment",
+          "qualifiedName": "scene_set_environment",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-native",
+          "signature": "scene_set_environment ...",
+          "summary": "Node Engine native function `scene_set_environment`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any"
+        },
+        {
           "name": "entity_add_component",
           "qualifiedName": "entity_add_component",
           "kind": "function",
@@ -1791,6 +1867,98 @@
               "name": "entity",
               "type": "integer",
               "description": "Entity identifier.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "camera",
+          "qualifiedName": "Scene.camera",
+          "kind": "function",
+          "library": "Scene",
+          "category": "scripting",
+          "signature": "camera entity options",
+          "summary": "Creates or updates an entity camera.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "table",
+              "description": "Perspective camera definition.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "model",
+          "qualifiedName": "Scene.model",
+          "kind": "function",
+          "library": "Scene",
+          "category": "scripting",
+          "signature": "model entity options",
+          "summary": "Loads an animated 3D model on an entity.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "table",
+              "description": "Model asset and animation settings.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "particles",
+          "qualifiedName": "Scene.particles",
+          "kind": "function",
+          "library": "Scene",
+          "category": "scripting",
+          "signature": "particles entity options",
+          "summary": "Creates or updates a Flutter Scene particle emitter.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "table",
+              "description": "Emitter and module settings.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "environment",
+          "qualifiedName": "Scene.environment",
+          "kind": "function",
+          "library": "Scene",
+          "category": "scripting",
+          "signature": "environment entity options",
+          "summary": "Configures scene lighting and post-processing.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "table",
+              "description": "Environment effect settings.",
               "optional": false
             }
           ]

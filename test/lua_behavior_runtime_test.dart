@@ -89,6 +89,20 @@ void main() {
           kind = 'pbr', color = '#44ccff', metallic = 0.7,
           roughness = 0.2, parameters = { glow = 3 },
         })
+        Scene.camera(entity, { active = true, fov = 0.9, near = 0.1, far = 900 })
+        Scene.model(entity, {
+          path = 'assets/models/courier.glb', variant = 'winter',
+          animation = 'run', auto_play = true,
+        })
+        Scene.particles(entity, {
+          max_particles = 256, rate = 30, lifetime = 2,
+          shape = 'cone', color = '#ff44cc', size = 0.2,
+          modules = { 'gravity', 'turbulence' },
+        })
+        Scene.environment(entity, {
+          fog = true, bloom = true, bloom_intensity = 0.8,
+          ambient_occlusion = true, temporal_anti_aliasing = true,
+        })
       end
     ''');
 
@@ -103,6 +117,15 @@ void main() {
     expect(material.color, '#44ccff');
     expect(material.metallic, .7);
     expect(material.parameters['glow'], 3);
+    expect(engine.world.get<SceneCamera3d>(entity).fovRadians, .9);
+    expect(engine.world.get<SceneAsset3d>(entity).animation, 'run');
+    expect(engine.world.get<SceneParticle3d>(entity).modules, [
+      'gravity',
+      'turbulence',
+    ]);
+    final environment = engine.world.get<SceneEnvironment3d>(entity);
+    expect(environment.bloomIntensity, .8);
+    expect(environment.temporalAntiAliasing, isTrue);
   });
 
   test(

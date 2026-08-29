@@ -96,8 +96,12 @@ render transforms.
 schedule. It copies gameplay-side mesh, material, light, camera, asset,
 particle and environment components into an immutable `ExtractedScene`. The
 `FlutterSceneAdapter` realizes that snapshot with cached Flutter Scene geometry
-and light components. This separation keeps GPU objects out of the ECS world
-and makes an alternate renderer or headless server possible.
+and light components. It also maps active ECS cameras to `PerspectiveCamera`,
+loads cached `SceneModel` GLB assets and animation specs, keeps stable
+`ParticleEmitterComponent` instances across rebuilds, and applies Flutter
+Scene environment/post-processing settings. This separation keeps GPU objects
+out of the ECS world and makes an alternate renderer or headless server
+possible.
 
 Game-specific rules must move out of the host application. The intended plugin
 layers are:

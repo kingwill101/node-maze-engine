@@ -29,6 +29,8 @@ class FlutterSceneAdapter {
   final DiscGeometry _disc = DiscGeometry();
   final RingGeometry _ring = RingGeometry();
   final WedgeGeometry _wedge = WedgeGeometry(Vector3.all(1));
+  final Map<Entity, ({int signature, ParticleEmitterComponent component})>
+  _particleEmitters = {};
 
   Widget mesh({
     required Entity entity,
@@ -74,7 +76,81 @@ class FlutterSceneAdapter {
         material: entity.material,
         transform: entity.transform,
       ),
+    if (entity.asset case final asset?)
+      SceneModel(
+        asset.path,
+        key: ValueKey<String>('ecs-scene-model-${entity.entity.id}'),
+        name: 'ecs-scene-model-${entity.entity.id}',
+        variant: asset.subtree,
+        animations: [
+          if (asset.animation case final animation?)
+            SceneAnimationSpec(animation, playing: asset.autoPlay),
+        ],
+        transform: entity.transform,
+      ),
+    if (entity.particle case final particle?)
+      SceneNode(
+        key: ValueKey<String>('ecs-scene-particles-${entity.entity.id}'),
+        name: 'ecs-scene-particles-${entity.entity.id}',
+        transform: entity.transform,
+        components: [_particle(entity.entity, particle)],
+      ),
   ];
+
+  PerspectiveCamera? camera(ExtractedScene scene) {
+    final cameraEntity = scene.activeCamera;
+    if (cameraEntity == null) return null;
+    final extracted = scene.entities
+        .where((item) => item.entity == cameraEntity)
+        .firstOrNull;
+    final spec = extracted?.camera;
+    if (extracted == null || spec == null) return null;
+    final position = extracted.transform.getTranslation();
+    final rotation = extracted.transform.getRotation();
+    final forward = rotation.transform(Vector3(0, 0, 1));
+    return PerspectiveCamera(
+      position: position,
+      target: position + forward,
+      up: rotation.transform(Vector3(0, 1, 0)),
+      fovRadiansY: spec.fovRadians,
+      fovNear: spec.near,
+      fovFar: spec.far,
+    );
+  }
+
+  EnvironmentSettings? environment(ExtractedScene scene) {
+    final spec = scene.entities
+        .map((entity) => entity.environment)
+        .whereType<SceneEnvironment3d>()
+        .firstOrNull;
+    if (spec == null) return null;
+    return EnvironmentSettings(
+      environmentIntensity: spec.environmentIntensity,
+      exposure: spec.exposure,
+      bloomEnabled: spec.bloom,
+      bloomIntensity: spec.bloomIntensity,
+      lensFlareEnabled: spec.lensFlare,
+      vignetteEnabled: spec.vignette,
+      chromaticAberrationEnabled: spec.chromaticAberration,
+      filmGrainEnabled: spec.filmGrain,
+      ambientOcclusionEnabled: spec.ambientOcclusion,
+      screenSpaceReflectionsEnabled: spec.screenSpaceReflections,
+      globalIlluminationEnabled: spec.globalIllumination,
+      fogEnabled: spec.fog,
+      godRaysEnabled: spec.godRays,
+      depthOfFieldEnabled: spec.depthOfField,
+      autoExposureEnabled: spec.autoExposure,
+    );
+  }
+
+  void configureScene(Scene scene, ExtractedScene extracted) {
+    final settings = environment(extracted);
+    if (settings != null) scene.environmentSettings = settings;
+    final taa = extracted.entities.any(
+      (entity) => entity.environment?.temporalAntiAliasing ?? false,
+    );
+    scene.antiAliasingMode = taa ? AntiAliasingMode.taa : AntiAliasingMode.msaa;
+  }
 
   Geometry geometry(ScenePrimitive primitive) => switch (primitive) {
     ScenePrimitive.box => _box,
@@ -129,6 +205,46 @@ class FlutterSceneAdapter {
     };
   }
 
+  ParticleEmitterComponent _particle(Entity entity, SceneParticle3d spec) {
+    final signature = Object.hash(
+      spec.maxParticles,
+      spec.rate,
+      spec.lifetime,
+      spec.shape,
+      spec.color,
+      spec.size,
+      Object.hashAll(spec.modules),
+    );
+    final cached = _particleEmitters[entity];
+    if (cached != null && cached.signature == signature) {
+      return cached.component;
+    }
+    final system = ParticleSystem(
+      maxParticles: spec.maxParticles,
+      shape: switch (spec.shape) {
+        'sphere' => const SphereEmitterShape(radius: .5),
+        'box' => BoxEmitterShape(halfExtents: Vector3.all(.5)),
+        'cone' => const ConeEmitterShape(angle: .5, radius: .1),
+        _ => PointEmitterShape(),
+      },
+      spawner: Spawner(rate: spec.rate),
+      lifetime: ConstantFloat(spec.lifetime),
+      startSpeed: const ConstantFloat(1),
+      startSize: ConstantFloat(spec.size),
+      startColor: ConstantColor(_linearColor4(spec.color)),
+      gravity: spec.modules.contains('gravity') ? Vector3(0, -9.8, 0) : null,
+      modules: [
+        if (spec.modules.contains('turbulence')) TurbulenceModule(),
+        if (spec.modules.contains('rotation')) const RotationModule(),
+        if (spec.modules.contains('drag')) LinearDragModule(1),
+      ],
+      seed: entity.id,
+    );
+    final component = ParticleEmitterComponent(system: system);
+    _particleEmitters[entity] = (signature: signature, component: component);
+    return component;
+  }
+
   static Vector3 _linearColor(String source) {
     final normalized = source.replaceFirst('#', '');
     final rgb =
@@ -142,5 +258,14 @@ class FlutterSceneAdapter {
       ((rgb >> 8) & 0xff) / 255,
       (rgb & 0xff) / 255,
     );
+  }
+
+  static Vector4 _linearColor4(String source) {
+    final color = _linearColor(source);
+    final normalized = source.replaceFirst('#', '');
+    final alpha = normalized.length == 8
+        ? (int.tryParse(normalized.substring(0, 2), radix: 16) ?? 255) / 255
+        : 1.0;
+    return Vector4(color.x, color.y, color.z, alpha);
   }
 }
