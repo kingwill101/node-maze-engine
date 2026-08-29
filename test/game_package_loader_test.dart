@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:node/game/components.dart';
 import 'package:node/game/maze_game.dart';
+import 'package:node/platformer/platformer_components.dart';
 import 'package:node/scripting/lua_game_package_loader.dart';
 
 void main() {
@@ -91,7 +92,11 @@ void main() {
       ),
       hasLength(14),
     );
-    expect(world.get<ScriptDrawings>(game.player).values.keys, contains('cap'));
+    final playerDrawings = world.get<ScriptDrawings>(game.player).values;
+    expect(playerDrawings.keys, contains('cap'));
+    final boot = playerDrawings['boot_left']!;
+    final body = world.get<PlatformerBody>(game.player);
+    expect(boot.y - boot.scaleY, closeTo(-body.halfHeight, .0001));
 
     game.setPlatformerAxis(1);
     for (var frame = 0; frame < 12; frame++) {

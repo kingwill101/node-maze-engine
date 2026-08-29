@@ -6,6 +6,10 @@ local checkpoint_y = 0.9
 local respawns = 0
 local damage_cooldown = 0
 local animation_time = 0
+-- Scripted platformer rigs use the entity origin at the collider centre.
+-- Tavi's original art was authored from the soles upward, so translate the
+-- whole rig to put the lowest boot point at PlatformerBody.halfHeight (-0.45).
+local rig_y = -0.49
 
 local chapters = {
   ['Clover Gearway'] = { count = 16, heights = {0,0.8,1.7,0.7,0,1.1,2.0,1.0}, moving = false },
@@ -29,16 +33,16 @@ end
 local function dress_player()
   Node.add_component(player, 'platformer_player', { grounded = false })
   Node.add_component(player, 'character_animation', { state = 'idle', facing = 1 })
-  draw_sphere(player, 'body', 0, 0.66, 0, 0.34, '#2676d8')
-  draw_sphere(player, 'head', 0, 1.2, 0, 0.4, '#f7c873')
-  draw_box(player, 'cap', -0.05, 1.58, 0, 0.42, 0.12, 0.36, '#16a085')
-  draw_box(player, 'cap_bill', 0.34, 1.5, 0, 0.24, 0.06, 0.32, '#0f766e')
-  draw_sphere(player, 'eye', 0.27, 1.27, 0.3, 0.055, '#172554')
-  draw_box(player, 'boot_left', -0.2, 0.2, 0, 0.18, 0.16, 0.28, '#c2413b')
-  draw_box(player, 'boot_right', 0.2, 0.2, 0, 0.18, 0.16, 0.28, '#c2413b')
-  draw_sphere(player, 'glove_left', -0.38, 0.72, 0, 0.13, '#f5f1d8')
-  draw_sphere(player, 'glove_right', 0.38, 0.72, 0, 0.13, '#f5f1d8')
-  draw_box(player, 'scarf', -0.28, 1.0, -0.05, 0.34, 0.08, 0.12, '#ff8a3d')
+  draw_sphere(player, 'body', 0, rig_y + 0.66, 0, 0.34, '#2676d8')
+  draw_sphere(player, 'head', 0, rig_y + 1.2, 0, 0.4, '#f7c873')
+  draw_box(player, 'cap', -0.05, rig_y + 1.58, 0, 0.42, 0.12, 0.36, '#16a085')
+  draw_box(player, 'cap_bill', 0.34, rig_y + 1.5, 0, 0.24, 0.06, 0.32, '#0f766e')
+  draw_sphere(player, 'eye', 0.27, rig_y + 1.27, 0.3, 0.055, '#172554')
+  draw_box(player, 'boot_left', -0.2, rig_y + 0.2, 0, 0.18, 0.16, 0.28, '#c2413b')
+  draw_box(player, 'boot_right', 0.2, rig_y + 0.2, 0, 0.18, 0.16, 0.28, '#c2413b')
+  draw_sphere(player, 'glove_left', -0.38, rig_y + 0.72, 0, 0.13, '#f5f1d8')
+  draw_sphere(player, 'glove_right', 0.38, rig_y + 0.72, 0, 0.13, '#f5f1d8')
+  draw_box(player, 'scarf', -0.28, rig_y + 1.0, -0.05, 0.34, 0.08, 0.12, '#ff8a3d')
 end
 
 local function build_level(root, config)
@@ -84,16 +88,16 @@ local function animate_player(root, delta)
   local facing = axis < 0 and -1 or 1
   local stride = math.abs(axis) > 0.01 and math.sin(animation_time * 13) or 0
   local bob = math.abs(stride) * 0.035
-  draw_sphere(player, 'body', 0, 0.66 + bob, 0, 0.34, '#2676d8')
-  draw_sphere(player, 'head', 0, 1.2 + bob, 0, 0.4, '#f7c873')
-  draw_box(player, 'cap', -0.05, 1.58 + bob, 0, 0.42, 0.12, 0.36, '#16a085')
-  draw_box(player, 'cap_bill', facing * 0.34, 1.5 + bob, 0, 0.24, 0.06, 0.32, '#0f766e')
-  draw_sphere(player, 'eye', facing * 0.27, 1.27 + bob, 0.3, 0.055, '#172554')
-  draw_box(player, 'boot_left', -0.2, 0.2 + stride * 0.07, 0, 0.18, 0.16, 0.28, '#c2413b')
-  draw_box(player, 'boot_right', 0.2, 0.2 - stride * 0.07, 0, 0.18, 0.16, 0.28, '#c2413b')
-  draw_sphere(player, 'glove_left', -0.38, 0.72 - stride * 0.08, 0, 0.13, '#f5f1d8')
-  draw_sphere(player, 'glove_right', 0.38, 0.72 + stride * 0.08, 0, 0.13, '#f5f1d8')
-  draw_box(player, 'scarf', -facing * 0.28, 1.0 + bob, -0.05, 0.34, 0.08, 0.12, '#ff8a3d')
+  draw_sphere(player, 'body', 0, rig_y + 0.66 + bob, 0, 0.34, '#2676d8')
+  draw_sphere(player, 'head', 0, rig_y + 1.2 + bob, 0, 0.4, '#f7c873')
+  draw_box(player, 'cap', -0.05, rig_y + 1.58 + bob, 0, 0.42, 0.12, 0.36, '#16a085')
+  draw_box(player, 'cap_bill', facing * 0.34, rig_y + 1.5 + bob, 0, 0.24, 0.06, 0.32, '#0f766e')
+  draw_sphere(player, 'eye', facing * 0.27, rig_y + 1.27 + bob, 0.3, 0.055, '#172554')
+  draw_box(player, 'boot_left', -0.2, rig_y + 0.2 + stride * 0.07, 0, 0.18, 0.16, 0.28, '#c2413b')
+  draw_box(player, 'boot_right', 0.2, rig_y + 0.2 - stride * 0.07, 0, 0.18, 0.16, 0.28, '#c2413b')
+  draw_sphere(player, 'glove_left', -0.38, rig_y + 0.72 - stride * 0.08, 0, 0.13, '#f5f1d8')
+  draw_sphere(player, 'glove_right', 0.38, rig_y + 0.72 + stride * 0.08, 0, 0.13, '#f5f1d8')
+  draw_box(player, 'scarf', -facing * 0.28, rig_y + 1.0 + bob, -0.05, 0.34, 0.08, 0.12, '#ff8a3d')
   Node.set_value(player, 'character_animation', 'state', math.abs(axis) > 0.01 and 'run' or 'idle')
   Node.set_value(player, 'character_animation', 'facing', facing)
 end
