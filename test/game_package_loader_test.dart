@@ -104,6 +104,12 @@ void main() {
     final platformTop =
         firstPlatform.$2.y +
         (firstPlatform.$3.values['platform']!['height'] as num).toDouble();
+    final firstPlatformWidth =
+        (firstPlatform.$3.values['platform']!['width'] as num).toDouble();
+    final platformDrawing = world
+        .get<ScriptDrawings>(firstPlatform.$1)
+        .values['grass']!;
+    expect(platformDrawing.scaleX, firstPlatformWidth);
     for (var frame = 0; frame < 12; frame++) {
       game.advance(.05);
       await Future<void>.delayed(Duration.zero);
@@ -130,6 +136,11 @@ void main() {
       beetle.$2.y + beetleFoot.y - beetleFoot.scaleY / 2,
       closeTo(beetlePlatform.$2.y + .385, .0001),
     );
+    final beetleWalker = beetle.$3.values['walker']!;
+    final beetlePlatformWidth =
+        (beetlePlatform.$3.values['platform']!['width'] as num).toDouble();
+    expect(beetleWalker['origin'], beetlePlatform.$2.x);
+    expect(beetleWalker['range'], closeTo(beetlePlatformWidth / 2 - .4, .0001));
 
     game.setPlatformerAxis(1);
     for (var frame = 0; frame < 12; frame++) {

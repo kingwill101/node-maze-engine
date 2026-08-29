@@ -25,9 +25,11 @@ local function platform(path, x, y, width, moving)
   drawing_remove(entity, 'brick')
   drawing_remove(entity, 'grass')
   drawing_remove(entity, 'soil')
-  draw_box(entity, 'brick', 0, 0, 0, width * 0.5, 0.34, 0.9, '#c96b32')
-  draw_box(entity, 'grass', 0, 0.34, 0, width * 0.5, 0.09, 0.94, '#55c95d')
-  draw_box(entity, 'soil', 0, -0.25, 0, width * 0.46, 0.08, 0.88, '#7b3f2b')
+  -- draw_box accepts full dimensions, just like platform.width. Keeping these
+  -- equal makes the visible edge and collision edge the same place.
+  draw_box(entity, 'brick', 0, 0, 0, width, 0.34, 0.9, '#c96b32')
+  draw_box(entity, 'grass', 0, 0.34, 0, width, 0.09, 0.94, '#55c95d')
+  draw_box(entity, 'soil', 0, -0.25, 0, width * 0.92, 0.08, 0.88, '#7b3f2b')
   if moving then Node.add_component(entity, 'moving_platform', { origin = y, phase = x * 0.17 }) end
   return entity
 end
@@ -74,8 +76,9 @@ local function build_level(root, config)
     end
     if index > 2 and index % 4 == 0 then
       -- Feet end at local -0.06; +0.445 puts them on grass at +0.385.
-      local bug = Prefab.instantiate('beetle', '/root/beetles/' .. index, x + 0.45, y + 0.445, 2)
-      Node.set_value(bug, 'walker', 'origin', x + 0.45)
+      local bug = Prefab.instantiate('beetle', '/root/beetles/' .. index, x, y + 0.445, 2)
+      Node.set_value(bug, 'walker', 'origin', x)
+      Node.set_value(bug, 'walker', 'range', math.max(0, width * 0.5 - 0.4))
       ride_platform(bug, landing)
     end
     if index > 2 and index % 7 == 0 then
