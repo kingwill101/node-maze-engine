@@ -6,6 +6,61 @@ import 'package:node/scripting/lua_behavior_runtime.dart';
 
 void main() {
   test(
+    'Lua defines components, resources, queries, and scheduled systems',
+    () async {
+      final engine = EngineContext();
+      final root = engine.world.create([
+        Transform3(0, 0, 0),
+        ScriptProperties(),
+        ScriptComponents(),
+      ]);
+      final actor = engine.world.create([
+        Transform3(2, 0, 0),
+        ScriptComponents(),
+      ]);
+      final excluded = engine.world.create([
+        Transform3(3, 0, 0),
+        ScriptComponents({
+          'disabled': {'value': true},
+        }),
+      ]);
+      final lua = LuaBehaviorRuntime(engine);
+      await lua.load('''
+      Component.define('velocity', { x = 1, y = 0 })
+      Node.add_component($actor, 'velocity', { x = 3 })
+      Node.add_component($excluded, 'velocity', { x = 8 })
+      Resource.insert('difficulty', { multiplier = 2 })
+
+      App.add_system('move', 'fixed_update', {
+        with = { 'transform', 'velocity' },
+        without = { 'disabled' },
+      }, function(entities, delta)
+        local difficulty = Resource.get('difficulty')
+        for _, entity in ipairs(entities) do
+          local velocity = World.get(entity, 'velocity')
+          entity_set_position(
+            entity,
+            entity_get_x(entity) + velocity.x * difficulty.multiplier * delta,
+            entity_get_y(entity),
+            entity_get_z(entity)
+          )
+        end
+      end)
+    ''');
+
+      await lua.ready(root);
+      await lua.fixedUpdate(root, .5);
+
+      expect(engine.world.get<Transform3>(actor).x, 5);
+      expect(engine.world.get<Transform3>(excluded).x, 3);
+      expect(
+        engine.world.get<ScriptComponents>(actor).values['velocity']?['y'],
+        0,
+      );
+    },
+  );
+
+  test(
     'Lua behavior can mutate an entity through the restricted bridge',
     () async {
       final engine = EngineContext();

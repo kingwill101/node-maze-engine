@@ -13,12 +13,19 @@ class World {
   int get entityCount => _entities.length;
 
   Entity create([Iterable<Object> components = const []]) {
-    final entity = Entity(_nextEntity++);
+    final entity = reserve();
+    materialize(entity, components);
+    return entity;
+  }
+
+  Entity reserve() => Entity(_nextEntity++);
+
+  void materialize(Entity entity, [Iterable<Object> components = const []]) {
+    if (isAlive(entity)) throw StateError('Entity $entity is already alive');
     _entities.add(entity);
     for (final component in components) {
       addObject(entity, component);
     }
-    return entity;
   }
 
   bool isAlive(Entity entity) => _entities.contains(entity);
@@ -49,6 +56,11 @@ class World {
   bool has<T extends Object>(Entity entity) =>
       _stores[T]?.containsKey(entity) ?? false;
 
+  bool hasType(Entity entity, Type type) =>
+      _stores[type]?.containsKey(entity) ?? false;
+
+  Object? maybeGetType(Entity entity, Type type) => _stores[type]?[entity];
+
   T? remove<T extends Object>(Entity entity) =>
       _stores[T]?.remove(entity) as T?;
 
@@ -70,6 +82,28 @@ class World {
       final b = bStore[entity];
       if (a != null && b != null && isAlive(entity)) {
         yield (entity, a as A, b as B);
+      }
+    }
+  }
+
+  Iterable<(Entity, A, B, C)>
+  query3<A extends Object, B extends Object, C extends Object>() sync* {
+    for (final (entity, a, b) in query2<A, B>()) {
+      final c = maybeGet<C>(entity);
+      if (c != null) yield (entity, a, b, c);
+    }
+  }
+
+  Iterable<Entity> queryTypes({
+    Iterable<Type> withTypes = const <Type>[],
+    Iterable<Type> withoutTypes = const <Type>[],
+  }) sync* {
+    final required = withTypes.toList(growable: false);
+    final excluded = withoutTypes.toList(growable: false);
+    for (final entity in List<Entity>.of(_entities)) {
+      if (required.every((type) => hasType(entity, type)) &&
+          excluded.every((type) => !hasType(entity, type))) {
+        yield entity;
       }
     }
   }

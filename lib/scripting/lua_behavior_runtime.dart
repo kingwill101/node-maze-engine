@@ -176,6 +176,17 @@ class LuaBehaviorRuntime {
             entity.id,
       ];
     });
+    _expose('query_components', (args) {
+      final withComponents = _stringList(_argument(args, 0));
+      final withoutComponents = args.length > 1
+          ? _stringList(_argument(args, 1))
+          : const <String>[];
+      return [
+        for (final entity in engine.world.entities)
+          if (_matchesScriptQuery(entity, withComponents, withoutComponents))
+            entity.id,
+      ];
+    });
     _expose('entity_add_component', (args) {
       final entity = _entity(args);
       switch (_string(args, 1)) {
@@ -584,6 +595,86 @@ class LuaBehaviorRuntime {
   Future<void> load(String source, {String? scriptPath}) async {
     await _lua.execute('''
 local __node_prefabs = {}
+local __node_component_schemas = {}
+local __node_resources = {}
+local __node_systems = {
+  startup = {}, pre_update = {}, fixed_update = {}, update = {}, post_update = {}
+}
+
+local function __node_copy(value)
+  if type(value) ~= "table" then return value end
+  local result = {}
+  for key, item in pairs(value) do result[key] = __node_copy(item) end
+  return result
+end
+
+local function __node_merge(defaults, values)
+  local result = __node_copy(defaults or {})
+  for key, value in pairs(values or {}) do result[key] = __node_copy(value) end
+  return result
+end
+
+Component = {}
+function Component.define(name, defaults)
+  __node_component_schemas[name] = __node_copy(defaults or {})
+end
+function Component.has(name) return __node_component_schemas[name] ~= nil end
+function Component.new(name, values)
+  return __node_merge(__node_component_schemas[name], values)
+end
+
+Resource = {}
+function Resource.insert(name, value) __node_resources[name] = value end
+function Resource.has(name) return __node_resources[name] ~= nil end
+function Resource.get(name) return __node_resources[name] end
+function Resource.remove(name)
+  local value = __node_resources[name]
+  __node_resources[name] = nil
+  return value
+end
+
+World = {}
+function World.query(...)
+  return query_components({...}, {})
+end
+function World.query_filtered(with_components, without_components)
+  return query_components(with_components or {}, without_components or {})
+end
+function World.get(entity, component) return get_component(entity, component) end
+function World.has(entity, component) return entity_has_component(entity, component) end
+
+Commands = {}
+function Commands.despawn(entity) return entity_destroy(entity) end
+function Commands.add(entity, component, values)
+  return add_component(entity, component, Component.new(component, values))
+end
+function Commands.remove(entity, component) return remove_component(entity, component) end
+
+System = {}
+function System.add(name, schedule, query, handler)
+  if handler == nil then handler, query = query, nil end
+  local systems = __node_systems[schedule]
+  if systems == nil then error("Unknown schedule: " .. tostring(schedule)) end
+  for _, system in ipairs(systems) do
+    if system.name == name then error("Duplicate system: " .. tostring(name)) end
+  end
+  table.insert(systems, { name = name, query = query, handler = handler })
+end
+
+local function __node_run_systems(schedule, entity, delta)
+  for _, system in ipairs(__node_systems[schedule] or {}) do
+    if system.query == nil then
+      system.handler(entity, delta)
+    else
+      system.handler(World.query_filtered(system.query.with or {}, system.query.without or {}), delta)
+    end
+  end
+end
+
+App = { api_version = 1 }
+function App.add_system(name, schedule, query, handler)
+  return System.add(name, schedule, query, handler)
+end
 
 Node = {}
 function Node.get(path) return get_node(path) end
@@ -593,7 +684,9 @@ function Node.queue_free(entity) return entity_destroy(entity) end
 function Node.add_to_group(entity, group) return entity_add_to_group(entity, group) end
 function Node.remove_from_group(entity, group) return entity_remove_from_group(entity, group) end
 function Node.is_in_group(entity, group) return entity_is_in_group(entity, group) end
-function Node.add_component(entity, component, data) return add_component(entity, component, data or {}) end
+function Node.add_component(entity, component, data)
+  return add_component(entity, component, Component.new(component, data))
+end
 function Node.remove_component(entity, component) return remove_component(entity, component) end
 function Node.has_component(entity, component) return entity_has_component(entity, component) end
 function Node.get_component(entity, component) return get_component(entity, component) end
@@ -628,6 +721,19 @@ function __node_dispatch(callback, entity, delta)
   end
 end
 
+function __node_ready(entity)
+  __node_run_systems("startup", entity, 0)
+  return __node_dispatch("ready", entity, 0)
+end
+
+function __node_tick(schedule, entity, delta)
+  if schedule == "update" then __node_run_systems("pre_update", entity, delta) end
+  __node_run_systems(schedule, entity, delta)
+  local result = __node_dispatch(schedule, entity, delta)
+  if schedule == "update" then __node_run_systems("post_update", entity, delta) end
+  return result
+end
+
 function __node_signal(entity, name, source, payload)
   if signal_received ~= nil then
     return signal_received(entity, name, source, payload)
@@ -640,9 +746,10 @@ end
 ''', scriptPath: scriptPath);
   }
 
-  Future<Object?> ready(Entity entity) => _dispatch('ready', entity, 0);
+  Future<Object?> ready(Entity entity) =>
+      _lua.call('__node_ready', [entity.id]);
   Future<Object?> update(Entity entity, double delta) =>
-      _dispatch('update', entity, delta);
+      _lua.call('__node_tick', ['update', entity.id, delta]);
   Future<Object?> fixedUpdate(Entity entity, double delta) async {
     final expired = <String>[];
     for (final entry in _timers.entries.toList()) {
@@ -658,16 +765,13 @@ end
     for (final name in expired) {
       await _lua.call('__node_timeout', [entity.id, name]);
     }
-    return _dispatch('fixed_update', entity, delta);
+    return _lua.call('__node_tick', ['fixed_update', entity.id, delta]);
   }
 
   Future<Object?> signalReceived(Entity entity, LuaSignal signal) => _lua.call(
     '__node_signal',
     [entity.id, signal.name, signal.source, signal.payload],
   );
-
-  Future<Object?> _dispatch(String callback, Entity entity, double delta) =>
-      _lua.call('__node_dispatch', [callback, entity.id, delta]);
 
   MoveDirection _direction(String value) => switch (value) {
     'left' => MoveDirection.left,
@@ -707,6 +811,43 @@ end
       );
     }
     return {for (final entry in raw.entries) entry.key.toString(): entry.value};
+  }
+
+  List<String> _stringList(Object? value) {
+    final raw = _deepUnwrap(value);
+    if (raw == null) return const <String>[];
+    if (raw is List) return raw.map((item) => item.toString()).toList();
+    if (raw is Map) {
+      final entries = raw.entries.toList()
+        ..sort((a, b) {
+          final ai = int.tryParse(a.key.toString()) ?? 0;
+          final bi = int.tryParse(b.key.toString()) ?? 0;
+          return ai.compareTo(bi);
+        });
+      return entries.map((entry) => entry.value.toString()).toList();
+    }
+    return <String>[raw.toString()];
+  }
+
+  bool _matchesScriptQuery(
+    Entity entity,
+    List<String> withComponents,
+    List<String> withoutComponents,
+  ) {
+    bool has(String name) {
+      if (name == 'transform') return engine.world.has<Transform3>(entity);
+      if (name == 'properties') {
+        return engine.world.has<ScriptProperties>(entity);
+      }
+      if (name == 'groups') return engine.world.has<ScriptGroups>(entity);
+      return engine.world
+              .maybeGet<ScriptComponents>(entity)
+              ?.values
+              .containsKey(name) ??
+          false;
+    }
+
+    return withComponents.every(has) && !withoutComponents.any(has);
   }
 
   ScriptProperties _properties(Entity entity) {
