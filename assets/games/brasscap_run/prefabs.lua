@@ -2,7 +2,8 @@ local M = {}
 
 function M.register()
   Prefab.define('grass_platform', function(entity)
-    Node.add_component(entity, 'platform', { width = 4, height = 0.35 })
+    -- Collision reaches the top of the grass cap: 0.34 centre + 0.09 radius.
+    Node.add_component(entity, 'platform', { width = 4, height = 0.43 })
     draw_box(entity, 'brick', 0, 0, 0, 2, 0.34, 0.9, '#c96b32')
     draw_box(entity, 'grass', 0, 0.34, 0, 2, 0.09, 0.94, '#55c95d')
     draw_box(entity, 'soil', 0, -0.25, 0, 1.8, 0.08, 0.88, '#7b3f2b')

@@ -63,7 +63,8 @@ local function build_level(root, config)
       gears_left, gears_total = gears_left + 1, gears_total + 1
     end
     if index > 2 and index % 4 == 0 then
-      local bug = Prefab.instantiate('beetle', '/root/beetles/' .. index, x + 0.45, y + 0.72, 2)
+      -- Beetle feet sit at local -0.10, so +0.53 puts them on grass at +0.43.
+      local bug = Prefab.instantiate('beetle', '/root/beetles/' .. index, x + 0.45, y + 0.53, 2)
       Node.set_value(bug, 'walker', 'origin', x + 0.45)
     end
     if index > 2 and index % 7 == 0 then

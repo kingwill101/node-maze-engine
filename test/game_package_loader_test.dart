@@ -98,6 +98,39 @@ void main() {
     final body = world.get<PlatformerBody>(game.player);
     expect(boot.y - boot.scaleY, closeTo(-body.halfHeight, .0001));
 
+    final firstPlatform = world
+        .query2<Transform3, ScriptComponents>()
+        .firstWhere((entry) => entry.$3.values.containsKey('platform'));
+    final platformTop =
+        firstPlatform.$2.y +
+        (firstPlatform.$3.values['platform']!['height'] as num).toDouble();
+    for (var frame = 0; frame < 12; frame++) {
+      game.advance(.05);
+      await Future<void>.delayed(Duration.zero);
+    }
+    final playerTransform = world.get<Transform3>(game.player);
+    expect(playerTransform.y - body.halfHeight, closeTo(platformTop, .0001));
+
+    final beetle = world.query2<Transform3, ScriptComponents>().firstWhere(
+      (entry) => entry.$3.values.containsKey('walker'),
+    );
+    final beetleDrawings = world.get<ScriptDrawings>(beetle.$1).values;
+    final beetleFoot = beetleDrawings['foot_a']!;
+    final beetlePlatform = world
+        .query2<Transform3, ScriptComponents>()
+        .where((entry) => entry.$3.values.containsKey('platform'))
+        .reduce(
+          (closest, candidate) =>
+              (candidate.$2.x - beetle.$2.x).abs() <
+                  (closest.$2.x - beetle.$2.x).abs()
+              ? candidate
+              : closest,
+        );
+    expect(
+      beetle.$2.y + beetleFoot.y - beetleFoot.scaleY,
+      closeTo(beetlePlatform.$2.y + .43, .0001),
+    );
+
     game.setPlatformerAxis(1);
     for (var frame = 0; frame < 12; frame++) {
       game.advance(.05);
