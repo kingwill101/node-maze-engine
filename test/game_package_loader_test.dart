@@ -146,4 +146,59 @@ void main() {
       expect(await File(path).readAsString(), isNot(contains('brasscap_run')));
     }
   });
+
+  test('Brasscap Lua moving platforms preserve live rider offsets', () async {
+    final catalog = await const LuaGamePackageLoader().load(rootBundle);
+    final brasscap = catalog.games.singleWhere(
+      (game) => game.id == 'brasscap_run',
+    );
+    final game = MazeGame(level: brasscap.campaign.levels[1]);
+    await game.loadGameScripts(
+      autoloadSource: await rootBundle.loadString(brasscap.autoloadPath),
+      ghostSource: '',
+      prefabSource: await rootBundle.loadString(brasscap.prefabPath),
+    );
+    final world = game.runtime.context.world;
+    final platform = game.sceneTree.getNode('/root/platforms/12')!;
+    final beetle = game.sceneTree.getNode('/root/beetles/12')!;
+    final gear = game.sceneTree.getNode('/root/gears/12')!;
+    final platformYBefore = world.get<Transform3>(platform).y;
+    final beetleYBefore = world.get<Transform3>(beetle).y;
+    final relativeY = beetleYBefore - platformYBefore;
+    final gearOffset =
+        world.get<Transform3>(gear).y - world.get<Transform3>(platform).y;
+
+    game.advance(.1);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+
+    final platformAfter = world.get<Transform3>(platform);
+    final beetleAfter = world.get<Transform3>(beetle);
+    expect(platformAfter.y, isNot(closeTo(platformYBefore, .0001)));
+    expect(beetleAfter.y - platformAfter.y, closeTo(relativeY, .0001));
+    expect(
+      world.get<Transform3>(gear).y - platformAfter.y,
+      closeTo(gearOffset, .0001),
+    );
+
+    final playerPlatform = game.sceneTree.getNode('/root/platforms/6')!;
+    final playerPlatformTransform = world.get<Transform3>(playerPlatform);
+    final playerTransform = world.get<Transform3>(game.player)
+      ..x = playerPlatformTransform.x
+      ..y = playerPlatformTransform.y + .385 + .45;
+    final body = world.get<PlatformerBody>(game.player)
+      ..velocityY = 0
+      ..grounded = false
+      ..groundedPlatform = null;
+    game.advance(.02);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    expect(body.groundedPlatform, playerPlatform);
+    final playerOffset = playerTransform.y - playerPlatformTransform.y;
+
+    game.advance(.1);
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    expect(
+      playerTransform.y - playerPlatformTransform.y,
+      closeTo(playerOffset, .0001),
+    );
+  });
 }

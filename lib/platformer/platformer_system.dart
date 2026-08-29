@@ -140,5 +140,8 @@ void movePlatformAndRiders(
       ..x += dx
       ..y += dy
       ..z += dz;
+    final walker = scripts?.values['walker'];
+    final origin = walker?['origin'];
+    if (origin is num && dx != 0) walker!['origin'] = origin.toDouble() + dx;
   }
 }
