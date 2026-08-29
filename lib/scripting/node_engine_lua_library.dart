@@ -295,6 +295,167 @@ class NodeEngineLuaLibrary extends NodeEngineDocumentedLibrary {
         ),
       ],
     ),
+    TableDoc(
+      name: 'Vec3',
+      description: 'Three-dimensional vector accepted by engine APIs.',
+      fields: [
+        FieldDoc(key: 'x', type: 'number', description: 'X component.'),
+        FieldDoc(key: 'y', type: 'number', description: 'Y component.'),
+        FieldDoc(key: 'z', type: 'number', description: 'Z component.'),
+      ],
+    ),
+    TableDoc(
+      name: 'PhysicsBodyOptions',
+      description: 'Rigid-body configuration consumed by Physics.body.',
+      fields: [
+        FieldDoc(
+          key: 'kind',
+          type: '"fixed"|"kinematic"|"dynamic"',
+          description: 'How the body moves. Dynamic requires a solver backend.',
+        ),
+        FieldDoc(key: 'mass', type: 'number', description: 'Additional mass.'),
+        FieldDoc(
+          key: 'velocity',
+          type: 'Vec3',
+          description: 'Initial linear velocity.',
+        ),
+        FieldDoc(
+          key: 'angular_velocity',
+          type: 'Vec3',
+          description: 'Initial angular velocity.',
+        ),
+        FieldDoc(
+          key: 'linear_damping',
+          type: 'number',
+          description: 'Linear damping coefficient.',
+        ),
+        FieldDoc(
+          key: 'angular_damping',
+          type: 'number',
+          description: 'Angular damping coefficient.',
+        ),
+        FieldDoc(
+          key: 'gravity_scale',
+          type: 'number',
+          description: 'Multiplier applied to world gravity.',
+        ),
+        FieldDoc(
+          key: 'ccd',
+          type: 'boolean',
+          description: 'Enables continuous collision detection.',
+        ),
+        FieldDoc(
+          key: 'linear_axis_factor',
+          type: 'Vec3',
+          description: 'Per-axis linear motion factors from 0 to 1.',
+        ),
+        FieldDoc(
+          key: 'angular_axis_factor',
+          type: 'Vec3',
+          description: 'Per-axis angular motion factors from 0 to 1.',
+        ),
+      ],
+    ),
+    TableDoc(
+      name: 'PhysicsColliderOptions',
+      description: 'Collider shape, material, trigger, and filter values.',
+      fields: [
+        FieldDoc(
+          key: 'shape',
+          type: '"box"|"sphere"|"capsule"|"cylinder"',
+          description: 'Primitive collision shape.',
+        ),
+        FieldDoc(
+          key: 'half_extents',
+          type: 'Vec3',
+          description: 'Box half-size on each axis.',
+        ),
+        FieldDoc(
+          key: 'radius',
+          type: 'number',
+          description: 'Sphere, capsule, or cylinder radius.',
+        ),
+        FieldDoc(
+          key: 'half_height',
+          type: 'number',
+          description: 'Capsule or cylinder half-height.',
+        ),
+        FieldDoc(key: 'offset', type: 'Vec3', description: 'Local offset.'),
+        FieldDoc(
+          key: 'trigger',
+          type: 'boolean',
+          description: 'Reports overlaps without solid contact.',
+        ),
+        FieldDoc(
+          key: 'friction',
+          type: 'number',
+          description: 'Surface friction.',
+        ),
+        FieldDoc(
+          key: 'restitution',
+          type: 'number',
+          description: 'Surface bounciness.',
+        ),
+        FieldDoc(
+          key: 'density',
+          type: 'number',
+          description: 'Mass per unit volume.',
+        ),
+        FieldDoc(
+          key: 'layer',
+          type: 'integer',
+          description: 'Collision membership bit mask.',
+        ),
+        FieldDoc(
+          key: 'mask',
+          type: 'integer',
+          description: 'Layers this collider interacts with.',
+        ),
+      ],
+    ),
+    TableDoc(
+      name: 'PhysicsQueryOptions',
+      description: 'Shared filtering options for spatial queries.',
+      fields: [
+        FieldDoc(
+          key: 'max_distance',
+          type: 'number',
+          description: 'Maximum ray distance.',
+        ),
+        FieldDoc(
+          key: 'layer_mask',
+          type: 'integer',
+          description: 'Collider layers included by the query.',
+        ),
+        FieldDoc(
+          key: 'include_triggers',
+          type: 'boolean',
+          description: 'Whether trigger volumes can be returned.',
+        ),
+      ],
+    ),
+    TableDoc(
+      name: 'PhysicsRayHit',
+      description: 'Entity-resolved scene-query result.',
+      fields: [
+        FieldDoc(
+          key: 'entity',
+          type: 'integer',
+          description: 'Hit entity identifier.',
+        ),
+        FieldDoc(key: 'point', type: 'Vec3', description: 'World hit point.'),
+        FieldDoc(
+          key: 'normal',
+          type: 'Vec3',
+          description: 'World surface normal.',
+        ),
+        FieldDoc(
+          key: 'distance',
+          type: 'number',
+          description: 'Distance from query origin.',
+        ),
+      ],
+    ),
   ];
 }
 

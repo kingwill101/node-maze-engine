@@ -1,12 +1,16 @@
 import 'package:lualike/docs.dart';
 import 'package:lualike/lualike.dart';
+import 'package:scene/physics.dart' as scene_physics;
+import 'package:vector_math/vector_math.dart';
 
+import '../engine/core_plugins.dart';
 import '../engine/entity.dart';
 import '../engine/runtime.dart';
 import '../engine/scene_tree.dart';
 import '../game/components.dart';
 import '../platformer/platformer_components.dart';
 import '../platformer/platformer_system.dart';
+import '../physics/physics_plugin.dart';
 import '../scene/render_components.dart';
 import 'node_engine_lua_library.dart';
 
@@ -321,6 +325,88 @@ class LuaBehaviorRuntime {
         },
       ),
     );
+    _lua.register(
+      NodeEngineFacadeLibrary(
+        namespace: 'Physics',
+        summary: 'Backend-neutral rigid bodies, colliders, and scene queries.',
+        functions: {
+          'body': (
+            callback: native('physics_set_body'),
+            doc: doc('Creates or replaces an entity rigid body.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('options', 'PhysicsBodyOptions', 'Body configuration.'),
+            ]),
+          ),
+          'collider': (
+            callback: native('physics_set_collider'),
+            doc: doc('Creates or replaces an entity collider.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam(
+                'options',
+                'PhysicsColliderOptions',
+                'Shape, material, and filter configuration.',
+              ),
+            ]),
+          ),
+          'remove': (
+            callback: native('physics_remove'),
+            doc: doc('Removes physics components from an entity.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+            ]),
+          ),
+          'raycast': (
+            callback: native('physics_raycast'),
+            doc: doc(
+              'Returns the closest collider along a ray.',
+              [
+                DocParam('origin', 'Vec3', 'World-space ray origin.'),
+                DocParam('direction', 'Vec3', 'Ray direction.'),
+                DocParam(
+                  'options',
+                  'PhysicsQueryOptions',
+                  'Query filters.',
+                  optional: true,
+                ),
+              ],
+              returns: 'Closest hit, or nil.',
+              returnType: 'PhysicsRayHit|nil',
+            ),
+          ),
+          'overlap_sphere': (
+            callback: native('physics_overlap_sphere'),
+            doc: doc(
+              'Returns entities overlapping a sphere.',
+              [
+                DocParam('center', 'Vec3', 'World-space sphere center.'),
+                DocParam('radius', 'number', 'Sphere radius.'),
+                DocParam(
+                  'options',
+                  'PhysicsQueryOptions',
+                  'Query filters.',
+                  optional: true,
+                ),
+              ],
+              returns: 'Unique overlapping entity identifiers.',
+              returnType: 'integer[]',
+            ),
+          ),
+          'set_velocity': (
+            callback: native('physics_set_velocity'),
+            doc: doc('Sets a registered body linear velocity.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('velocity', 'Vec3', 'World-space velocity.'),
+            ]),
+          ),
+          'apply_impulse': (
+            callback: native('physics_apply_impulse'),
+            doc: doc('Applies an instantaneous impulse to a body.', [
+              DocParam('entity', 'integer', 'Entity identifier.'),
+              DocParam('impulse', 'Vec3', 'World-space impulse.'),
+            ]),
+          ),
+        },
+      ),
+    );
   }
 
   void _registerApi() {
@@ -603,6 +689,123 @@ class LuaBehaviorRuntime {
         ),
       );
       return entity.id;
+    });
+    _expose('physics_set_body', (args) {
+      final entity = _entity(args);
+      final data = _stringObjectMap(_argument(args, 1));
+      _ensureLocalTransform(entity);
+      _replaceComponent(
+        entity,
+        PhysicsBody3d(
+          kind: switch (data['kind']?.toString()) {
+            'dynamic' => scene_physics.BodyType.dynamic_,
+            'kinematic' => scene_physics.BodyType.kinematic,
+            _ => scene_physics.BodyType.fixed,
+          },
+          mass: data['mass'] is num ? (data['mass'] as num).toDouble() : null,
+          linearVelocity: _vector3(data['velocity']),
+          angularVelocity: _vector3(data['angular_velocity']),
+          linearDamping: _mapNumber(data, 'linear_damping', 0),
+          angularDamping: _mapNumber(data, 'angular_damping', 0),
+          gravityScale: _mapNumber(data, 'gravity_scale', 1),
+          continuousCollisionDetection: data['ccd'] == true,
+          linearAxisFactor: _vector3(
+            data['linear_axis_factor'],
+            Vector3.all(1),
+          ),
+          angularAxisFactor: _vector3(
+            data['angular_axis_factor'],
+            Vector3.all(1),
+          ),
+        ),
+      );
+      return entity.id;
+    });
+    _expose('physics_set_collider', (args) {
+      final entity = _entity(args);
+      final data = _stringObjectMap(_argument(args, 1));
+      _ensureLocalTransform(entity);
+      final shape = switch (data['shape']?.toString()) {
+        'sphere' => scene_physics.SphereShape(
+          radius: _mapNumber(data, 'radius', .5),
+        ),
+        'capsule' => scene_physics.CapsuleShape(
+          radius: _mapNumber(data, 'radius', .5),
+          halfHeight: _mapNumber(data, 'half_height', .5),
+        ),
+        'cylinder' => scene_physics.CylinderShape(
+          radius: _mapNumber(data, 'radius', .5),
+          halfHeight: _mapNumber(data, 'half_height', .5),
+        ),
+        _ => scene_physics.BoxShape(
+          halfExtents: _vector3(data['half_extents'], Vector3.all(.5)),
+        ),
+      };
+      final offset = _vector3(data['offset']);
+      _replaceComponent(
+        entity,
+        PhysicsCollider3d(
+          shape: shape,
+          material: scene_physics.PhysicsMaterial(
+            friction: _mapNumber(data, 'friction', .5),
+            restitution: _mapNumber(data, 'restitution', 0),
+            density: _mapNumber(data, 'density', 1),
+          ),
+          isTrigger: data['trigger'] == true,
+          localPose: Matrix4.translation(offset),
+          layer: _mapNumber(data, 'layer', 0xFFFFFFFF).toInt(),
+          mask: _mapNumber(data, 'mask', 0xFFFFFFFF).toInt(),
+        ),
+      );
+      return entity.id;
+    });
+    _expose('physics_remove', (args) {
+      final entity = _entity(args);
+      engine.world
+        ..remove<PhysicsCollider3d>(entity)
+        ..remove<PhysicsBody3d>(entity);
+      return null;
+    });
+    _expose('physics_raycast', (args) {
+      final options = args.length > 2
+          ? _stringObjectMap(_argument(args, 2))
+          : const <String, Object?>{};
+      final hit = _physics.raycast(
+        _vector3(_argument(args, 0)),
+        _vector3(_argument(args, 1), Vector3(0, 0, 1)),
+        maxDistance: _mapNumber(options, 'max_distance', double.infinity),
+        layerMask: _mapNumber(options, 'layer_mask', 0xFFFFFFFF).toInt(),
+        includeTriggers: options['include_triggers'] == true,
+      );
+      if (hit == null) return null;
+      return {
+        'entity': hit.entity.id,
+        'point': _vectorTable(hit.point),
+        'normal': _vectorTable(hit.normal),
+        'distance': hit.distance,
+      };
+    });
+    _expose('physics_overlap_sphere', (args) {
+      final options = args.length > 2
+          ? _stringObjectMap(_argument(args, 2))
+          : const <String, Object?>{};
+      return _physics
+          .overlapSphere(
+            _vector3(_argument(args, 0)),
+            _number(args, 1),
+            layerMask: _mapNumber(options, 'layer_mask', 0xFFFFFFFF).toInt(),
+            includeTriggers: options['include_triggers'] == true,
+          )
+          .map((entity) => entity.id)
+          .toList(growable: false);
+    });
+    _expose('physics_set_velocity', (args) {
+      _physics.setLinearVelocity(_entity(args), _vector3(_argument(args, 1)));
+      return null;
+    });
+    _expose('physics_apply_impulse', (args) {
+      _physics.applyImpulse(_entity(args), _vector3(_argument(args, 1)));
+      return null;
     });
     _expose('entity_add_component', (args) {
       final entity = _entity(args);
@@ -1257,6 +1460,51 @@ end
         final num value => value.toDouble(),
         _ => fallback,
       };
+
+  PhysicsRuntime get _physics =>
+      engine.resources.maybeGet<PhysicsRuntime>() ??
+      (throw StateError(
+        'PhysicsPlugin is not installed. Add PhysicsPlugin to GameApp before '
+        'calling Physics queries or forces.',
+      ));
+
+  void _ensureLocalTransform(Entity entity) {
+    if (engine.world.has<LocalTransform>(entity)) return;
+    final legacy = engine.world.maybeGet<Transform3>(entity);
+    engine.world.add(
+      entity,
+      LocalTransform(
+        translation: Vector3(legacy?.x ?? 0, legacy?.y ?? 0, legacy?.z ?? 0),
+      ),
+    );
+  }
+
+  Vector3 _vector3(Object? value, [Vector3? fallback]) {
+    final raw = _deepUnwrap(value);
+    if (raw is List && raw.length >= 3) {
+      return Vector3(
+        (raw[0] as num).toDouble(),
+        (raw[1] as num).toDouble(),
+        (raw[2] as num).toDouble(),
+      );
+    }
+    if (raw is Map) {
+      num coordinate(Object key, int index, num fallbackValue) =>
+          raw[key] as num? ?? raw['${index + 1}'] as num? ?? fallbackValue;
+      return Vector3(
+        coordinate('x', 0, fallback?.x ?? 0).toDouble(),
+        coordinate('y', 1, fallback?.y ?? 0).toDouble(),
+        coordinate('z', 2, fallback?.z ?? 0).toDouble(),
+      );
+    }
+    return fallback?.clone() ?? Vector3.zero();
+  }
+
+  Map<String, double> _vectorTable(Vector3 value) => {
+    'x': value.x,
+    'y': value.y,
+    'z': value.z,
+  };
 
   ScenePrimitive _scenePrimitive(String? value) => switch (value) {
     'sphere' => ScenePrimitive.sphere,

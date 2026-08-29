@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_scene/physics.dart' as physics;
-import 'package:scene/physics.dart' as simulation_types;
+import 'package:scene/physics.dart' as physics;
 import 'package:vector_math/vector_math.dart';
 
 import '../engine/app.dart';
@@ -106,7 +105,7 @@ class PhysicsContactEvent {
   final PhysicsContactPhase phase;
   final Entity entityA;
   final Entity entityB;
-  final List<simulation_types.ContactPoint> contacts;
+  final List<physics.ContactPoint> contacts;
 }
 
 class PhysicsRayHit {
@@ -133,7 +132,7 @@ class PhysicsRuntime implements DisposableResource {
   final EngineContext context;
   final Map<Entity, _PhysicsRegistration> _registrations = {};
   final Map<int, Entity> _colliderEntities = {};
-  late final StreamSubscription<simulation_types.SimCollisionEvent>
+  late final StreamSubscription<physics.SimCollisionEvent>
   _collisionSubscription;
 
   String get backendName => simulation.backendName;
@@ -254,30 +253,29 @@ class PhysicsRuntime implements DisposableResource {
       _registrations[entity] ??
       (throw StateError('$entity has no registered physics body'));
 
-  PhysicsRayHit _rayHit(simulation_types.SimRaycastHit hit) => PhysicsRayHit(
+  PhysicsRayHit _rayHit(physics.SimRaycastHit hit) => PhysicsRayHit(
     entity: _colliderEntities[hit.colliderHandle]!,
     point: hit.worldPoint,
     normal: hit.worldNormal,
     distance: hit.distance,
   );
 
-  void _onCollision(simulation_types.SimCollisionEvent event) {
+  void _onCollision(physics.SimCollisionEvent event) {
     final a = _colliderEntities[event.colliderHandleA];
     final b = _colliderEntities[event.colliderHandleB];
     if (a == null || b == null) return;
     final phase = switch (event) {
-      simulation_types.SimCollisionBegan() => PhysicsContactPhase.began,
-      simulation_types.SimCollisionEnded() => PhysicsContactPhase.ended,
-      simulation_types.SimTriggerEntered() =>
-        PhysicsContactPhase.triggerEntered,
-      simulation_types.SimTriggerExited() => PhysicsContactPhase.triggerExited,
+      physics.SimCollisionBegan() => PhysicsContactPhase.began,
+      physics.SimCollisionEnded() => PhysicsContactPhase.ended,
+      physics.SimTriggerEntered() => PhysicsContactPhase.triggerEntered,
+      physics.SimTriggerExited() => PhysicsContactPhase.triggerExited,
     };
     context.events.emit(
       PhysicsContactEvent(
         phase: phase,
         entityA: a,
         entityB: b,
-        contacts: event is simulation_types.SimCollisionBegan
+        contacts: event is physics.SimCollisionBegan
             ? event.contacts
             : const [],
       ),

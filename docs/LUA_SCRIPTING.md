@@ -120,6 +120,48 @@ entity_remove_component(entity, 'drawings')
 Native operations remain the capability boundary; game-defined named
 components are deliberately open-ended data.
 
+## Physics
+
+When the host installs `PhysicsPlugin`, Lua can author bodies and colliders and
+perform entity-resolved spatial queries without Dart glue. The definitions are
+registered through LuaLike's `LibraryBuilder`, so `PhysicsBodyOptions`,
+`PhysicsColliderOptions`, `PhysicsQueryOptions`, `Vec3`, and `PhysicsRayHit`
+are available to Lua Language Server:
+
+```lua
+Physics.body(entity, {
+  kind = 'kinematic',
+  gravity_scale = 0,
+  ccd = true,
+})
+Physics.collider(entity, {
+  shape = 'capsule',
+  radius = 0.35,
+  half_height = 0.6,
+  friction = 0.8,
+  layer = 2,
+  mask = 5,
+})
+
+local hit = Physics.raycast(
+  { x = 0, y = 2, z = 0 },
+  { x = 0, y = -1, z = 0 },
+  { max_distance = 10, layer_mask = 1 }
+)
+if hit then print('ground entity', hit.entity, hit.distance) end
+
+local nearby = Physics.overlap_sphere(
+  { x = 0, y = 0, z = 0 }, 4,
+  { layer_mask = 4, include_triggers = true }
+)
+Physics.set_velocity(entity, { x = 5, y = 0, z = 0 })
+Physics.apply_impulse(entity, { x = 0, y = 8, z = 0 })
+```
+
+`fixed` and `kinematic` bodies work with the default pure-Dart backend.
+`dynamic` bodies use the same Lua API but require a solver implementation to
+be injected into `PhysicsPlugin`.
+
 ## Platformer example
 
 `Moonfall Causeway` demonstrates genre-specific gameplay authored on the same

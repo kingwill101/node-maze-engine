@@ -40,6 +40,57 @@
 ---@field inner_angle? number # Spot inner angle in radians.
 ---@field outer_angle? number # Spot outer angle in radians.
 
+---@class Vec3
+---Three-dimensional vector accepted by engine APIs.
+---
+---@field x? number # X component.
+---@field y? number # Y component.
+---@field z? number # Z component.
+
+---@class PhysicsBodyOptions
+---Rigid-body configuration consumed by Physics.body.
+---
+---@field kind? "fixed"|"kinematic"|"dynamic" # How the body moves. Dynamic requires a solver backend.
+---@field mass? number # Additional mass.
+---@field velocity? Vec3 # Initial linear velocity.
+---@field angular_velocity? Vec3 # Initial angular velocity.
+---@field linear_damping? number # Linear damping coefficient.
+---@field angular_damping? number # Angular damping coefficient.
+---@field gravity_scale? number # Multiplier applied to world gravity.
+---@field ccd? boolean # Enables continuous collision detection.
+---@field linear_axis_factor? Vec3 # Per-axis linear motion factors from 0 to 1.
+---@field angular_axis_factor? Vec3 # Per-axis angular motion factors from 0 to 1.
+
+---@class PhysicsColliderOptions
+---Collider shape, material, trigger, and filter values.
+---
+---@field shape? "box"|"sphere"|"capsule"|"cylinder" # Primitive collision shape.
+---@field half_extents? Vec3 # Box half-size on each axis.
+---@field radius? number # Sphere, capsule, or cylinder radius.
+---@field half_height? number # Capsule or cylinder half-height.
+---@field offset? Vec3 # Local offset.
+---@field trigger? boolean # Reports overlaps without solid contact.
+---@field friction? number # Surface friction.
+---@field restitution? number # Surface bounciness.
+---@field density? number # Mass per unit volume.
+---@field layer? integer # Collision membership bit mask.
+---@field mask? integer # Layers this collider interacts with.
+
+---@class PhysicsQueryOptions
+---Shared filtering options for spatial queries.
+---
+---@field max_distance? number # Maximum ray distance.
+---@field layer_mask? integer # Collider layers included by the query.
+---@field include_triggers? boolean # Whether trigger volumes can be returned.
+
+---@class PhysicsRayHit
+---Entity-resolved scene-query result.
+---
+---@field entity? integer # Hit entity identifier.
+---@field point? Vec3 # World hit point.
+---@field normal? Vec3 # World surface normal.
+---@field distance? number # Distance from query origin.
+
 ---@nodiscard
 ---Finds an entity by its scene-tree path.
 ---@param path string # Scene-tree path.
@@ -197,6 +248,48 @@ function scene_set_particles(...) end
 ---@param ... any # Native function arguments.
 ---@return any # The operation result, or nil.
 function scene_set_environment(...) end
+
+---@private
+---Internal Node Engine compatibility binding `physics_set_body`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function physics_set_body(...) end
+
+---@private
+---Internal Node Engine compatibility binding `physics_set_collider`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function physics_set_collider(...) end
+
+---@private
+---Internal Node Engine compatibility binding `physics_remove`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function physics_remove(...) end
+
+---@private
+---Internal Node Engine compatibility binding `physics_raycast`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function physics_raycast(...) end
+
+---@private
+---Internal Node Engine compatibility binding `physics_overlap_sphere`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function physics_overlap_sphere(...) end
+
+---@private
+---Internal Node Engine compatibility binding `physics_set_velocity`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function physics_set_velocity(...) end
+
+---@private
+---Internal Node Engine compatibility binding `physics_apply_impulse`.
+---@param ... any # Native function arguments.
+---@return any # The operation result, or nil.
+function physics_apply_impulse(...) end
 
 ---Adds or replaces a script-defined component.
 ---@param entity integer # Entity identifier.
@@ -647,4 +740,47 @@ function SceneTree.get_nodes_with_component(component) end
 ---@nodiscard
 ---Returns registered scene node count.
 function SceneTree.node_count() end
+
+---@type table
+Physics = Physics or {}
+
+---Creates or replaces an entity rigid body.
+---@param entity integer # Entity identifier.
+---@param options PhysicsBodyOptions # Body configuration.
+function Physics.body(entity, options) end
+
+---Creates or replaces an entity collider.
+---@param entity integer # Entity identifier.
+---@param options PhysicsColliderOptions # Shape, material, and filter configuration.
+function Physics.collider(entity, options) end
+
+---Removes physics components from an entity.
+---@param entity integer # Entity identifier.
+function Physics.remove(entity) end
+
+---@nodiscard
+---Returns the closest collider along a ray.
+---@param origin Vec3 # World-space ray origin.
+---@param direction Vec3 # Ray direction.
+---@param options? PhysicsQueryOptions # Query filters.
+---@return PhysicsRayHit|nil # Closest hit, or nil.
+function Physics.raycast(origin, direction, options) end
+
+---@nodiscard
+---Returns entities overlapping a sphere.
+---@param center Vec3 # World-space sphere center.
+---@param radius number # Sphere radius.
+---@param options? PhysicsQueryOptions # Query filters.
+---@return integer[] # Unique overlapping entity identifiers.
+function Physics.overlap_sphere(center, radius, options) end
+
+---Sets a registered body linear velocity.
+---@param entity integer # Entity identifier.
+---@param velocity Vec3 # World-space velocity.
+function Physics.set_velocity(entity, velocity) end
+
+---Applies an instantaneous impulse to a body.
+---@param entity integer # Entity identifier.
+---@param impulse Vec3 # World-space impulse.
+function Physics.apply_impulse(entity, impulse) end
 

@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:node/engine/app.dart';
 import 'package:node/engine/runtime.dart';
 import 'package:node/engine/scene_tree.dart';
 import 'package:node/game/components.dart';
+import 'package:node/physics/physics_plugin.dart';
 import 'package:node/scene/render_components.dart';
 import 'package:node/scripting/lua_behavior_runtime.dart';
 
@@ -16,6 +18,8 @@ void main() {
     expect(annotations, contains('function scene_set_mesh'));
     expect(annotations, contains('function Scene.mesh(entity, options)'));
     expect(annotations, contains('function World.query(...)'));
+    expect(annotations, contains('function Physics.raycast('));
+    expect(annotations, contains('---@class PhysicsColliderOptions'));
     expect(
       annotations,
       contains(
@@ -25,6 +29,46 @@ void main() {
     );
     expect(metadata, contains('query_components'));
     expect(metadata, contains('QueryFilter'));
+  });
+
+  test('Lua authors and queries an ECS physics scene', () async {
+    final engine = EngineContext();
+    final app = GameApp(context: engine)..addPlugin(PhysicsPlugin());
+    final entity = engine.world.create([
+      Transform3(0, 0, 3),
+      ScriptProperties(),
+    ]);
+    final lua = LuaBehaviorRuntime(engine);
+    await lua.load('''
+      function ready(entity)
+        Physics.body(entity, { kind = 'fixed' })
+        Physics.collider(entity, {
+          shape = 'box', half_extents = { x = 0.5, y = 0.5, z = 0.5 },
+          layer = 4, friction = 0.8,
+        })
+      end
+
+      function update(entity, delta)
+        local hit = Physics.raycast(
+          { x = 0, y = 0, z = 0 },
+          { x = 0, y = 0, z = 1 },
+          { max_distance = 10, layer_mask = 4 }
+        )
+        entity_set_property(entity, 'physics_hit', hit and hit.entity or 0)
+      end
+    ''');
+
+    await lua.ready(entity);
+    app.update(1 / 60);
+    await lua.update(entity, 1 / 60);
+
+    expect(engine.world.has<PhysicsBody3d>(entity), isTrue);
+    expect(engine.world.has<PhysicsCollider3d>(entity), isTrue);
+    expect(
+      engine.world.get<ScriptProperties>(entity).values['physics_hit'],
+      entity.id,
+    );
+    await app.dispose();
   });
 
   test(

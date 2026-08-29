@@ -578,6 +578,146 @@
           "scope": "private"
         },
         {
+          "name": "physics_set_body",
+          "qualifiedName": "physics_set_body",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-internal",
+          "signature": "physics_set_body ...",
+          "summary": "Internal Node Engine compatibility binding `physics_set_body`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any",
+          "scope": "private"
+        },
+        {
+          "name": "physics_set_collider",
+          "qualifiedName": "physics_set_collider",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-internal",
+          "signature": "physics_set_collider ...",
+          "summary": "Internal Node Engine compatibility binding `physics_set_collider`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any",
+          "scope": "private"
+        },
+        {
+          "name": "physics_remove",
+          "qualifiedName": "physics_remove",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-internal",
+          "signature": "physics_remove ...",
+          "summary": "Internal Node Engine compatibility binding `physics_remove`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any",
+          "scope": "private"
+        },
+        {
+          "name": "physics_raycast",
+          "qualifiedName": "physics_raycast",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-internal",
+          "signature": "physics_raycast ...",
+          "summary": "Internal Node Engine compatibility binding `physics_raycast`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any",
+          "scope": "private"
+        },
+        {
+          "name": "physics_overlap_sphere",
+          "qualifiedName": "physics_overlap_sphere",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-internal",
+          "signature": "physics_overlap_sphere ...",
+          "summary": "Internal Node Engine compatibility binding `physics_overlap_sphere`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any",
+          "scope": "private"
+        },
+        {
+          "name": "physics_set_velocity",
+          "qualifiedName": "physics_set_velocity",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-internal",
+          "signature": "physics_set_velocity ...",
+          "summary": "Internal Node Engine compatibility binding `physics_set_velocity`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any",
+          "scope": "private"
+        },
+        {
+          "name": "physics_apply_impulse",
+          "qualifiedName": "physics_apply_impulse",
+          "kind": "function",
+          "library": "base",
+          "category": "engine-internal",
+          "signature": "physics_apply_impulse ...",
+          "summary": "Internal Node Engine compatibility binding `physics_apply_impulse`.",
+          "params": [
+            {
+              "name": "...",
+              "type": "any",
+              "description": "Native function arguments.",
+              "optional": false
+            }
+          ],
+          "returns": "The operation result, or nil.",
+          "returnType": "any",
+          "scope": "private"
+        },
+        {
           "name": "entity_add_component",
           "qualifiedName": "entity_add_component",
           "kind": "function",
@@ -1718,6 +1858,222 @@
               "required": false
             }
           ]
+        },
+        {
+          "name": "Vec3",
+          "description": "Three-dimensional vector accepted by engine APIs.",
+          "fields": [
+            {
+              "key": "x",
+              "type": "number",
+              "description": "X component.",
+              "required": false
+            },
+            {
+              "key": "y",
+              "type": "number",
+              "description": "Y component.",
+              "required": false
+            },
+            {
+              "key": "z",
+              "type": "number",
+              "description": "Z component.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "PhysicsBodyOptions",
+          "description": "Rigid-body configuration consumed by Physics.body.",
+          "fields": [
+            {
+              "key": "kind",
+              "type": "\"fixed\"|\"kinematic\"|\"dynamic\"",
+              "description": "How the body moves. Dynamic requires a solver backend.",
+              "required": false
+            },
+            {
+              "key": "mass",
+              "type": "number",
+              "description": "Additional mass.",
+              "required": false
+            },
+            {
+              "key": "velocity",
+              "type": "Vec3",
+              "description": "Initial linear velocity.",
+              "required": false
+            },
+            {
+              "key": "angular_velocity",
+              "type": "Vec3",
+              "description": "Initial angular velocity.",
+              "required": false
+            },
+            {
+              "key": "linear_damping",
+              "type": "number",
+              "description": "Linear damping coefficient.",
+              "required": false
+            },
+            {
+              "key": "angular_damping",
+              "type": "number",
+              "description": "Angular damping coefficient.",
+              "required": false
+            },
+            {
+              "key": "gravity_scale",
+              "type": "number",
+              "description": "Multiplier applied to world gravity.",
+              "required": false
+            },
+            {
+              "key": "ccd",
+              "type": "boolean",
+              "description": "Enables continuous collision detection.",
+              "required": false
+            },
+            {
+              "key": "linear_axis_factor",
+              "type": "Vec3",
+              "description": "Per-axis linear motion factors from 0 to 1.",
+              "required": false
+            },
+            {
+              "key": "angular_axis_factor",
+              "type": "Vec3",
+              "description": "Per-axis angular motion factors from 0 to 1.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "PhysicsColliderOptions",
+          "description": "Collider shape, material, trigger, and filter values.",
+          "fields": [
+            {
+              "key": "shape",
+              "type": "\"box\"|\"sphere\"|\"capsule\"|\"cylinder\"",
+              "description": "Primitive collision shape.",
+              "required": false
+            },
+            {
+              "key": "half_extents",
+              "type": "Vec3",
+              "description": "Box half-size on each axis.",
+              "required": false
+            },
+            {
+              "key": "radius",
+              "type": "number",
+              "description": "Sphere, capsule, or cylinder radius.",
+              "required": false
+            },
+            {
+              "key": "half_height",
+              "type": "number",
+              "description": "Capsule or cylinder half-height.",
+              "required": false
+            },
+            {
+              "key": "offset",
+              "type": "Vec3",
+              "description": "Local offset.",
+              "required": false
+            },
+            {
+              "key": "trigger",
+              "type": "boolean",
+              "description": "Reports overlaps without solid contact.",
+              "required": false
+            },
+            {
+              "key": "friction",
+              "type": "number",
+              "description": "Surface friction.",
+              "required": false
+            },
+            {
+              "key": "restitution",
+              "type": "number",
+              "description": "Surface bounciness.",
+              "required": false
+            },
+            {
+              "key": "density",
+              "type": "number",
+              "description": "Mass per unit volume.",
+              "required": false
+            },
+            {
+              "key": "layer",
+              "type": "integer",
+              "description": "Collision membership bit mask.",
+              "required": false
+            },
+            {
+              "key": "mask",
+              "type": "integer",
+              "description": "Layers this collider interacts with.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "PhysicsQueryOptions",
+          "description": "Shared filtering options for spatial queries.",
+          "fields": [
+            {
+              "key": "max_distance",
+              "type": "number",
+              "description": "Maximum ray distance.",
+              "required": false
+            },
+            {
+              "key": "layer_mask",
+              "type": "integer",
+              "description": "Collider layers included by the query.",
+              "required": false
+            },
+            {
+              "key": "include_triggers",
+              "type": "boolean",
+              "description": "Whether trigger volumes can be returned.",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "PhysicsRayHit",
+          "description": "Entity-resolved scene-query result.",
+          "fields": [
+            {
+              "key": "entity",
+              "type": "integer",
+              "description": "Hit entity identifier.",
+              "required": false
+            },
+            {
+              "key": "point",
+              "type": "Vec3",
+              "description": "World hit point.",
+              "required": false
+            },
+            {
+              "key": "normal",
+              "type": "Vec3",
+              "description": "World surface normal.",
+              "required": false
+            },
+            {
+              "key": "distance",
+              "type": "number",
+              "description": "Distance from query origin.",
+              "required": false
+            }
+          ]
         }
       ]
     },
@@ -2369,6 +2725,185 @@
           "params": [],
           "returnType": "integer",
           "nodiscard": true
+        }
+      ]
+    },
+    {
+      "name": "Physics",
+      "description": "Backend-neutral rigid bodies, colliders, and scene queries.",
+      "functions": [
+        {
+          "name": "body",
+          "qualifiedName": "Physics.body",
+          "kind": "function",
+          "library": "Physics",
+          "category": "scripting",
+          "signature": "body entity options",
+          "summary": "Creates or replaces an entity rigid body.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "PhysicsBodyOptions",
+              "description": "Body configuration.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "collider",
+          "qualifiedName": "Physics.collider",
+          "kind": "function",
+          "library": "Physics",
+          "category": "scripting",
+          "signature": "collider entity options",
+          "summary": "Creates or replaces an entity collider.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "PhysicsColliderOptions",
+              "description": "Shape, material, and filter configuration.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "remove",
+          "qualifiedName": "Physics.remove",
+          "kind": "function",
+          "library": "Physics",
+          "category": "scripting",
+          "signature": "remove entity",
+          "summary": "Removes physics components from an entity.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "raycast",
+          "qualifiedName": "Physics.raycast",
+          "kind": "function",
+          "library": "Physics",
+          "category": "scripting",
+          "signature": "raycast origin direction [options]",
+          "summary": "Returns the closest collider along a ray.",
+          "params": [
+            {
+              "name": "origin",
+              "type": "Vec3",
+              "description": "World-space ray origin.",
+              "optional": false
+            },
+            {
+              "name": "direction",
+              "type": "Vec3",
+              "description": "Ray direction.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "PhysicsQueryOptions",
+              "description": "Query filters.",
+              "optional": true
+            }
+          ],
+          "returns": "Closest hit, or nil.",
+          "returnType": "PhysicsRayHit|nil",
+          "nodiscard": true
+        },
+        {
+          "name": "overlap_sphere",
+          "qualifiedName": "Physics.overlap_sphere",
+          "kind": "function",
+          "library": "Physics",
+          "category": "scripting",
+          "signature": "overlap_sphere center radius [options]",
+          "summary": "Returns entities overlapping a sphere.",
+          "params": [
+            {
+              "name": "center",
+              "type": "Vec3",
+              "description": "World-space sphere center.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Sphere radius.",
+              "optional": false
+            },
+            {
+              "name": "options",
+              "type": "PhysicsQueryOptions",
+              "description": "Query filters.",
+              "optional": true
+            }
+          ],
+          "returns": "Unique overlapping entity identifiers.",
+          "returnType": "integer[]",
+          "nodiscard": true
+        },
+        {
+          "name": "set_velocity",
+          "qualifiedName": "Physics.set_velocity",
+          "kind": "function",
+          "library": "Physics",
+          "category": "scripting",
+          "signature": "set_velocity entity velocity",
+          "summary": "Sets a registered body linear velocity.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "velocity",
+              "type": "Vec3",
+              "description": "World-space velocity.",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "name": "apply_impulse",
+          "qualifiedName": "Physics.apply_impulse",
+          "kind": "function",
+          "library": "Physics",
+          "category": "scripting",
+          "signature": "apply_impulse entity impulse",
+          "summary": "Applies an instantaneous impulse to a body.",
+          "params": [
+            {
+              "name": "entity",
+              "type": "integer",
+              "description": "Entity identifier.",
+              "optional": false
+            },
+            {
+              "name": "impulse",
+              "type": "Vec3",
+              "description": "World-space impulse.",
+              "optional": false
+            }
+          ]
         }
       ]
     }
