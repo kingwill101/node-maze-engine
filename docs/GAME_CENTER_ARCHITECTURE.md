@@ -58,6 +58,13 @@ bridge. An automated test guards that boundary. Node Maze and Moonfall are also
 loaded through the index while their combined legacy manifest is gradually
 split into individual package directories.
 
+Brasscap Run extends that conformance boundary to 2.5D platformers. Its
+manifest selects a scripted player renderer and the reusable bright platform
+environment. Lua owns its character assembly, route generation, collectibles,
+enemy patrols and stomping, springs, moving platforms, checkpoints, HUD, and
+completion rules. The only new native scripting primitive is the generic
+`platformer_launch(entity, velocity)` capability.
+
 Minimal manifest metadata:
 
 ```lua

@@ -8,6 +8,7 @@ return {
       autoload = 'assets/games/signal_garden/autoload.lua',
       behavior = 'assets/games/signal_garden/sentinel.lua',
       prefabs = 'assets/games/signal_garden/prefabs.lua',
+      icon = 'spark', accent_color = '#8dffef', background_color = '#174f55',
     },
   },
   levels = {

@@ -72,6 +72,21 @@ class LuaLevelLoader {
             definition['prefabs'],
             fallback: 'assets/lua/prefabs.lua',
           ),
+          playerRenderer: _string(
+            definition['player_renderer'],
+            fallback: 'native',
+          ),
+          platformEnvironment: _string(
+            definition['platform_environment'],
+            fallback: 'moonfall',
+          ),
+          controls: _string(definition['controls'], fallback: ''),
+          icon: _string(definition['icon'], fallback: 'orb'),
+          accentColor: _string(definition['accent_color'], fallback: '#31e7ff'),
+          backgroundColor: _string(
+            definition['background_color'],
+            fallback: '#10224a',
+          ),
         ),
       );
     }

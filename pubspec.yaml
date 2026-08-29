@@ -67,6 +67,7 @@ flutter:
     - assets/lua/
     - assets/games/
     - assets/games/signal_garden/
+    - assets/games/brasscap_run/
     - assets/images/
     - assets/characters/
     - assets/audio/

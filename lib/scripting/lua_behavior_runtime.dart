@@ -261,6 +261,14 @@ class LuaBehaviorRuntime {
         ..checkpointY = _number(args, 2);
       return true;
     });
+    _expose('platformer_launch', (args) {
+      final body = engine.world.maybeGet<PlatformerBody>(_entity(args));
+      if (body == null) return false;
+      body
+        ..velocityY = _number(args, 1)
+        ..grounded = false;
+      return true;
+    });
     _expose('game_complete_level', (args) {
       final states = engine.world.query<GameState>().toList();
       if (states.isEmpty) return false;

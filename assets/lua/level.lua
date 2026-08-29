@@ -84,12 +84,14 @@ return {
       name = 'Node Maze',
       tagline = 'Tactical neon maze adventure',
       campaign = 'Neon Rift Tour',
+      icon = 'maze', accent_color = '#31e7ff', background_color = '#10224a',
     },
     {
       id = 'moonfall_courier',
       name = 'Moonfall Courier',
       tagline = 'A 2.5D fantasy action-platformer',
       campaign = 'The Shattered Moon',
+      icon = 'moon', accent_color = '#b35cff', background_color = '#321957',
     },
   },
   levels = {

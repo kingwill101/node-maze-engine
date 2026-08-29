@@ -70,6 +70,12 @@ class GameDefinition {
     this.autoloadPath = 'assets/lua/autoload.lua',
     this.behaviorPath = 'assets/lua/ghost.lua',
     this.prefabPath = 'assets/lua/prefabs.lua',
+    this.playerRenderer = 'native',
+    this.platformEnvironment = 'moonfall',
+    this.controls = '',
+    this.icon = 'orb',
+    this.accentColor = '#31e7ff',
+    this.backgroundColor = '#10224a',
   });
 
   final String id;
@@ -79,6 +85,12 @@ class GameDefinition {
   final String autoloadPath;
   final String? behaviorPath;
   final String prefabPath;
+  final String playerRenderer;
+  final String platformEnvironment;
+  final String controls;
+  final String icon;
+  final String accentColor;
+  final String backgroundColor;
 }
 
 class GamePackageIndex {

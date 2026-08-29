@@ -16,8 +16,9 @@ void main() {
       'node_maze',
       'moonfall_courier',
       'signal_garden',
+      'brasscap_run',
     ]);
-    final garden = catalog.games.last;
+    final garden = catalog.games[2];
     expect(garden.autoloadPath, 'assets/games/signal_garden/autoload.lua');
     expect(garden.behaviorPath, 'assets/games/signal_garden/sentinel.lua');
     expect(garden.prefabPath, 'assets/games/signal_garden/prefabs.lua');
@@ -27,7 +28,7 @@ void main() {
     'third game boots its own Lua package without engine branches',
     () async {
       final catalog = await const LuaGamePackageLoader().load(rootBundle);
-      final garden = catalog.games.last;
+      final garden = catalog.games[2];
       final game = MazeGame(level: garden.campaign.levels.single);
       await game.loadGameScripts(
         autoloadSource: await rootBundle.loadString(garden.autoloadPath),
@@ -62,4 +63,49 @@ void main() {
       }
     },
   );
+
+  test('independent 2.5D package builds gameplay entirely from Lua', () async {
+    final catalog = await const LuaGamePackageLoader().load(rootBundle);
+    final brasscap = catalog.games.singleWhere(
+      (game) => game.id == 'brasscap_run',
+    );
+    final game = MazeGame(level: brasscap.campaign.levels.first);
+    await game.loadGameScripts(
+      autoloadSource: await rootBundle.loadString(brasscap.autoloadPath),
+      ghostSource: '',
+      prefabSource: await rootBundle.loadString(brasscap.prefabPath),
+    );
+
+    final world = game.runtime.context.world;
+    expect(brasscap.playerRenderer, 'script');
+    expect(brasscap.platformEnvironment, 'bright');
+    expect(
+      world.query<ScriptComponents>().where(
+        (entry) => entry.$2.values.containsKey('platform'),
+      ),
+      hasLength(16),
+    );
+    expect(
+      world.query<ScriptComponents>().where(
+        (entry) => entry.$2.values.containsKey('gear_coin'),
+      ),
+      hasLength(14),
+    );
+    expect(world.get<ScriptDrawings>(game.player).values.keys, contains('cap'));
+
+    game.setPlatformerAxis(1);
+    for (var frame = 0; frame < 12; frame++) {
+      game.advance(.05);
+      await Future<void>.delayed(Duration.zero);
+    }
+    expect(world.get<Transform3>(game.player).x, greaterThan(3));
+
+    for (final path in [
+      'lib/main.dart',
+      'lib/game/maze_game.dart',
+      'lib/scripting/lua_behavior_runtime.dart',
+    ]) {
+      expect(await File(path).readAsString(), isNot(contains('brasscap_run')));
+    }
+  });
 }

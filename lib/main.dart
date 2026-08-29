@@ -17,6 +17,7 @@ import 'generated/nix_character.g.dart';
 import 'generated/star_eater_character.g.dart';
 import 'generated/thorn_runner_character.g.dart';
 import 'scene/moonfall_environment.dart';
+import 'scene/platform_environment.dart';
 import 'scene/procedural_character.dart';
 import 'scripting/lua_game_package_loader.dart';
 
@@ -30,6 +31,23 @@ CameraMode nextCameraMode(CameraMode active, CameraMode levelMode) {
       ? CameraMode.firstPerson
       : CameraMode.follow;
 }
+
+Color _gameColor(String source) {
+  final normalized = source.replaceFirst('#', '');
+  final value = int.tryParse(
+    normalized.length == 6 ? 'ff$normalized' : normalized,
+    radix: 16,
+  );
+  return Color(value ?? 0xff31e7ff);
+}
+
+IconData _gameIcon(String name) => switch (name) {
+  'moon' => Icons.nightlight_round,
+  'sun' => Icons.wb_sunny_rounded,
+  'spark' => Icons.auto_awesome,
+  'maze' => Icons.blur_circular,
+  _ => Icons.sports_esports,
+};
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -380,9 +398,10 @@ class _GameCard extends StatelessWidget {
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: game.id == 'moonfall_courier'
-              ? const [Color(0xff321957), Color(0xff102f52)]
-              : const [Color(0xff10224a), Color(0xff071227)],
+          colors: [
+            _gameColor(game.backgroundColor),
+            Color.lerp(_gameColor(game.backgroundColor), Colors.black, .62)!,
+          ],
         ),
         border: Border.all(
           color: selected ? const Color(0xff31e7ff) : Colors.white24,
@@ -394,13 +413,9 @@ class _GameCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
-            game.id == 'moonfall_courier'
-                ? Icons.nightlight_round
-                : Icons.blur_circular,
+            _gameIcon(game.icon),
             size: 48,
-            color: game.id == 'moonfall_courier'
-                ? const Color(0xffb35cff)
-                : const Color(0xff31e7ff),
+            color: _gameColor(game.accentColor),
           ),
           const Spacer(),
           Text(
@@ -812,6 +827,8 @@ class _MazeGameViewState extends State<MazeGameView> {
       ProceduralCharacterResources(starEaterCharacterSpec);
   final MoonfallEnvironmentResources moonfallEnvironmentResources =
       MoonfallEnvironmentResources();
+  final BrightPlatformEnvironmentResources brightPlatformResources =
+      BrightPlatformEnvironmentResources();
 
   @override
   void initState() {
@@ -1157,7 +1174,9 @@ class _MazeGameViewState extends State<MazeGameView> {
                   child: Text(
                     game.phase == GamePhase.playing
                         ? _isPlatformerLevel
-                              ? 'A / D MOVE   •   SPACE JUMP   •   F STAR BOLT   •   P PAUSE'
+                              ? widget.game.controls.isNotEmpty
+                                    ? widget.game.controls
+                                    : 'A / D MOVE   •   SPACE JUMP   •   F STAR BOLT   •   P PAUSE'
                               : 'F FIRE   •   Q STAR PULSE   •   V / TAB SWITCH VIEW   •   ${game.level.objective.toUpperCase()}'
                         : 'ENTER / SPACE TO RESTART',
                     style: const TextStyle(
@@ -1306,11 +1325,18 @@ class _MazeGameViewState extends State<MazeGameView> {
     final renderDistance = game.level.renderDistance;
     final widgets = <Widget>[
       if (_isPlatformerLevel)
-        MoonfallEnvironment(
-          resources: moonfallEnvironmentResources,
-          playerX: -playerTransform.x * sceneTileScale,
-          time: animationSeconds,
-        )
+        if (widget.game.platformEnvironment == 'bright')
+          BrightPlatformEnvironment(
+            resources: brightPlatformResources,
+            playerX: -playerTransform.x * sceneTileScale,
+            time: animationSeconds,
+          )
+        else
+          MoonfallEnvironment(
+            resources: moonfallEnvironmentResources,
+            playerX: -playerTransform.x * sceneTileScale,
+            time: animationSeconds,
+          )
       else
         SceneMesh(
           name: 'maze-floor',
@@ -1334,7 +1360,9 @@ class _MazeGameViewState extends State<MazeGameView> {
       if (!_isVisible(transform, playerTransform, renderDistance)) continue;
       if (game.runtime.context.world.has<PlayerTag>(entity)) {
         if (activeCameraMode == CameraMode.firstPerson) continue;
-        widgets.add(_heroine(entity, transform));
+        if (widget.game.playerRenderer != 'script') {
+          widgets.add(_heroine(entity, transform));
+        }
         _appendScriptDrawings(widgets, entity, transform);
         continue;
       }

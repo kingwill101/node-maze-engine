@@ -1,8 +1,8 @@
 # Node Game Center
 
 A Flutter-native 3D game engine and game center containing Node Maze, the 2.5D
-action-platformer Moonfall Courier, and the independently packaged Lua game
-Signal Garden.
+action-platformer Moonfall Courier, the independently packaged Lua game Signal
+Garden, and the bright classic-style 2.5D platformer Brasscap Run.
 
 Play the web build at **https://kingwill101.github.io/node-maze-engine/**.
 
@@ -40,6 +40,13 @@ and synthesized cues for jumps, Star Bolts, crystals, damage, checkpoint
 lanterns, and the ending. Run `fvm dart tool/generate_audio.dart` to regenerate
 the deterministic PCM assets. Audio can be disabled from the accessibility
 menu and the choice persists with campaign progress.
+
+**Brasscap Run** is an original genre homage rather than a copy of Nintendo
+assets or layouts. Its three Lua-authored chapters use a manifest-selected
+bright 3D environment and scripted player renderer. The package generates
+grass-and-brick routes, brass gear pickups, stompable tick-beetles, springs,
+moving lifts, checkpoints, and finish bells without a game-ID branch in Dart.
+Its source lives under `assets/games/brasscap_run/`.
 
 Flutter Scene uses Flutter GPU on native platforms, so native `flutter run`
 commands may include `--enable-flutter-gpu`. The app manifests also enable it
