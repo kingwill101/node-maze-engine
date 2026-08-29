@@ -67,12 +67,25 @@ class GameDefinition {
     required this.name,
     required this.tagline,
     required this.campaign,
+    this.autoloadPath = 'assets/lua/autoload.lua',
+    this.behaviorPath = 'assets/lua/ghost.lua',
+    this.prefabPath = 'assets/lua/prefabs.lua',
   });
 
   final String id;
   final String name;
   final String tagline;
   final LevelCampaign campaign;
+  final String autoloadPath;
+  final String? behaviorPath;
+  final String prefabPath;
+}
+
+class GamePackageIndex {
+  const GamePackageIndex({required this.name, required this.manifests});
+
+  final String name;
+  final List<String> manifests;
 }
 
 class GameCatalog {

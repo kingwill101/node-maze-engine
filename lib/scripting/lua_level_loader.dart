@@ -4,6 +4,8 @@ import '../game/level.dart';
 import '../game/maze.dart';
 
 class LuaLevelLoader {
+  const LuaLevelLoader();
+
   Future<LevelDefinition> load(String source, {String? scriptPath}) async {
     final campaign = await loadCampaign(source, scriptPath: scriptPath);
     return campaign.levels.first;
@@ -56,6 +58,20 @@ class LuaLevelLoader {
             name: _string(definition['campaign'], fallback: id),
             levels: gameLevels,
           ),
+          autoloadPath: _string(
+            definition['autoload'],
+            fallback: 'assets/lua/autoload.lua',
+          ),
+          behaviorPath: definition['behavior'] == false
+              ? null
+              : _string(
+                  definition['behavior'],
+                  fallback: 'assets/lua/ghost.lua',
+                ),
+          prefabPath: _string(
+            definition['prefabs'],
+            fallback: 'assets/lua/prefabs.lua',
+          ),
         ),
       );
     }
@@ -65,6 +81,26 @@ class LuaLevelLoader {
     return GameCatalog(
       name: _string(map['catalog_name'], fallback: 'Node Game Center'),
       games: games,
+    );
+  }
+
+  Future<GamePackageIndex> loadPackageIndex(
+    String source, {
+    String? scriptPath,
+  }) async {
+    final result = await LuaLike().execute(source, scriptPath: scriptPath);
+    final root = _unwrap(result);
+    if (root is! Map) {
+      throw const FormatException('Game package index must return a table');
+    }
+    final map = _stringMap(root);
+    final manifests = _stringList(map['manifests']);
+    if (manifests.isEmpty) {
+      throw const FormatException('Game package index must list manifests');
+    }
+    return GamePackageIndex(
+      name: _string(map['name'], fallback: 'Node Game Center'),
+      manifests: manifests,
     );
   }
 

@@ -18,7 +18,7 @@ import 'generated/star_eater_character.g.dart';
 import 'generated/thorn_runner_character.g.dart';
 import 'scene/moonfall_environment.dart';
 import 'scene/procedural_character.dart';
-import 'scripting/lua_level_loader.dart';
+import 'scripting/lua_game_package_loader.dart';
 
 CameraMode nextCameraMode(CameraMode active, CameraMode levelMode) {
   if (levelMode == CameraMode.platformer) {
@@ -34,11 +34,7 @@ CameraMode nextCameraMode(CameraMode active, CameraMode levelMode) {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await useAssetBundle(rootBundle, assetRoot: 'assets/lua');
-  final levelSource = await rootBundle.loadString('assets/lua/level.lua');
-  final catalog = await LuaLevelLoader().loadCatalog(
-    levelSource,
-    scriptPath: 'assets/lua/level.lua',
-  );
+  final catalog = await const LuaGamePackageLoader().load(rootBundle);
   final saveStore = SharedPreferencesGameSaveStore();
   final saveData = await saveStore.load();
   runApp(
@@ -137,6 +133,7 @@ class _MazeEngineAppState extends State<MazeEngineApp> {
           : selectedLevel == null
           ? StartScene(
               campaign: activeGame.campaign,
+              gameName: activeGame.name,
               unlockedLevelIndex: saveData.unlockedChapter(activeGame.id),
               completedLevels: {
                 for (
@@ -151,7 +148,7 @@ class _MazeEngineAppState extends State<MazeEngineApp> {
             )
           : MazeGameView(
               campaign: activeGame.campaign,
-              gameId: activeGame.id,
+              game: activeGame,
               audioEnabled: saveData.audioEnabled,
               initialLevelIndex: selectedLevel!,
               onLevelCompleted: _completeChapter,
@@ -435,6 +432,7 @@ class StartScene extends StatefulWidget {
     this.onBack,
     this.unlockedLevelIndex,
     this.completedLevels = const {},
+    this.gameName,
   });
 
   final LevelCampaign campaign;
@@ -442,6 +440,7 @@ class StartScene extends StatefulWidget {
   final VoidCallback? onBack;
   final int? unlockedLevelIndex;
   final Set<int> completedLevels;
+  final String? gameName;
 
   int get maximumUnlocked => unlockedLevelIndex ?? campaign.levels.length - 1;
 
@@ -511,9 +510,7 @@ class _StartSceneState extends State<StartScene> {
                       ),
                     ),
                     Text(
-                      level.gameId == 'moonfall_courier'
-                          ? 'MOONFALL COURIER'
-                          : 'NODE MAZE',
+                      (widget.gameName ?? level.gameId).toUpperCase(),
                       style: const TextStyle(
                         letterSpacing: 5,
                         color: Color(0xffb35cff),
@@ -735,14 +732,14 @@ class MazeGameView extends StatefulWidget {
   const MazeGameView({
     super.key,
     required this.campaign,
-    required this.gameId,
+    required this.game,
     required this.audioEnabled,
     this.initialLevelIndex = 0,
     required this.onExitToMenu,
     required this.onLevelCompleted,
   });
   final LevelCampaign campaign;
-  final String gameId;
+  final GameDefinition game;
   final bool audioEnabled;
   final int initialLevelIndex;
   final VoidCallback onExitToMenu;
@@ -825,15 +822,18 @@ class _MazeGameViewState extends State<MazeGameView> {
     _snapCameraYaw();
     _loadGhostBehavior();
     _loadSceneMaterials();
-    if (widget.gameId == 'moonfall_courier') audio.startMoonfallAmbience();
+    if (widget.game.id == 'moonfall_courier') audio.startMoonfallAmbience();
   }
 
   Future<void> _loadGhostBehavior() async {
     final target = game;
     final sources = await Future.wait([
-      rootBundle.loadString('assets/lua/autoload.lua'),
-      rootBundle.loadString('assets/lua/ghost.lua'),
-      rootBundle.loadString('assets/lua/prefabs.lua'),
+      rootBundle.loadString(widget.game.autoloadPath),
+      if (widget.game.behaviorPath case final path?)
+        rootBundle.loadString(path)
+      else
+        Future.value(''),
+      rootBundle.loadString(widget.game.prefabPath),
     ]);
     await target.loadGameScripts(
       autoloadSource: sources[0],
@@ -1107,7 +1107,7 @@ class _MazeGameViewState extends State<MazeGameView> {
                   if (game.phase == GamePhase.won && !completionRecorded) {
                     completionRecorded = true;
                     audio.play(GameAudioCue.victory);
-                    widget.onLevelCompleted(widget.gameId, levelIndex);
+                    widget.onLevelCompleted(widget.game.id, levelIndex);
                   }
                   if (mounted) setState(() {});
                 },
@@ -1193,7 +1193,7 @@ class _MazeGameViewState extends State<MazeGameView> {
                 phase: game.phase,
                 score: game.score,
                 hasNextLevel: levelIndex + 1 < widget.campaign.levels.length,
-                isPlatformer: widget.gameId == 'moonfall_courier',
+                isPlatformer: _isPlatformerLevel,
               ),
           ],
         ),
@@ -1255,7 +1255,7 @@ class _MazeGameViewState extends State<MazeGameView> {
   }
 
   void _updateAudioFeedback() {
-    if (widget.gameId != 'moonfall_courier') return;
+    if (widget.game.id != 'moonfall_courier') return;
     if (game.score > observedScore) audio.play(GameAudioCue.collect);
     if (game.lives < observedLives) audio.play(GameAudioCue.hurt);
     final checkpoints = game.runtime.context.world

@@ -24,6 +24,11 @@ specific characters.
 
 ## Lua-first game packages
 
+The first package-loader milestone is live. `assets/games/catalog.lua` is the
+startup registry. It lists Lua manifest paths, which the engine loads and
+merges without knowing their game IDs. Each manifest declares its own autoload,
+behavior, prefab library, campaign metadata, and levels.
+
 Each game owns a manifest, autoloads, scenes, prefabs, behaviors, and assets:
 
 ```text
@@ -36,6 +41,46 @@ assets/games/<game_id>/
 ├── levels/
 └── models/
 ```
+
+The current compact package layout is:
+
+```text
+assets/games/catalog.lua
+assets/games/<game_id>/game.lua
+assets/games/<game_id>/autoload.lua
+assets/games/<game_id>/prefabs.lua
+assets/games/<game_id>/<behavior>.lua
+```
+
+Signal Garden is the conformance package. It is discovered, displayed, and
+booted without adding its ID to `main.dart`, `maze_game.dart`, or the Lua
+bridge. An automated test guards that boundary. Node Maze and Moonfall are also
+loaded through the index while their combined legacy manifest is gradually
+split into individual package directories.
+
+Minimal manifest metadata:
+
+```lua
+return {
+  games = {{
+    id = 'my_game',
+    name = 'My Game',
+    tagline = 'A Lua-authored experiment',
+    campaign = 'My Campaign',
+    autoload = 'assets/games/my_game/autoload.lua',
+    behavior = 'assets/games/my_game/enemy.lua', -- or false
+    prefabs = 'assets/games/my_game/prefabs.lua',
+  }},
+  levels = {
+    -- ordinary Lua level tables tagged with game = 'my_game'
+  },
+}
+```
+
+Adding a game currently requires its assets, one manifest entry in
+`catalog.lua`, and matching `pubspec.yaml` asset inclusion. It does not require
+a Dart registration branch. New simulation capabilities still belong in the
+engine as generic components and systems rather than game-ID checks.
 
 The manifest declares the initial scene, supported input actions, save schema,
 and optional engine capabilities. Lua composes gameplay from generic components

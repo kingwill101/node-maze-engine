@@ -1,7 +1,8 @@
 # Node Game Center
 
-A Flutter-native 3D game engine and game center containing Node Maze and the
-2.5D action-platformer Moonfall Courier.
+A Flutter-native 3D game engine and game center containing Node Maze, the 2.5D
+action-platformer Moonfall Courier, and the independently packaged Lua game
+Signal Garden.
 
 Play the web build at **https://kingwill101.github.io/node-maze-engine/**.
 
